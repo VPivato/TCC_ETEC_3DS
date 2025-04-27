@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contate-nos</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/feedback.css')}}">
+</head>
+
+<body>
+    <header>
+
+    </header>
+
+    <main>
+        <h1>Tem alguma dúvida ou reclamação? Contate-nos.</h1>
+
+        <form action="{{url_for('enviar_feedback')}}" method="post">
+            <div id="identificacao">
+                <label for="nome_feedback">Nome:</label>
+                <input type="text" name="nome_feedback" id="nome_feedback" placeholder="Digite seu nome..." maxlength="40">
+
+                <label for="nome_feedback">Email:</label>
+                <input type="email" name="email_feedback" id="email_feedback" placeholder="Exemplo@gmail.com" maxlength="70">
+            </div>
+            
+            <div id="feedback">
+                <label for="assunto_feedback">Assunto</label>
+                <div id="assunto_tipo_wrapper">
+                    <input type="text" name="assunto_feedback" id="assunto_feedback" placeholder="Por que você está nos contatando?" maxlength="70">
+                    <select name="tipo_feedback" id="tipo_feedback">
+                        <option value="duvida">Dúvida</option>
+                        <option value="reclamacao">Reclamação</option>
+                    </select>
+                </div>
+                
+
+                <label for="texto_feedback">O que você quer nos informar?</label>
+                <div id="textarea_wrapper">
+                    <textarea name="texto_feedback" id="texto_feedback" maxlength="700"></textarea>
+                    <small id="contador">700</small>
+                </div>
+            </div>
+            
+            <div id="botoes">
+                <button type="submit" id="enviar">Enviar</button>
+                <button type="button" id="cancelar">Cancelar</button>
+            </div>
+        </form>
+    </main>
+
+    <script src="{{url_for('static', filename='js/index.js')}}"></script>
+</body>
+
+</html>

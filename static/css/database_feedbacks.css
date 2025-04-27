@@ -1,0 +1,107 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "poppins", sans-serif;
+}
+
+body {
+    padding: 0 20px;
+    background-color: #eee;
+    overflow-x: auto;
+}
+
+table {
+    border-collapse: collapse;
+    font-size: .9rem;
+    margin: 20px 0;
+    border-radius: 15px 15px 0 0;
+    overflow: hidden;
+    box-shadow: 0 0 20px 5px rgba(0, 0, 0, .15);
+}
+
+#th_id {
+    width: 2%;
+}
+#th_nome {
+    width: 10%;
+    min-width: 120px
+}
+#th_email {
+    width: 15%;
+    min-width: 120px
+}
+#th_tipo {
+    width: 5%;
+}
+#th_feedback {
+    min-width: 400px
+}
+#th_data {
+    width: 8%;
+}
+#th_acoes {
+    width: 5%;
+}
+
+#td_nome, #td_email {
+    overflow: auto;
+    overflow-wrap: anywhere;
+}
+#td_feedback {
+    max-height: 300px; /* Defina a altura máxima para a célula de feedback */
+    overflow-y: auto; /* Adiciona a barra de rolagem vertical se o conteúdo ultrapassar a altura */
+    word-wrap: break-word; /* Garante que o texto quebrará automaticamente */
+    white-space: normal; /* Garante que o texto quebrará em várias linhas */
+    display: block; /* Permite a barra de rolagem dentro da célula */
+    overflow-wrap: anywhere;
+}
+
+tr {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+table thead tr {
+    background-color: #aa0404;
+    color: #eee;
+    text-align: left;
+    font-weight: bold;
+}
+
+th,
+td {
+    padding: 10px 15px;
+}
+
+td {
+    border-bottom: 1px solid #ccc;
+}
+
+tr:nth-of-type(even) {
+    background-color: #e6e6e6;
+}
+
+tr:last-of-type {
+    border-bottom: 2px solid #aa0404;
+}
+
+tbody tr:hover {
+    cursor: pointer;
+    color: #aa0404;
+}
+
+a {
+    text-decoration: none;
+    color: #0000ee;
+}
+
+a:visited {
+    color: #0000ee;
+}
+
+a:hover {
+    color: red;
+}
