@@ -107,6 +107,30 @@ def home():
 def feedback():
     return render_template("feedback.html")
 
+@app.route('/perfil')
+def perfil():
+    return render_template("perfil.html")
+
+@app.route('/sair')
+def sair():
+    session.clear()
+    return redirect(url_for("login"))
+
+@app.route('/excluir_perfil', methods=["POST"])
+def excluir_perfil():
+    email = session['email']
+    usuario = Usuarios.query.filter_by(email_usuario=email).first()
+
+    if usuario:
+        try:
+            db.session.delete(usuario)
+            db.session.commit()
+            session.clear()
+            flash("Seu perfil foi excluido com sucesso.", "sucesso")
+            return redirect(url_for("login"))
+        except Exception as e:
+            return f"ERROR: {e}"
+
 @app.route('/enviar_feedback', methods=["POST"])
 def enviar_feedback():
     if request.method == "POST":

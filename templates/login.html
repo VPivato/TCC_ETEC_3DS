@@ -5,15 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Crédito CPS</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='css/login-style.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login-style.css') }}">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
 
 </head>
 
 <body>
+
+
     <div class="container">
         <div class="form-box login">
-            <form action="{{url_for('entrar')}}" method="POST">
+            <form action="{{ url_for('entrar') }}" method="POST">
                 <h1>Login</h1>
                 <div class="input-box">
                     <input type="text" placeholder="Código" name="codigo-entrar" required id="codeEtecLogin"
@@ -25,7 +27,7 @@
                 {% if messages %}
                 {% for message in messages %}
                 {% if message == "Usuário não cadastrado" %}
-                <span class="warning">{{message}}</span>
+                <span class="warning">{{ message }}</span>
                 {% endif %}
                 {% endfor %}
                 {% endif %}
@@ -38,7 +40,7 @@
                 {% if messages %}
                 {% for message in messages %}
                 {% if message == "Senha incorreta" %}
-                <span class="warning">{{message}}</span>
+                <span class="warning">{{ message }}</span>
                 {% endif %}
                 {% endfor %}
                 {% endif %}
@@ -51,7 +53,7 @@
         </div>
 
         <div class="form-box register">
-            <form action="{{url_for('registrar')}}" method="POST">
+            <form action="{{ url_for('registrar') }}" method="POST">
                 <h1>Cadastro</h1>
                 <div class="input-box">
                     <input type="email" name="email-registrar" placeholder="Email" required>
@@ -87,7 +89,7 @@
                 </div>
             </div>
         </div>
-        <script src="{{url_for('static', filename='js/login-script.js')}}"></script>
+        <script src="{{ url_for('static', filename='js/login-script.js') }}"></script>
 </body>
 
 </html>

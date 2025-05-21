@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contate-nos</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='css/feedback.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/feedback-style.css')}}">
 </head>
 
 <body>
@@ -32,14 +32,15 @@
                     <select name="tipo_feedback" id="tipo_feedback">
                         <option value="duvida">Dúvida</option>
                         <option value="reclamacao">Reclamação</option>
+                        <option value="sugestao">Sugestão</option>
                     </select>
                 </div>
                 
 
                 <label for="texto_feedback">O que você quer nos informar?</label>
                 <div id="textarea_wrapper">
-                    <textarea name="texto_feedback" id="texto_feedback" maxlength="700"></textarea>
-                    <small id="contador">700</small>
+                    <textarea name="texto_feedback" id="texto_feedback" maxlength="300"></textarea>
+                    <small id="contador">300</small>
                 </div>
             </div>
             
@@ -50,7 +51,7 @@
         </form>
     </main>
 
-    <script src="{{url_for('static', filename='js/index.js')}}"></script>
+    <script src="{{url_for('static', filename='js/feedback-script.js')}}"></script>
 </body>
 
 </html>
