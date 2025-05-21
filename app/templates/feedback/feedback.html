@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contate-nos</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='css/feedback-style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/feedback/feedback-style.css')}}">
 </head>
 
 <body>
@@ -16,7 +16,7 @@
     <main>
         <h1>Tem alguma dúvida ou reclamação? Contate-nos.</h1>
 
-        <form action="{{url_for('enviar_feedback')}}" method="post">
+        <form action="{{url_for('feedback.enviar_feedback')}}" method="post">
             <div id="identificacao">
                 <label for="nome_feedback">Nome:</label>
                 <input type="text" name="nome_feedback" id="nome_feedback" placeholder="Digite seu nome..." maxlength="40">
@@ -46,12 +46,12 @@
             
             <div id="botoes">
                 <button type="submit" id="enviar">Enviar</button>
-                <button type="button" id="cancelar">Cancelar</button>
+                <button type="reset" id="cancelar">Cancelar</button>
             </div>
         </form>
     </main>
 
-    <script src="{{url_for('static', filename='js/feedback-script.js')}}"></script>
+    <script src="{{url_for('static', filename='js/feedback/feedback-script.js')}}"></script>
 </body>
 
 </html>

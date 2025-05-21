@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/database_feedbacks.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/feedback/database_feedbacks.css')}}">
     <title>BD Feedbackss</title>
 </head>
 <body>
@@ -28,7 +28,7 @@
             <td id="td_feedback">{{feedback.texto_feedback}}</td>
             <td id="td_data">{{feedback.data_feedback.strftime("%d-%m-%Y %H:%M:%S")}}</td>
             <td id="td_acoes">
-                <a href="/database_feedbacks/excluir_feedback/{{feedback.id_feedback}}" class="excluir">Excluir</a>
+                <a href="database_feedbacks/excluir_feedback/{{feedback.id_feedback}}" class="excluir">Excluir</a>
             </td>
         </tr>
         {% endfor %}

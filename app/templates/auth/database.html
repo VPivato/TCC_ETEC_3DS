@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/database-style.css' )}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/auth/database-style.css' )}}">
     <title>Database</title>
 </head>
 
@@ -31,7 +31,7 @@
                 <td>{{usuario.hash_senha_usuario}}</td>
                 <td>{{usuario.data_criacao_usuario.strftime("%d-%m-%Y %H:%M:%S")}}</td>
                 <td>
-                    <a href="/database/excluir_usuario/{{usuario.id_usuario}}" class="excluir">Excluir</a>
+                    <a href="database/excluir_usuario/{{usuario.id_usuario}}" class="excluir">Excluir</a>
                 </td>
             </tr>
             {% endfor %}

@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/perfil-style.css')}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/perfil/perfil-style.css')}}">
 </head>
 
 <body>
@@ -13,7 +13,7 @@
         <nav>
             <div id="notif-container">
                 <div id="sino">
-                    <img src="../static/images/notif.png" id="notif-icon" class="icon">
+                    <img src="{{ url_for('static', filename='images/perfil/notif.png') }}" id="notif-icon" class="icon">
                     <span id="notif-contador">1</span>
                 </div>
                 <div id="painel-notif" class="hidden">
@@ -32,39 +32,39 @@
     <div id="container">
         <aside id="esquerda">
             <div id="perfil-wrapper">
-                <img src="../static/images/cat.jfif" alt="" id="pfp">
+                <img src="{{ url_for('static', filename='images/perfil/cat.jfif') }}" alt="" id="pfp">
                 <p id="nome-usuario">Fulano da Silva</p>
                 <p id="rm-usuario">RM: {{ session["username"]}}</p>
             </div>
 
             <section id="lower-section">
                 <div id="geral-wrapper" class="aside-wrapper active">
-                    <img src="../static/images/perfil.png" alt="" id="geral-icon" class="aside-icon icon">
+                    <img src="{{ url_for('static', filename='images/perfil/perfil.png') }}" alt="" id="geral-icon" class="aside-icon icon">
                     <a href="#" id="geral-p" class="aside-a">Geral</a>
                 </div>
 
                 <div id="saldo-pagamentos-wrapper" class="aside-wrapper">
-                    <img src="../static/images/cartao.png" alt="" id="saldo-pagamentos-icon" class="aside-icon icon">
+                    <img src="{{ url_for('static', filename='images/perfil/cartao.png') }}" alt="" id="saldo-pagamentos-icon" class="aside-icon icon">
                     <a href="#" id="saldo-pagamentos-p" class="aside-a">Saldo / Pagamentos</a>
                 </div>
 
                 <div id="comprovantes-wrapper" class="aside-wrapper">
-                    <img src="../static/images/comprovante.png" alt="" id="comprovantes-icon" class="aside-icon icon">
+                    <img src="{{ url_for('static', filename='images/perfil/comprovante.png') }}" alt="" id="comprovantes-icon" class="aside-icon icon">
                     <a href="#" id="comprovantes-p" class="aside-a">Comprovantes</a>
                 </div>
 
                 <div id="stats-wrapper" class="aside-wrapper">
-                    <img src="../static/images/stats.png" alt="" id="stats-icon" class="aside-icon icon">
+                    <img src="{{ url_for('static', filename='images/perfil/stats.png') }}" alt="" id="stats-icon" class="aside-icon icon">
                     <a href="#" id="stats-p" class="aside-a">Estatísticas</a>
                 </div>
 
                 <div id="conf-wrapper" class="aside-wrapper">
-                    <img src="../static/images/conf.png" alt="" id="conf-icon" class="aside-icon icon">
+                    <img src="{{ url_for('static', filename='images/perfil/conf.png') }}" alt="" id="conf-icon" class="aside-icon icon">
                     <a href="#" id="conf-p" class="aside-a">Configurações</a>
                 </div>
 
                 <div id="sair-wrapper" class="aside-wrapper">
-                    <img src="../static/images/sair.png" alt="" id="sair-icon" class="aside-icon icon">
+                    <img src="{{ url_for('static', filename='images/perfil/sair.png') }}" alt="" id="sair-icon" class="aside-icon icon">
                     <a href="#" id="sair-p" class="aside-a">Sair</a>
                 </div>
 
@@ -80,9 +80,9 @@
                 <div class="main-content">
                     <h1 id="titulo-gerais" class="titulo-conteudo">Informações Gerais</h1>
                     <div id="foto-perfil-wrapper">
-                        <img src="../static/images/cat.jfif" alt="" id="foto-perfil">
+                        <img src="{{ url_for('static', filename='images/perfil/cat.jfif') }}" alt="" id="foto-perfil">
                         <button id="edit-pfp">
-                            <img src="../static/images/edit.png" id="edit-icon">
+                            <img src="{{ url_for('static', filename='images/perfil/edit.png') }}" id="edit-icon">
                         </button>
                     </div>
 
@@ -145,8 +145,8 @@
                     <h1 id="titulo-perigo" class="titulo-conteudo">Zona perigosa</h1>
 
                     <p class="label-opcao">Excluir conta?</p>
-                    <form method="POST" action="{{ url_for('excluir_perfil') }}"
-                        onsubmit="return confirm('Tem certeza que deseja excluir sua conta?  ESSA AÇÃO É IRREVERSÍVEL');">
+                    <form method="POST" action="{{ url_for('perfil.excluir_perfil') }}"
+                        onsubmit="return confirm('Tem certeza que deseja excluir sua conta? ESSA AÇÃO É IRREVERSÍVEL');">
                         <button type="submit" id="excluir-perfil" class="btn btn-danger">Excluir</button>
                     </form>
                 </div>
@@ -156,7 +156,7 @@
             </div>
         </div>
 
-        <script src="{{ url_for('static', filename='js/perfil-script.js')}}"></script>
+        <script src="{{ url_for('static', filename='js/perfil/perfil-script.js')}}"></script>
 </body>
 
 </html>

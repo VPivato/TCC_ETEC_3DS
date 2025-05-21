@@ -53,9 +53,9 @@ sino.addEventListener('click', () => {
 // CONFIRMAÇÃO SAIR 
 document.querySelector('#sair-wrapper').addEventListener("click", () => {
     if (confirm("Deseja mesmo sair?")) {
-        window.location.href = "/sair"
+        window.location.href = "sair"
     }
     else {
-        window.location.href = "/perfil"
+        window.location.href = "perfil"
     }
 });
