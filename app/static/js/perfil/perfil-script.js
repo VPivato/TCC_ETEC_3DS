@@ -1,4 +1,5 @@
 const botoes = document.querySelectorAll('.aside-wrapper')
+const conteudo_conf = document.querySelector("#conteudo-conf")
 const conteudos = document.querySelectorAll('.conteudo-pagina')
 
 // MUDANÇA DE PÁGINA MENU LATERAL
@@ -58,28 +59,39 @@ const notif_container = document.querySelector("#notif-container")
 desativar_notificacoes_toggle.addEventListener("change", () => {
     localStorage.setItem('desativar-notificacoes', desativar_notificacoes_toggle.checked)
     if (desativar_notificacoes_toggle.checked) {
-        notif_container.classList.add("hidden")
+        painel.innerHTML = ""
+        const div = document.createElement("div")
+        const span = document.createElement("span")
+        span.id = "fechar-notif"
+        span.textContent = "x"
+        div.classList.add("notificacao")
+        div.textContent = "Ative as notificações em configurações."
+        painel.appendChild(span)
+        painel.appendChild(div)
+        span.addEventListener("click", () => {
+            painel.classList.add("hidden")
+        })
     }
     else {
-        notif_container.classList.remove("hidden")
+        alert("Recarrege a página para fazer efeito.")
     }
 })
 // Restaurar ao carregar a página
 if (localStorage.getItem('desativar-notificacoes') === 'true') {
     desativar_notificacoes_toggle.checked = true
-    notif_container.classList.add("hidden")
+    painel.innerHTML = ""
+    const div = document.createElement("div")
+    const span = document.createElement("span")
+    span.id = "fechar-notif"
+    span.textContent = "x"
+    div.classList.add("notificacao")
+    div.textContent = "Ative as notificações em configurações."
+    painel.appendChild(span)
+    painel.appendChild(div)
+    span.addEventListener("click", () => {
+        painel.classList.add("hidden")
+    })
 }
-
-// RECEBER NOTIFICAÇÕES EM TEMPO REAL
-const socket = io();
-socket.on("nova_notificacao", function (data) {
-    const ul = document.querySelector("#lista-notif");
-    const li = document.createElement("li");
-    ul.textContent = ""
-    li.className = "notificacao";
-    li.textContent = data.mensagem;
-    ul.prepend(li);
-});
 
 // CONFIRMAÇÃO SAIR 
 document.querySelector('#sair-wrapper').addEventListener("click", () => {
@@ -90,3 +102,8 @@ document.querySelector('#sair-wrapper').addEventListener("click", () => {
         window.location.href = "perfil"
     }
 });
+
+
+document.addEventListener("DOMContentLoaded", () => {
+
+})
