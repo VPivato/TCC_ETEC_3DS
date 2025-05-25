@@ -48,6 +48,12 @@ const fechar_notif = document.querySelector("#fechar-notif")
 sino.addEventListener('click', () => {
     painel.classList.toggle('hidden')
     contador.style.display = 'none'
+    fetch('/notificacao/marcar_como_vista', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    })
 })
 fechar_notif.addEventListener("click", () => {
     painel.classList.add("hidden")
@@ -57,6 +63,13 @@ fechar_notif.addEventListener("click", () => {
 const desativar_notificacoes_toggle = document.querySelector("#notif-toggle")
 const notif_container = document.querySelector("#notif-container")
 desativar_notificacoes_toggle.addEventListener("change", () => {
+    fetch('/notificacao/atualizar_notificacoes', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ notificacoes_ativas: !desativar_notificacoes_toggle.checked })
+    })
     localStorage.setItem('desativar-notificacoes', desativar_notificacoes_toggle.checked)
     if (desativar_notificacoes_toggle.checked) {
         painel.innerHTML = ""
@@ -78,6 +91,13 @@ desativar_notificacoes_toggle.addEventListener("change", () => {
 })
 // Restaurar ao carregar a página
 if (localStorage.getItem('desativar-notificacoes') === 'true') {
+    fetch('/notificacao/atualizar_notificacoes', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ notificacoes_ativas: localStorage.getItem('desativar-notificacoes') })
+    })
     desativar_notificacoes_toggle.checked = true
     painel.innerHTML = ""
     const div = document.createElement("div")

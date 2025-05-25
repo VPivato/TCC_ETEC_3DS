@@ -12,6 +12,9 @@ class Usuarios(db.Model):
     hash_senha_usuario = db.Column(db.String(100), nullable=False)
     data_criacao_usuario = db.Column(db.DateTime, default=datetime.now)
 
+    notificacoes_ativas = db.Column(db.Boolean, default=True)
+    ultima_notificacao_vista = db.Column(db.Boolean, default=False)
+
     def set_senha(self, senha):
         self.hash_senha_usuario = generate_password_hash(senha)
     
