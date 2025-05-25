@@ -1,5 +1,5 @@
 from flask import Flask
-from .extensions import db, socketio
+from .extensions import db
 from .models import *
 
 def create_app():
@@ -7,7 +7,6 @@ def create_app():
     app.config.from_object("config.Config")
 
     db.init_app(app)
-    socketio.init_app(app)
 
     from .auth.routes import auth_bp
     from .home.routes import home_bp

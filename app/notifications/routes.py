@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from ..extensions import socketio
 from ..extensions import db
 from ..models.notificacao import Notificacoes
 
@@ -17,7 +16,6 @@ def enviar():
         nova_notificacao = Notificacoes(mensagem=mensagem)
         db.session.add(nova_notificacao)
         db.session.commit()
-        socketio.emit("nova_notificacao", {"mensagem": nova_notificacao.mensagem})
     return redirect(url_for("notificacao.controle_notificacao"))
 
 @notificacao_bp.route('/excluir/<int:id>')
