@@ -14,13 +14,21 @@
             <div id="notif-container">
                 <div id="sino">
                     <img src="{{ url_for('static', filename='images/perfil/notif.png') }}" id="notif-icon" class="icon">
-                    <span id="notif-contador">1</span>
+                    <span id="notif-contador"></span>
                 </div>
                 <div id="painel-notif" class="hidden">
+                    <span id="fechar-notif">x</span>
                     <ul id="lista-notif">
-                        <li>1</li>
-                        <li>2</li>
-                        <li>3</li>
+                        {% if notificacoes %}
+                        {% for notificacao in notificacoes %}
+                        <li class="notificacao">
+                            {{ notificacao.mensagem }}
+                            <span class="notificacao-data">{{ notificacao.data.strftime("%d-%m-%Y %H:%M") }}</span>
+                        </li>
+                        {% endfor %}
+                        {% else %}
+                        <li>Não há notificações no momento</li>
+                        {% endif%}
                     </ul>
                 </div>
             </div>
@@ -156,6 +164,7 @@
             </div>
         </div>
 
+        <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
         <script src="{{ url_for('static', filename='js/perfil/perfil-script.js')}}"></script>
 </body>
 

@@ -43,12 +43,43 @@ const painel = document.getElementById('painel-notif')
 const sino = document.getElementById('sino')
 const lista = document.getElementById('lista-notif')
 const contador = document.getElementById('notif-contador')
-let notifNaoLidas = 0
+const fechar_notif = document.querySelector("#fechar-notif")
 sino.addEventListener('click', () => {
     painel.classList.toggle('hidden')
-    notifNaoLidas = 0
     contador.style.display = 'none'
 })
+fechar_notif.addEventListener("click", () => {
+    painel.classList.add("hidden")
+})
+
+// DESATIVAR NOTIFCAÇÕES
+const desativar_notificacoes_toggle = document.querySelector("#notif-toggle")
+const notif_container = document.querySelector("#notif-container")
+desativar_notificacoes_toggle.addEventListener("change", () => {
+    localStorage.setItem('desativar-notificacoes', desativar_notificacoes_toggle.checked)
+    if (desativar_notificacoes_toggle.checked) {
+        notif_container.classList.add("hidden")
+    }
+    else {
+        notif_container.classList.remove("hidden")
+    }
+})
+// Restaurar ao carregar a página
+if (localStorage.getItem('desativar-notificacoes') === 'true') {
+    desativar_notificacoes_toggle.checked = true
+    notif_container.classList.add("hidden")
+}
+
+// RECEBER NOTIFICAÇÕES EM TEMPO REAL
+const socket = io();
+socket.on("nova_notificacao", function (data) {
+    const ul = document.querySelector("#lista-notif");
+    const li = document.createElement("li");
+    ul.textContent = ""
+    li.className = "notificacao";
+    li.textContent = data.mensagem;
+    ul.prepend(li);
+});
 
 // CONFIRMAÇÃO SAIR 
 document.querySelector('#sair-wrapper').addEventListener("click", () => {

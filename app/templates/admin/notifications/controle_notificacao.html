@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Notificações</title>
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin/notifications/controle_notificacao-style.css')}}">
+</head>
+
+<body>
+    <header></header>
+
+    <main>
+        <h1>Controle de Notificações</h1>
+        <div id="content">
+            <div id="form-container">
+                <h2>Enviar notificação global</h2>
+                <form action="{{ url_for('notificacao.enviar')}}" method="post" id="form-notificacao" onsubmit="return confirm('Confirmar o envio da notificação a todos os usuários?')">
+                    <textarea name="mensagem-notificacao" id="mensagem-notificacao" maxlength="200"></textarea>
+                    <div id="btn-container">
+                        <button type="submit" id="enviar">Enviar</button>
+                        <button type="reset" id="cancelar">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+            <div id="database-container">
+                <h2>Base de dados</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th id="id">ID</th>
+                            <th id="mensagem">MENSAGEM</th>
+                            <th id="data">DATA</th>
+                            <th id="acoes">AÇÕES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for notificacao in notificacoes %}
+                        <tr>
+                            <td>{{ notificacao.id}}</td>
+                            <td>{{ notificacao.mensagem }}</td>
+                            <td>{{ notificacao.data.strftime("%d-%m-%Y %H:%M:%S") }}</td>
+                            <td>
+                                <a href="excluir/{{notificacao.id}}" class="excluir">Excluir</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

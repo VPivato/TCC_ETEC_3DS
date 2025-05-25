@@ -110,41 +110,65 @@ nav {
 
 #notif-contador {
     background-color: red;
-    color: white;
-    font-size: 12px;
-    padding: 2px 5px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     position: absolute;
-    top: -5px;
-    right: -10px;
+    top: 0px;
+    right: 0px;
+    border: 1px solid #a00000d0;
 }
 
 #painel-notif {
     position: absolute;
     right: 0;
     top: 50px;
-    width: 300px;
-    background: white;
+    width: 25vw;
+    max-height: 90vh;
+    overflow: auto;
+    background-color: #eee;
     border: 1px solid #ccc;
     border-radius: 10px;
-    padding: 10px 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px 15px 10px 10px;
+    box-shadow: 0px 0px 20px 10px #03001b2a;
     z-index: 999;
 }
 
 #painel-notif ul {
     list-style: none;
-    padding: 10px;
     margin: 0;
 }
 
-#painel-notif li {
+.notificacao {
+    position: relative;
+    min-height: 90px;
     padding: 8px;
-    border-bottom: 1px solid #eee;
+    border-radius: 5px;
+    background-color: #e8e8e8;
+    margin-bottom: 7px;
+    box-shadow: 2px 2px 8px 2px #0900221c;
+    border-bottom: 2px solid #ccc;
+    border-right: 2px solid #ccc;
+    font-size: 1rem;
+    text-align: justify;
 }
 
-#painel-notif li:last-child {
-    border-bottom: none;
+.notificacao:nth-child(even) {
+    background-color: #e4e4e4;
+}
+
+.notificacao-data {
+    font-size: .7rem;
+    position: absolute;
+    bottom: 0;
+    right: 10px;
+}
+
+#fechar-notif {
+    cursor: pointer;
+    display: block;
+    color: #111;
+    margin: 0 0 10px 95%;
 }
 
 #linha-header {
