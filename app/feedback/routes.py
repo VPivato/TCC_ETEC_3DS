@@ -4,7 +4,7 @@ from ..extensions import db
 
 feedback_bp = Blueprint("feedback", __name__, url_prefix="/feedback")
 
-@feedback_bp.route('/feedback')
+@feedback_bp.route('/')
 def feedback():
     return render_template("feedback/feedback.html")
 

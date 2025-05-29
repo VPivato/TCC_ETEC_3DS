@@ -5,7 +5,7 @@ from ..extensions import db
 
 perfil_bp = Blueprint("perfil", __name__, url_prefix="/perfil")
 
-@perfil_bp.route('/perfil')
+@perfil_bp.route('/')
 def perfil():
     user = Usuarios.query.filter_by(email_usuario=session["email"]).first()
     notificacoes = Notificacoes.query.order_by(Notificacoes.data.desc()).all()

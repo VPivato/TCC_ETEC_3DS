@@ -1,0 +1,327 @@
+@import url('https://fonts.googleapis.com/css2?family=Chau+Philomene+One:ital@0;1&family=Inter:wght@400;600&display=swap');
+
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+/* NAVBAR */
+#navegacao {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: 80px;
+  background-color: #e52d27;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#linhadochuma { 
+  height: 90px;
+  width: 100%;
+  background-color: #2e9a60;
+  position: fixed;
+}
+
+#logo {
+  position: absolute;
+  left: 30px;
+  top: 15px;
+  width: 7rem;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+#nav-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.button-container {
+  display: flex;
+  gap: 24px;
+}
+
+.button {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+a {
+  text-decoration: none;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: #ffe0b2;
+}
+
+#user-icon {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#user-icon img {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  transition: box-shadow 0.3s ease;
+}
+
+#user-icon:hover img {
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+  transform: scale(1.05);
+}
+
+
+
+
+/* IMAGEM PRINCIPAL */
+#img-menu {
+  width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* LINHA */
+#linha {
+  width: 100%;
+  height: 5px;
+  background-color: #2e9a60;
+}
+
+/* SLOGAN */
+#menu-slogan {
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+#letra-foodpay {
+  font-family: "Chau Philomene One", sans-serif;
+  font-size: 6rem;
+  color: #2e9a60;
+}
+
+#title_beneficios {
+  font-family: "Chau Philomene One", sans-serif;
+  font-size: 3rem;
+  color: #2e9a60;
+}
+
+#letra-texto {
+  font-size: 1.2rem;
+  color: #333;
+  max-width: 800px;
+  padding: 0 20px;
+  margin-top: 20px;
+  line-height: 1.6;
+}
+
+/* COMO FUNCIONA */
+#como-funciona {
+  background-color: #f7f7f7;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+#como-funciona h2 {
+  font-size: 100px;
+  color: #2e9a60;
+  margin-bottom: 40px;
+  font-family: "Chau Philomene One", sans-serif;
+}
+
+.passos {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.passo {
+  max-width: 280px;
+}
+
+.passo img {
+  width: 80px;
+  margin-bottom: 20px;
+}
+
+.passo h3 {
+  font-size: 1.5rem;
+  color: #f83435;
+}
+
+.passo p {
+  font-size: 1.3rem;
+  color: #444;
+}
+
+/* BENEFÍCIOS */
+#beneficios {
+  background-color: #fff;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+#beneficios h2 {
+  font-size: 100px;
+  color: #2e9a60;
+  margin-bottom: 40px;
+  font-family: "Chau Philomene One", sans-serif;
+}
+
+.beneficios-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.beneficio {
+  max-width: 250px;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease;
+}
+
+.beneficio:hover {
+  transform: translateY(-8px);
+}
+
+.beneficio img {
+  width: 60px;
+  margin-bottom: 15px;
+}
+
+.beneficio h4 {
+  font-size: 1.5rem;
+  color: #f83435;
+  margin-bottom: 10px;
+}
+
+.beneficio p {
+  font-size: 1.3rem;
+  color: #333;
+}
+
+/* VANTAGENS */
+#vantagens {
+  background-color: #f7f7f7;
+  padding: 80px 20px;
+  text-align: center;
+}
+
+#vantagens h2 {
+  font-size: 100px;
+  color: #2e9a60;
+  margin-bottom: 40px;
+  font-family: "Chau Philomene One", sans-serif;
+}
+
+.vantagens-lista {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.vantagem {
+  max-width: 250px;
+}
+
+.vantagem img {
+  width: 60px;
+  margin-bottom: 20px;
+}
+
+.vantagem h4 {
+  font-size: 1.5rem;
+  color: #f83435;
+}
+
+.vantagem p {
+  font-size: 1.3rem;
+  color: #333;
+}
+
+/* RODAPÉ */
+#rodape {
+  background-color: #2e9a60;
+  color: #fff;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.rodape-logo {
+  width: 80px;
+  margin-bottom: 20px;
+}
+
+.links-rodape {
+  margin-top: 20px;
+}
+
+.links-rodape a {
+  color: #fff;
+  margin: 0 10px;
+  font-size: 0.9rem;
+  text-decoration: none;
+}
+
+.links-rodape a:hover {
+  text-decoration: underline;
+}
+
+#img-icons { 
+	width: 100px;
+	height: 80px;
+}
