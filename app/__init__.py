@@ -1,5 +1,5 @@
 from flask import Flask
-from .extensions import db
+from .extensions import db, migrate
 from .models import *
 
 def create_app():
@@ -7,6 +7,7 @@ def create_app():
     app.config.from_object("config.Config")
 
     db.init_app(app)
+    migrate.init_app(app, db)
 
     from .auth.routes import auth_bp
     from .home.routes import home_bp
