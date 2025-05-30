@@ -1,0 +1,24 @@
+<div id="notif-container">
+    <div id="sino">
+        <img src="{{ url_for('static', filename='images/perfil/notif.png') }}" id="notif-icon-perfil"
+            class="icon-perfil">
+        {% if not user.ultima_notificacao_vista and user.notificacoes_ativas %}
+        <span id="notif-contador"></span>
+        {% endif %}
+    </div>
+    <div id="painel-notif" class="hidden">
+        <span id="fechar-notif">x</span>
+        <ul id="lista-notif">
+            {% if notificacoes %}
+            {% for notificacao in notificacoes %}
+            <li class="notificacao">
+                {{ notificacao.mensagem }}
+                <span class="notificacao-data">{{ notificacao.data.strftime("%d-%m-%Y %H:%M") }}</span>
+            </li>
+            {% endfor %}
+            {% else %}
+            <li>Não há notificações no momento</li>
+            {% endif%}
+        </ul>
+    </div>
+</div>

@@ -39,26 +39,6 @@ if (localStorage.getItem('modo-escuro') === 'true') {
     modo_escuro_toggle.checked = true
 }
 
-// PAINEL NOTIFICAÇÕES
-const painel = document.getElementById('painel-notif')
-const sino = document.getElementById('sino')
-const lista = document.getElementById('lista-notif')
-const contador = document.getElementById('notif-contador')
-const fechar_notif = document.querySelector("#fechar-notif")
-sino.addEventListener('click', () => {
-    painel.classList.toggle('hidden')
-    contador.style.display = 'none'
-    fetch('/notificacao/marcar_como_vista', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        }
-    })
-})
-fechar_notif.addEventListener("click", () => {
-    painel.classList.add("hidden")
-})
-
 // DESATIVAR NOTIFCAÇÕES
 const desativar_notificacoes_toggle = document.querySelector("#notif-toggle")
 const notif_container = document.querySelector("#notif-container")
@@ -119,11 +99,6 @@ document.querySelector('#sair-wrapper').addEventListener("click", () => {
         window.location.href = "sair"
     }
     else {
-        window.location.href = "perfil"
+        window.location.href = ""
     }
 });
-
-
-document.addEventListener("DOMContentLoaded", () => {
-
-})

@@ -1,57 +1,53 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+{% extends 'shared/base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contate-nos</title>
-    <link rel="stylesheet" href="{{url_for('static', filename='css/feedback/feedback-style.css')}}">
-</head>
+{% block title %}Contate-nos{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{url_for('static', filename='css/feedback/feedback-style.css')}}">
+<link rel="stylesheet" href="{{url_for('static', filename='css/shared/header_relative.css')}}">
+{% endblock %}
 
-<body>
-    <header>
+{% block content %}
+<main>
+    <h1>Tem alguma dúvida ou reclamação? Contate-nos.</h1>
 
-    </header>
+    <form action="{{url_for('feedback.enviar_feedback')}}" method="post">
+        <div id="identificacao">
+            <label for="nome_feedback">Nome:</label>
+            <input type="text" name="nome_feedback" id="nome_feedback" placeholder="Digite seu nome..." maxlength="40">
 
-    <main>
-        <h1>Tem alguma dúvida ou reclamação? Contate-nos.</h1>
+            <label for="nome_feedback">Email:</label>
+            <input type="email" name="email_feedback" id="email_feedback" placeholder="Exemplo@gmail.com"
+                maxlength="70">
+        </div>
 
-        <form action="{{url_for('feedback.enviar_feedback')}}" method="post">
-            <div id="identificacao">
-                <label for="nome_feedback">Nome:</label>
-                <input type="text" name="nome_feedback" id="nome_feedback" placeholder="Digite seu nome..." maxlength="40">
-
-                <label for="nome_feedback">Email:</label>
-                <input type="email" name="email_feedback" id="email_feedback" placeholder="Exemplo@gmail.com" maxlength="70">
+        <div id="feedback">
+            <label for="assunto_feedback">Assunto</label>
+            <div id="assunto_tipo_wrapper">
+                <input type="text" name="assunto_feedback" id="assunto_feedback"
+                    placeholder="Por que você está nos contatando?" maxlength="70">
+                <select name="tipo_feedback" id="tipo_feedback">
+                    <option value="duvida">Dúvida</option>
+                    <option value="reclamacao">Reclamação</option>
+                    <option value="sugestao">Sugestão</option>
+                </select>
             </div>
-            
-            <div id="feedback">
-                <label for="assunto_feedback">Assunto</label>
-                <div id="assunto_tipo_wrapper">
-                    <input type="text" name="assunto_feedback" id="assunto_feedback" placeholder="Por que você está nos contatando?" maxlength="70">
-                    <select name="tipo_feedback" id="tipo_feedback">
-                        <option value="duvida">Dúvida</option>
-                        <option value="reclamacao">Reclamação</option>
-                        <option value="sugestao">Sugestão</option>
-                    </select>
-                </div>
-                
 
-                <label for="texto_feedback">O que você quer nos informar?</label>
-                <div id="textarea_wrapper">
-                    <textarea name="texto_feedback" id="texto_feedback" maxlength="300"></textarea>
-                    <small id="contador">300</small>
-                </div>
+
+            <label for="texto_feedback">O que você quer nos informar?</label>
+            <div id="textarea_wrapper">
+                <textarea name="texto_feedback" id="texto_feedback" maxlength="300"></textarea>
+                <small id="contador">300</small>
             </div>
-            
-            <div id="botoes">
-                <button type="submit" id="enviar">Enviar</button>
-                <button type="reset" id="cancelar">Cancelar</button>
-            </div>
-        </form>
-    </main>
+        </div>
 
-    <script src="{{url_for('static', filename='js/feedback/feedback-script.js')}}"></script>
-</body>
+        <div id="botoes">
+            <button type="submit" id="enviar">Enviar</button>
+            <button type="reset" id="cancelar">Cancelar</button>
+        </div>
+    </form>
+</main>
+{% endblock %}
 
-</html>
+{% block extra_js %}
+<script src="{{url_for('static', filename='js/feedback/feedback-script.js')}}"></script>
+{% endblock %}

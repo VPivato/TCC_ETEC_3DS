@@ -1,0 +1,10 @@
+#navegacao {
+    position: relative !important;
+}
+
+#linhadochuma {
+    height: 10.2px;
+    width: 100%;
+    background-color: #2e9a60;
+    position: relative;
+}

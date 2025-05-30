@@ -3,7 +3,6 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
-    font-size: 1.2rem;
 }
 
 body,
@@ -35,153 +34,10 @@ body.modo-escuro .perfil-inpt::placeholder {
     color: #666;
 }
 
-header {
-    box-shadow: 0px 5px 25px 0px #002c0b6e;
-}
-
-nav {
-    display: flex;
-    justify-content: end;
-    align-items: center;
-    background: #c73030;
-    background: linear-gradient(90deg, rgba(199, 48, 48, 1) 40%, rgba(209, 95, 38, 1) 100%);
-    height: 100px;
-    box-shadow: 0px 5px 25px 0px #002c0b6e;
-}
-
-#notif-icon {
-    margin: 0 !important;
-}
-
-#notif-icon:hover {
-    transition: .2s ease-out;
-    animation: bell-keyframes 1s;
-    scale: 1.07;
-    filter: opacity(100%) invert(100%);
-}
-
-#notif-icon:hover+#notif-contador {
-    transition: .2s ease-out;
-    animation: bell-keyframes 1s;
-    scale: 1.07;
-}
-
-@keyframes bell-keyframes {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    10% {
-        transform: rotate(14deg);
-    }
-
-    20% {
-        transform: rotate(-8deg);
-    }
-
-    30% {
-        transform: rotate(14deg);
-    }
-
-    40% {
-        transform: rotate(-4deg);
-    }
-
-    60% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(0deg);
-    }
-}
-
-#notif-container {
-    position: relative;
-    display: inline-block;
-    margin-right: 20px;
-}
-
-#sino {
-    cursor: pointer;
-    font-size: 24px;
-    position: relative;
-}
-
-#notif-contador {
-    background-color: red;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    border: 1px solid #a00000d0;
-}
-
-#painel-notif {
-    position: absolute;
-    right: 0;
-    top: 50px;
-    width: 25vw;
-    max-height: 90vh;
-    overflow: auto;
-    background-color: #eee;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 10px 15px 10px 10px;
-    box-shadow: 0px 0px 20px 10px #03001b2a;
-    z-index: 999;
-}
-
-#painel-notif ul {
-    list-style: none;
-    margin: 0;
-}
-
-.notificacao {
-    position: relative;
-    min-height: 90px;
-    padding: 8px;
-    border-radius: 5px;
-    background-color: #e8e8e8;
-    margin-bottom: 7px;
-    box-shadow: 2px 2px 8px 2px #0900221c;
-    border-bottom: 2px solid #ccc;
-    border-right: 2px solid #ccc;
-    font-size: 1rem;
-    text-align: justify;
-}
-
-.notificacao:nth-child(even) {
-    background-color: #e4e4e4;
-}
-
-.notificacao-data {
-    font-size: .7rem;
-    position: absolute;
-    bottom: 0;
-    right: 10px;
-}
-
-#fechar-notif {
-    cursor: pointer;
-    display: block;
-    color: #111;
-    margin: 0 0 10px 95%;
-}
-
-#linha-header {
-    background-color: #15a315;
-    height: 8px;
-    border: none;
-    outline: none;
-}
-
 #container {
     display: flex;
     flex-direction: row;
-    height: 855px;
+    height: 888px;
     width: 100%;
 }
 
@@ -197,7 +53,7 @@ nav {
 }
 
 #perfil-wrapper {
-    margin: 30px auto 0 auto;
+    margin: 80px auto 0 auto;
 }
 
 #perfil-wrapper>p {
@@ -216,7 +72,7 @@ nav {
 }
 
 #nome-usuario {
-    font-size: 1.45rem;
+    font-size: 1.9rem;
     font-weight: bold;
 }
 
@@ -241,7 +97,7 @@ nav {
     letter-spacing: 2px;
 }
 
-.aside-wrapper:not(.active):hover .aside-icon {
+.aside-wrapper:not(.active):hover .aside-icon-perfil {
     filter: invert(100%) opacity(100%);
 }
 
@@ -260,7 +116,7 @@ nav {
     width: 100%;
 }
 
-.icon {
+.icon-perfil {
     width: 30px;
     height: 30px;
     margin-right: 15px;
@@ -270,10 +126,14 @@ nav {
 .aside-a {
     width: 100%;
     text-align: left;
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     text-decoration: none;
-    color: #ddd;
+    color: #ddd !important;
     cursor: inherit;
+}
+
+.aside-a:hover {
+    color: #ddd !important;
 }
 
 #contato {
@@ -297,7 +157,7 @@ nav {
 }
 
 .titulo-conteudo {
-    font-size: 1.5rem;
+    font-size: 2rem;
     margin-bottom: 20px;
 }
 
@@ -339,14 +199,14 @@ nav {
     scale: 1.02;
 }
 
-#edit-icon {
+#edit-icon-perfil {
     width: 30px;
     height: 30px;
 }
 
 .label-opcao {
     display: block;
-    font-size: 1.1rem;
+    font-size: 1.5rem;
     margin-bottom: 5px;
 }
 
@@ -359,6 +219,7 @@ nav {
     box-shadow: 0px 0px 6px 0px #00042525;
     margin-bottom: 30px;
     width: 500px;
+    font-size: 1.5rem;
 }
 
 input:disabled {

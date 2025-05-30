@@ -1,178 +1,146 @@
-<!DOCTYPE html>
-<html lang="pt-br">
+{% extends 'shared/base.html' %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/perfil/perfil-style.css')}}">
-</head>
+{% block title %}Perfil{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/perfil/perfil-style.css')}}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/shared/header_relative.css')}}">
+{% endblock %}
 
-<body>
-    <header>
-        <nav>
-            <div id="notif-container">
-                <div id="sino">
-                    <img src="{{ url_for('static', filename='images/perfil/notif.png') }}" id="notif-icon" class="icon">
-                    {% if not user.ultima_notificacao_vista and user.notificacoes_ativas %}
-                    <span id="notif-contador"></span>
-                    {% endif %}
-                </div>
-                <div id="painel-notif" class="hidden">
-                    <span id="fechar-notif">x</span>
-                    <ul id="lista-notif">
-                        {% if notificacoes %}
-                        {% for notificacao in notificacoes %}
-                        <li class="notificacao">
-                            {{ notificacao.mensagem }}
-                            <span class="notificacao-data">{{ notificacao.data.strftime("%d-%m-%Y %H:%M") }}</span>
-                        </li>
-                        {% endfor %}
-                        {% else %}
-                        <li>Não há notificações no momento</li>
-                        {% endif%}
-                    </ul>
-                </div>
+{% block content %}
+<div id="container">
+    <aside id="esquerda">
+        <div id="perfil-wrapper">
+            <img src="{{ url_for('static', filename='images/perfil/cat.jfif') }}" alt="" id="pfp">
+            <p id="nome-usuario">Fulano da Silva</p>
+            <p id="rm-usuario">RM: {{ session["username"]}}</p>
+        </div>
+
+        <section id="lower-section">
+            <div id="geral-wrapper" class="aside-wrapper active">
+                <img src="{{ url_for('static', filename='images/perfil/perfil.png') }}" alt="" id="geral-icon-perfil"
+                    class="aside-icon-perfil icon-perfil">
+                <a href="#" id="geral-p" class="aside-a">Geral</a>
             </div>
 
-        </nav>
-        <hr id="linha-header">
-    </header>
-
-    <div id="container">
-        <aside id="esquerda">
-            <div id="perfil-wrapper">
-                <img src="{{ url_for('static', filename='images/perfil/cat.jfif') }}" alt="" id="pfp">
-                <p id="nome-usuario">Fulano da Silva</p>
-                <p id="rm-usuario">RM: {{ session["username"]}}</p>
+            <div id="saldo-pagamentos-wrapper" class="aside-wrapper">
+                <img src="{{ url_for('static', filename='images/perfil/cartao.png') }}" alt=""
+                    id="saldo-pagamentos-icon-perfil" class="aside-icon-perfil icon-perfil">
+                <a href="#" id="saldo-pagamentos-p" class="aside-a">Saldo / Pagamentos</a>
             </div>
 
-            <section id="lower-section">
-                <div id="geral-wrapper" class="aside-wrapper active">
-                    <img src="{{ url_for('static', filename='images/perfil/perfil.png') }}" alt="" id="geral-icon"
-                        class="aside-icon icon">
-                    <a href="#" id="geral-p" class="aside-a">Geral</a>
-                </div>
-
-                <div id="saldo-pagamentos-wrapper" class="aside-wrapper">
-                    <img src="{{ url_for('static', filename='images/perfil/cartao.png') }}" alt=""
-                        id="saldo-pagamentos-icon" class="aside-icon icon">
-                    <a href="#" id="saldo-pagamentos-p" class="aside-a">Saldo / Pagamentos</a>
-                </div>
-
-                <div id="comprovantes-wrapper" class="aside-wrapper">
-                    <img src="{{ url_for('static', filename='images/perfil/comprovante.png') }}" alt=""
-                        id="comprovantes-icon" class="aside-icon icon">
-                    <a href="#" id="comprovantes-p" class="aside-a">Comprovantes</a>
-                </div>
-
-                <div id="stats-wrapper" class="aside-wrapper">
-                    <img src="{{ url_for('static', filename='images/perfil/stats.png') }}" alt="" id="stats-icon"
-                        class="aside-icon icon">
-                    <a href="#" id="stats-p" class="aside-a">Estatísticas</a>
-                </div>
-
-                <div id="conf-wrapper" class="aside-wrapper">
-                    <img src="{{ url_for('static', filename='images/perfil/conf.png') }}" alt="" id="conf-icon"
-                        class="aside-icon icon">
-                    <a href="#" id="conf-p" class="aside-a">Configurações</a>
-                </div>
-
-                <div id="sair-wrapper" class="aside-wrapper">
-                    <img src="{{ url_for('static', filename='images/perfil/sair.png') }}" alt="" id="sair-icon"
-                        class="aside-icon icon">
-                    <a href="#" id="sair-p" class="aside-a">Sair</a>
-                </div>
-
-                <div id="contato">
-                    <p>Contate-nos: foodpaycontato@gmail.com</p>
-
-                </div>
-            </section>
-        </aside>
-
-        <div id="conteudo">
-            <div id="conteudo-geral" class="conteudo-pagina ativo">
-                <div class="main-content">
-                    <h1 id="titulo-gerais" class="titulo-conteudo">Informações Gerais</h1>
-                    <div id="foto-perfil-wrapper">
-                        <img src="{{ url_for('static', filename='images/perfil/cat.jfif') }}" alt="" id="foto-perfil">
-                        <button id="edit-pfp">
-                            <img src="{{ url_for('static', filename='images/perfil/edit.png') }}" id="edit-icon">
-                        </button>
-                    </div>
-
-                    <form action="" method="POST" id="perfil-informacoes-basicas">
-                        <label for="nome-perfil" class="label-opcao">Nome de usuário</label>
-                        <input type="text" id="nome-perfil" name="nome-perfil" class="perfil-inpt"
-                            placeholder="Fulano da Silva" disabled>
-
-                        <label for="rm-perfil" class="label-opcao">RM</label>
-                        <input type="text" id="rm-perfil" name="rm-perfil" class="perfil-inpt" placeholder="07282"
-                            disabled>
-
-                        <label for="cod-etec-perfil" class="label-opcao">Código ETEC</label>
-                        <input type="text" id="cod-etec-perfil" name="cod-etec-perfil" class="perfil-inpt"
-                            placeholder="055" disabled>
-
-                        <label for="instituicao-perfil" class="label-opcao">Instituição</label>
-                        <input type="text" id="instituicao-perfil" name="instituicao-perfil" class="perfil-inpt"
-                            placeholder="ETEC Prof. Eudécio Luiz Vicente" disabled>
-                    </form>
-                </div>
+            <div id="comprovantes-wrapper" class="aside-wrapper">
+                <img src="{{ url_for('static', filename='images/perfil/comprovante.png') }}" alt=""
+                    id="comprovantes-icon-perfil" class="aside-icon-perfil icon-perfil">
+                <a href="#" id="comprovantes-p" class="aside-a">Comprovantes</a>
             </div>
 
-            <div id="conteudo-saldo-pagamentos" class="conteudo-pagina">
-                <div class="main-content">
-                    <h1 id="titulo-saldo-pagamentos" class="titulo-conteudo">Saldo / Pagamentos</h1>
-                </div>
+            <div id="stats-wrapper" class="aside-wrapper">
+                <img src="{{ url_for('static', filename='images/perfil/stats.png') }}" alt="" id="stats-icon-perfil"
+                    class="aside-icon-perfil icon-perfil">
+                <a href="#" id="stats-p" class="aside-a">Estatísticas</a>
             </div>
 
-            <div id="conteudo-comprovantes" class="conteudo-pagina">
-                <div class="main-content">
-                    <h1 id="titulo-comprovantes" class="titulo-conteudo">Comprovantes</h1>
-                </div>
+            <div id="conf-wrapper" class="aside-wrapper">
+                <img src="{{ url_for('static', filename='images/perfil/conf.png') }}" alt="" id="conf-icon-perfil"
+                    class="aside-icon-perfil icon-perfil">
+                <a href="#" id="conf-p" class="aside-a">Configurações</a>
             </div>
 
-            <div id="conteudo-stats" class="conteudo-pagina">
-                <div class="main-content">
-                    <h1 id="titulo-stats" class="titulo-conteudo">Estatísticas</h1>
-                </div>
+            <div id="sair-wrapper" class="aside-wrapper">
+                <img src="{{ url_for('static', filename='images/perfil/sair.png') }}" alt="" id="sair-icon-perfil"
+                    class="aside-icon-perfil icon-perfil">
+                <a href="#" id="sair-p" class="aside-a">Sair</a>
             </div>
 
-            <div id="conteudo-conf" class="conteudo-pagina">
-                <div class="main-content">
-                    <h1 id="titulo-pref" class="titulo-conteudo">Preferências</h1>
+            <div id="contato">
+                <p>Contate-nos: foodpaycontato@gmail.com</p>
 
-                    <p class="label-opcao">Modo escuro</p>
-                    <label class="switch">
-                        <input type="checkbox" id="modo-escuro-toggle">
-                        <span class="slider round"></span>
-                    </label>
-
-                    <p class="label-opcao">Desabilitar notificações</p>
-                    <label class="switch">
-                        <input type="checkbox" id="notif-toggle" {% if not user.notificacoes_ativas %}checked{% endif %}>
-                        <span class="slider round"></span>
-                    </label>
-                </div>
-
-                <div id="main-content-perigo" class="main-content">
-                    <h1 id="titulo-perigo" class="titulo-conteudo">Zona perigosa</h1>
-
-                    <p class="label-opcao">Excluir conta?</p>
-                    <form method="POST" action="{{ url_for('perfil.excluir_perfil') }}"
-                        onsubmit="return confirm('Tem certeza que deseja excluir sua conta? ESSA AÇÃO É IRREVERSÍVEL');">
-                        <button type="submit" id="excluir-perfil" class="btn btn-danger">Excluir</button>
-                    </form>
-                </div>
             </div>
+        </section>
+    </aside>
 
-            <div id="conteudo-sair" class="conteudo-pagina">
+    <div id="conteudo">
+        <div id="conteudo-geral" class="conteudo-pagina ativo">
+            <div class="main-content">
+                <h1 id="titulo-gerais" class="titulo-conteudo">Informações Gerais</h1>
+                <div id="foto-perfil-wrapper">
+                    <img src="{{ url_for('static', filename='images/perfil/cat.jfif') }}" alt="" id="foto-perfil">
+                    <button id="edit-pfp">
+                        <img src="{{ url_for('static', filename='images/perfil/edit.png') }}" id="edit-icon-perfil">
+                    </button>
+                </div>
+
+                <form action="" method="POST" id="perfil-informacoes-basicas">
+                    <label for="nome-perfil" class="label-opcao">Nome de usuário</label>
+                    <input type="text" id="nome-perfil" name="nome-perfil" class="perfil-inpt"
+                        placeholder="Fulano da Silva" disabled>
+
+                    <label for="rm-perfil" class="label-opcao">RM</label>
+                    <input type="text" id="rm-perfil" name="rm-perfil" class="perfil-inpt" placeholder="07282" disabled>
+
+                    <label for="cod-etec-perfil" class="label-opcao">Código ETEC</label>
+                    <input type="text" id="cod-etec-perfil" name="cod-etec-perfil" class="perfil-inpt" placeholder="055"
+                        disabled>
+
+                    <label for="instituicao-perfil" class="label-opcao">Instituição</label>
+                    <input type="text" id="instituicao-perfil" name="instituicao-perfil" class="perfil-inpt"
+                        placeholder="ETEC Prof. Eudécio Luiz Vicente" disabled>
+                </form>
             </div>
         </div>
 
-        <script src="{{ url_for('static', filename='js/perfil/perfil-script.js')}}"></script>
-</body>
+        <div id="conteudo-saldo-pagamentos" class="conteudo-pagina">
+            <div class="main-content">
+                <h1 id="titulo-saldo-pagamentos" class="titulo-conteudo">Saldo / Pagamentos</h1>
+            </div>
+        </div>
 
-</html>
+        <div id="conteudo-comprovantes" class="conteudo-pagina">
+            <div class="main-content">
+                <h1 id="titulo-comprovantes" class="titulo-conteudo">Comprovantes</h1>
+            </div>
+        </div>
+
+        <div id="conteudo-stats" class="conteudo-pagina">
+            <div class="main-content">
+                <h1 id="titulo-stats" class="titulo-conteudo">Estatísticas</h1>
+            </div>
+        </div>
+
+        <div id="conteudo-conf" class="conteudo-pagina">
+            <div class="main-content">
+                <h1 id="titulo-pref" class="titulo-conteudo">Preferências</h1>
+
+                <p class="label-opcao">Modo escuro</p>
+                <label class="switch">
+                    <input type="checkbox" id="modo-escuro-toggle">
+                    <span class="slider round"></span>
+                </label>
+
+                <p class="label-opcao">Desabilitar notificações</p>
+                <label class="switch">
+                    <input type="checkbox" id="notif-toggle" {% if not user.notificacoes_ativas %}checked{% endif %}>
+                    <span class="slider round"></span>
+                </label>
+            </div>
+
+            <div id="main-content-perigo" class="main-content">
+                <h1 id="titulo-perigo" class="titulo-conteudo">Zona perigosa</h1>
+
+                <p class="label-opcao">Excluir conta?</p>
+                <form method="POST" action="{{ url_for('perfil.excluir_perfil') }}"
+                    onsubmit="return confirm('Tem certeza que deseja excluir sua conta? ESSA AÇÃO É IRREVERSÍVEL');">
+                    <button type="submit" id="excluir-perfil" class="btn btn-danger">Excluir</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="conteudo-sair" class="conteudo-pagina">
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/perfil/perfil-script.js')}}"></script>
+{% endblock %}

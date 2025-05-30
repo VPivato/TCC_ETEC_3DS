@@ -9,7 +9,7 @@ perfil_bp = Blueprint("perfil", __name__, url_prefix="/perfil")
 def perfil():
     user = Usuarios.query.filter_by(email_usuario=session["email"]).first()
     notificacoes = Notificacoes.query.order_by(Notificacoes.data.desc()).all()
-    return render_template("perfil/perfil.html", notificacoes=notificacoes, user=user)
+    return render_template("perfil/perfil.html", notificacoes=notificacoes, user=user, header_mode='perfil')
 
 @perfil_bp.route('/sair')
 def sair():
