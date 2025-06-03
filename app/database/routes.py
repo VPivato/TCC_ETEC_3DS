@@ -1,4 +1,6 @@
 from flask import Blueprint, render_template, session, redirect, url_for, request, jsonify
+from sqlalchemy import func
+from datetime import datetime
 from ..models.usuario import Usuarios
 from ..models.notificacao import Notificacoes
 from ..models.feedback import Feedbacks
@@ -90,18 +92,39 @@ def filtrar():
 
     try:
         col = getattr(modelo, coluna)
-        if operador == '=':
-            filtro = col == valor
-        elif operador == '!=':
-            filtro = col != valor
-        elif operador == '>':
-            filtro = col > valor
-        elif operador == '<':
-            filtro = col < valor
-        elif operador.upper() == 'LIKE':
-            filtro = col.like(f"%{valor}%")
+        tipo_coluna = str(col.property.columns[0].type)
+        is_date = "DATE" in tipo_coluna.upper()
+        if is_date:
+            try:
+                valor_dt = datetime.strptime(valor, "%Y-%m-%d").date()
+            except ValueError:
+                return jsonify({"erro": "Data inválida"}), 400
+            
+            # Usa func.date para comparar apenas a data (sem hora)
+            if operador == '=':
+                filtro = func.date(col) == valor_dt
+            elif operador == '!=':
+                filtro = func.date(col) != valor_dt
+            elif operador == '>':
+                filtro = func.date(col) > valor_dt
+            elif operador == '<':
+                filtro = func.date(col) < valor_dt
+            else:
+                return jsonify({'erro': 'Operador inválido para data'}), 400
         else:
-            return jsonify({'erro': 'Operador inválido'}), 400
+            # Filtros normais para texto/número
+            if operador == '=':
+                filtro = col == valor
+            elif operador == '!=':
+                filtro = col != valor
+            elif operador == '>':
+                filtro = col > valor
+            elif operador == '<':
+                filtro = col < valor
+            elif operador.upper() == 'LIKE':
+                filtro = col.like(f"%{valor}%")
+            else:
+                return jsonify({'erro': 'Operador inválido'}), 400
 
         registros = db.session.query(modelo).filter(filtro).all()
         colunas = [c.name for c in modelo.__table__.columns]

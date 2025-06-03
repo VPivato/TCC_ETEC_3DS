@@ -89,6 +89,16 @@ function carregarTabela(modelo) {
 document.getElementById('select-tabela').addEventListener('change', function () {
     carregarColunas(this.value)
     carregarTabela(this.value)
+    document.getElementById("valor-consulta").type = "text"
+})
+
+document.getElementById("coluna-select").addEventListener("change", function () {
+    if (this.value.includes("data")) {
+        document.getElementById("valor-consulta").type = "date"
+    }
+    else {
+        document.getElementById("valor-consulta").type = "text"
+    }
 })
 
 document.getElementById("consulta-form").addEventListener("submit", e => {
@@ -156,24 +166,15 @@ document.getElementById("consulta-form").addEventListener("submit", e => {
                 row.appendChild(tdAcao)
                 body.appendChild(row)
             });
-
-
         });
 })
 
 document.getElementById("limpar").addEventListener("click", () => {
     let tabela = document.getElementById('select-tabela')
-    let coluna = document.getElementById('coluna-select')
-    const coluna_selecionada = coluna.value
-    const tabela_selecionada = tabela.value
     const modelo = tabela.value;
 
     document.getElementById('valor-consulta').value = '';
     document.getElementById('operador-select').value = '=';
-
-    tabela.value = tabela_selecionada
-    coluna.value = coluna_selecionada
-
 
     carregarTabela(modelo)
 })

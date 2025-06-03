@@ -9,44 +9,40 @@
 {% block content %}
 <main>
     <form action="" method="POST" id="consulta-form">
-        <div id="primeira-linha">
-            <div id="tabela-wrapper">
-                <label for="select-tabela">Tabela:</label>
-                <select name="tabela" id="select-tabela">
-                    {% for modelo in modelos %}
-                    <option value="{{ modelo }}">{{ modelo }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div id="coluna-wrapper">
-                <label for="coluna-select">Coluna:</label>
-                <select name="coluna" id="coluna-select">
-                </select>
-            </div>
+        <div id="tabela-wrapper">
+            <label for="select-tabela">Tabela:</label>
+            <select name="tabela" id="select-tabela">
+                {% for modelo in modelos %}
+                <option value="{{ modelo }}">{{ modelo }}</option>
+                {% endfor %}
+            </select>
         </div>
 
-        <div id="segunda-linha">
-            <div id="operador-wrapper">
-                <label for="operador-select">Operador</label>
-                <select name="operador" id="operador-select">
-                    <option value="=">Igual =</option>
-                    <option value="!=">Diferente !=</option>
-                    <option value=">">Maior ></option>
-                    <option value="<">Menor < </option>
-                    <option value="LIKE">Contém</option>
-                </select>
-            </div>
+        <div id="coluna-wrapper">
+            <label for="coluna-select">Coluna:</label>
+            <select name="coluna" id="coluna-select">
+            </select>
+        </div>
 
-            <div id="valor-wrapper">
-                <label for="valor-consulta">Valor</label>
-                <input type="text" name="valor-consulta" id="valor-consulta">
-            </div>
+        <div id="operador-wrapper">
+            <label for="operador-select">Operador</label>
+            <select name="operador" id="operador-select">
+                <option value="=">Igual =</option>
+                <option value="!=">Diferente !=</option>
+                <option value=">">Maior ></option>
+                <option value="<">Menor < </option>
+                <option value="LIKE">Contém</option>
+            </select>
+        </div>
+
+        <div id="valor-wrapper">
+            <label for="valor-consulta">Valor</label>
+            <input type="text" name="valor-consulta" id="valor-consulta">
         </div>
 
         <div id="button-wrapper">
             <button type="submit" id="filtrar">Filtrar</button>
-            <button type="reset" id="limpar">Limpar</button>
+            <button type="button" id="limpar">Limpar</button>
         </div>
     </form>
 
