@@ -138,3 +138,25 @@ def filtrar():
         })
     except Exception as e:
         return jsonify({'erro': f'Erro ao filtrar: {str(e)}'}), 500
+
+
+
+@database_bp.route('/excluir_varios', methods=['POST'])
+def excluir_varios():
+    dados = request.json
+    modelo_nome = dados.get('modelo')
+    ids = dados.get('ids', [])
+
+    modelo = MODELOS.get(modelo_nome)
+    if not modelo:
+        return jsonify({'erro': 'Modelo inválido'}), 400
+
+    try:
+        registros = db.session.query(modelo).filter(modelo.id.in_(ids)).all()
+        for registro in registros:
+            db.session.delete(registro)
+        db.session.commit()
+        return jsonify({'sucesso': True, 'mensagem': f'{len(registros)} registros excluídos.'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'erro': f'Erro ao excluir: {str(e)}'}), 500

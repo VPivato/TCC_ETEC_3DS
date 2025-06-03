@@ -14,6 +14,8 @@ main {
 }
 
 form {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     padding: 30px;
     border-radius: 15px;
     font-size: 1.3rem;
@@ -26,11 +28,20 @@ label {
     display: block;
 }
 
+#filtro-wrapper {
+    padding-right: 30px;
+    border-right: 2px dotted rgb(207, 205, 218);
+}
 
-#consulta-form select, #consulta-form input {
+#selecao-multipla-wrapper {
+    padding-left: 30px;
+}
+
+#consulta-form select,
+#consulta-form input:not(input[type='checkbox']) {
     background-color: #ebebeb;
     height: 40px;
-    width: 30%;
+    width: 100%;
     font-size: 1.3rem;
     padding-left: 5px;
     border-radius: 10px;
@@ -45,7 +56,7 @@ label {
     margin: 20px 0;
 }
 
-#button-wrapper > button {
+#button-wrapper>button {
     cursor: pointer;
     width: 200px;
     height: 40px;
@@ -56,28 +67,72 @@ label {
     box-shadow: 4px 4px 20px -5px rgba(0, 0, 0, 0.15);
 }
 
-#button-wrapper > button:hover {
+#button-wrapper>button:hover {
     transition: .2s ease-out;
     font-weight: bolder;
     letter-spacing: 2px;
 }
 
-#filtrar {
+#excluir-varios, #filtrar {
     background-color: #3ab340;
     color: #eee;
     border: none;
 }
-#limpar {
+
+#cancelar-selecao, #limpar {
     border: 2px solid #c5453c;
     color: #c5453c;
     background-color: #eee;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    display: none;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    background-color: #ccc;
+    border-radius: 34px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: 0.4s;
+}
+
+.slider:before {
+    content: "";
+    position: absolute;
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.4s;
+}
+
+#toggle-excluir-varios:checked+.slider {
+    background-color: #4CAF50;
+}
+
+#toggle-excluir-varios:checked+.slider:before {
+    transform: translateX(26px);
 }
 
 #visualizacao-tabela {
     overflow: auto;
     max-height: 75vh;
     box-shadow: 0 0 5px 3px rgba(0, 0, 0, .15);
-    border-radius: 15px;
+    border-radius: 15px 15px 0 0;
 }
 
 table {

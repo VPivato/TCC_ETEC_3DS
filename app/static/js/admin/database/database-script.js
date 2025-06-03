@@ -1,3 +1,5 @@
+let checkboxVisiveis = false
+
 function carregarColunas(modelo) {
     fetch('/database/get_colunas', {
         method: 'POST',
@@ -19,7 +21,7 @@ function carregarColunas(modelo) {
         })
 }
 
-function carregarTabela(modelo) {
+function carregarTabela(modelo, checkboxVisiveis=false) {
     fetch('/database/get_registros', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -49,6 +51,10 @@ function carregarTabela(modelo) {
             const thAcao = document.createElement('th')
             thAcao.textContent = 'Ação'
             headerRow.appendChild(thAcao)
+            const thCheckbox = document.createElement('th');
+            thCheckbox.classList.add('col-checkbox');
+            thCheckbox.textContent = ''; // sem título
+            headerRow.appendChild(thCheckbox);
             head.appendChild(headerRow)
 
             // Registros
@@ -72,7 +78,7 @@ function carregarTabela(modelo) {
                             .then(res => res.json())
                             .then(response => {
                                 if (response.sucesso) {
-                                    carregarTabela(modelo) // Recarrega a tabela
+                                    carregarTabela(modelo, checkboxVisiveis) // Recarrega a tabela
                                 } else {
                                     alert(response.erro)
                                 }
@@ -81,6 +87,23 @@ function carregarTabela(modelo) {
                 }
                 tdAcao.appendChild(btnExcluir)
                 row.appendChild(tdAcao)
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.classList.add('selecionar-registro');
+                if (!checkboxVisiveis) {
+                    checkbox.style.visibility = 'hidden'
+                }
+                else {
+                    checkbox.style.visibility = 'visible'
+                }
+                checkbox.value = registro.id;
+
+                const tdCheckbox = document.createElement('td');
+                tdCheckbox.classList.add('col-checkbox');
+                tdCheckbox.appendChild(checkbox);
+                row.appendChild(tdCheckbox);
+
                 body.appendChild(row)
             })
         })
@@ -88,7 +111,7 @@ function carregarTabela(modelo) {
 
 document.getElementById('select-tabela').addEventListener('change', function () {
     carregarColunas(this.value)
-    carregarTabela(this.value)
+    carregarTabela(this.value, checkboxVisiveis)
     document.getElementById("valor-consulta").type = "text"
 })
 
@@ -155,7 +178,7 @@ document.getElementById("consulta-form").addEventListener("submit", e => {
                             .then(res => res.json())
                             .then(response => {
                                 if (response.sucesso) {
-                                    carregarTabela(modelo) // Recarrega a tabela
+                                    carregarTabela(modelo, checkboxVisiveis) // Recarrega a tabela
                                 } else {
                                     alert(response.erro)
                                 }
@@ -176,7 +199,58 @@ document.getElementById("limpar").addEventListener("click", () => {
     document.getElementById('valor-consulta').value = '';
     document.getElementById('operador-select').value = '=';
 
-    carregarTabela(modelo)
+    carregarTabela(modelo, checkboxVisiveis)
+})
+
+document.getElementById('toggle-excluir-varios').addEventListener('change', function () {
+    if (this.checked) {
+        document.querySelectorAll('.col-checkbox').forEach(el => el.style.visibility = 'visible');
+        document.querySelectorAll('.selecionar-registro').forEach(cb => cb.style.visibility = 'visible');
+        checkboxVisiveis = true
+    }
+    else {
+        document.querySelectorAll('.col-checkbox').forEach(el => el.style.visibility = 'hidden');
+        document.querySelectorAll('.selecionar-registro').forEach(cb => {
+            cb.style.visibility = 'hidden'
+            cb.checked = false
+        });
+        checkboxVisiveis = false
+    }
+});
+
+document.getElementById('excluir-varios').addEventListener("click", (e) => {
+    e.preventDefault()
+    const modelo = document.getElementById('select-tabela').value;
+    const selecionados = Array.from(document.querySelectorAll('.selecionar-registro:checked'))
+        .map(cb => parseInt(cb.value));
+
+    if (selecionados.length === 0) {
+        alert("Selecione pelo menos um registro.");
+        return;
+    }
+
+    if (!confirm(`Deseja excluir ${selecionados.length} registro(s)?`)) return;
+
+    fetch('/database/excluir_varios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ modelo, ids: selecionados })
+    })
+        .then(res => res.json())
+        .then(data => {
+            if (data.sucesso) {
+                alert(data.mensagem);
+                carregarTabela(modelo, checkboxVisiveis); // recarrega a tabela
+            } else {
+                alert(data.erro || "Erro desconhecido.");
+            }
+
+            document.getElementById('cancelar-selecao').click();
+        });
+})
+
+document.getElementById("cancelar-selecao").addEventListener('click', () => {
+    Array.from(document.querySelectorAll('.selecionar-registro:checked')).map(el => el.checked = false)
 })
 
 document.getElementById('select-tabela').dispatchEvent(new Event('change'))
