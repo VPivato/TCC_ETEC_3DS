@@ -1,0 +1,144 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+main {
+    padding: 60px 30px;
+}
+
+form {
+    font-size: 1.3rem;
+}
+
+label {
+    display: block;
+}
+
+#primeira-linha, #segunda-linha {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#primeira-linha > div {
+    width: 49%;
+}
+
+#consulta-form select, #consulta-form input {
+    background-color: #efefef;
+    height: 40px;
+    width: 90%;
+    font-size: 1.3rem;
+    padding-left: 5px;
+    border-radius: 10px;
+    outline: none;
+    border: none;
+    margin: 0 0 5px;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.15);
+    letter-spacing: normal;
+}
+
+#segunda-linha > #operador-wrapper {
+    width: 20%;
+}
+#segunda-linha > #valor-wrapper {
+    width: 75%;
+}
+
+#button-wrapper {
+    margin: 20px 0;
+}
+
+#button-wrapper > button {
+    cursor: pointer;
+    width: 200px;
+    height: 40px;
+    font-size: 1.3rem;
+    outline: none;
+    border-radius: 10px;
+    letter-spacing: normal;
+    box-shadow: 4px 4px 20px -5px rgba(0, 0, 0, 0.15);
+}
+
+#button-wrapper > button:hover {
+    transition: .2s ease-out;
+    font-weight: bolder;
+    letter-spacing: 2px;
+}
+
+#filtrar {
+    background-color: #3ab340;
+    color: #eee;
+    border: none;
+}
+#limpar {
+    border: 2px solid #c5453c;
+    color: #c5453c;
+    background-color: #eee;
+}
+
+#visualizacao-tabela {
+    padding: 20px;
+    overflow: auto;
+    max-height: 75vh;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .9rem;
+    margin: 20px 0;
+    border-radius: 15px 15px 0 0;
+    overflow: hidden;
+    box-shadow: 0 0 5px 3px rgba(0, 0, 0, .15);
+}
+
+table thead tr {
+    background-color: #aa0404;
+    color: #eee;
+    text-align: left;
+    font-weight: bold;
+}
+
+th,
+td {
+    padding: 10px 15px;
+    max-width: 500px;
+    word-wrap: anywhere;
+}
+
+td {
+    border-bottom: 1px solid #ccc;
+}
+
+tr:nth-of-type(even) {
+    background-color: #e6e6e6;
+}
+
+tr:last-of-type {
+    border-bottom: 2px solid #aa0404;
+}
+
+tbody tr:hover {
+    color: #aa0404;
+}
+
+tbody button {
+    text-decoration: none;
+    color: #0000ee;
+    background-color: transparent;
+    outline: none;
+    border: none;
+    cursor: pointer;
+}
+
+tbody button:visited {
+    color: #0000ee;
+}
+
+tbody button:hover {
+    color: red;
+}

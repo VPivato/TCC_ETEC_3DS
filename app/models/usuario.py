@@ -5,7 +5,7 @@ from ..extensions import db
 class Usuarios(db.Model):
     __tablename__ = "usuarios"
 
-    id_usuario = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     nome_usuario = db.Column(db.String(40), nullable=False, unique=True)
     email_usuario = db.Column(db.String(70), nullable=False, unique=True)
     codigo_etec_usuario = db.Column(db.String(30), nullable=False)

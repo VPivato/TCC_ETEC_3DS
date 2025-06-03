@@ -9,7 +9,6 @@ auth_bp = Blueprint("auth", __name__, url_prefix="/")
 def login():
     return render_template('auth/login.html')
 
-
 # Rota para entrar
 @auth_bp.route('/entrar', methods=["POST"])
 def entrar():
@@ -55,20 +54,3 @@ def registrar():
             return redirect(url_for("home.home")) # Redireciona para pagina Home
         except Exception as e:
             return f"ERROR: {e}"
-
-# Rota para ver o conteudo da tabela Usuarios
-@auth_bp.route('/database')
-def database():
-    usuarios = Usuarios.query.order_by(Usuarios.id_usuario).all()
-    return render_template('auth/database.html', usuarios=usuarios)
-
-# Rota para excluir valores do BD
-@auth_bp.route('/database/excluir_usuario/<int:id>')
-def excluir_usuario(id:int):
-    excluir_usuario = Usuarios.query.get_or_404(id) # Usuario para excluir
-    try:
-        db.session.delete(excluir_usuario)
-        db.session.commit()
-        return redirect(url_for("auth.database"))
-    except Exception as e:
-        return f"ERROR: {e}"
