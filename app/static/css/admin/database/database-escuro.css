@@ -1,0 +1,40 @@
+body.modo-escuro {
+    background: #17041f;
+    background: linear-gradient(135deg, #17041f 0%, #08031f 100%);
+    color: #d0d0d0;
+}
+
+body.modo-escuro #consulta-form {
+    background: #211726;
+    background: linear-gradient(135deg, #211726 0%, #1d183d 100%);
+    box-shadow: 4px 4px 8px #20355a26;
+}
+
+body.modo-escuro #consulta-form select,
+body.modo-escuro #consulta-form input {
+    background-color: #e1dbebd8 !important;
+}
+
+body.modo-escuro tr:nth-of-type(odd) {
+    background-color: #211726 !important;
+}
+
+body.modo-escuro tr:nth-of-type(even) {
+    background-color: #1c1424 !important;
+}
+
+body.modo-escuro .btn-excluir {
+    color: #3e82ff;
+}
+
+body.modo-escuro tbody tr:hover {
+    color: #da2929 !important;
+}
+
+body.modo-escuro tbody tr:hover .btn-excluir {
+    color: #da2929 !important;
+}
+
+body.modo-escuro #filtro-wrapper {
+    border-right: 4px dotted #1c0f22 !important;
+}

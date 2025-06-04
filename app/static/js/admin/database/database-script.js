@@ -21,7 +21,7 @@ function carregarColunas(modelo) {
         })
 }
 
-function carregarTabela(modelo, checkboxVisiveis=false) {
+function carregarTabela(modelo, checkboxVisiveis = false) {
     fetch('/database/get_registros', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -43,6 +43,16 @@ function carregarTabela(modelo, checkboxVisiveis=false) {
 
             // Cabeçalhos + coluna de ação
             const headerRow = document.createElement('tr')
+            const thCheckbox = document.createElement('th');
+            thCheckbox.classList.add('col-checkbox');
+            thCheckbox.textContent = ''; // sem título
+            if (!checkboxVisiveis) {
+                thCheckbox.style.display = "none"
+            }
+            else {
+                thCheckbox.style.display = ""
+            }
+            headerRow.appendChild(thCheckbox);
             data.colunas.forEach(col => {
                 const th = document.createElement('th')
                 th.textContent = col
@@ -51,15 +61,28 @@ function carregarTabela(modelo, checkboxVisiveis=false) {
             const thAcao = document.createElement('th')
             thAcao.textContent = 'Ação'
             headerRow.appendChild(thAcao)
-            const thCheckbox = document.createElement('th');
-            thCheckbox.classList.add('col-checkbox');
-            thCheckbox.textContent = ''; // sem título
-            headerRow.appendChild(thCheckbox);
             head.appendChild(headerRow)
 
             // Registros
             data.registros.forEach(registro => {
                 const row = document.createElement('tr')
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.classList.add('selecionar-registro');
+                checkbox.value = registro.id;
+
+                const tdCheckbox = document.createElement('td');
+                tdCheckbox.classList.add('col-checkbox');
+                if (!checkboxVisiveis) {
+                    tdCheckbox.style.display = 'none'
+                }
+                else {
+                    tdCheckbox.style.display = ''
+                }
+                tdCheckbox.appendChild(checkbox);
+                row.appendChild(tdCheckbox);
+
                 data.colunas.forEach(col => {
                     const td = document.createElement('td')
                     td.textContent = registro[col]
@@ -70,6 +93,7 @@ function carregarTabela(modelo, checkboxVisiveis=false) {
                 const tdAcao = document.createElement('td')
                 const btnExcluir = document.createElement('button')
                 btnExcluir.textContent = 'Excluir'
+                btnExcluir.classList.add('btn-excluir')
                 btnExcluir.onclick = () => {
                     if (confirm(`Excluir o registro #${registro.id}?`)) {
                         fetch(`/database/excluir/${modelo}/${registro.id}`, {
@@ -87,22 +111,6 @@ function carregarTabela(modelo, checkboxVisiveis=false) {
                 }
                 tdAcao.appendChild(btnExcluir)
                 row.appendChild(tdAcao)
-
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.classList.add('selecionar-registro');
-                if (!checkboxVisiveis) {
-                    checkbox.style.visibility = 'hidden'
-                }
-                else {
-                    checkbox.style.visibility = 'visible'
-                }
-                checkbox.value = registro.id;
-
-                const tdCheckbox = document.createElement('td');
-                tdCheckbox.classList.add('col-checkbox');
-                tdCheckbox.appendChild(checkbox);
-                row.appendChild(tdCheckbox);
 
                 body.appendChild(row)
             })
@@ -150,6 +158,12 @@ document.getElementById("consulta-form").addEventListener("submit", e => {
             }
 
             const headerRow = document.createElement('tr');
+            const thCheckbox = document.createElement('th');
+            thCheckbox.classList.add('col-checkbox');
+            thCheckbox.textContent = ''; // sem título
+            thCheckbox.style.display = "none"
+            headerRow.appendChild(thCheckbox);
+
             data.colunas.forEach(col => {
                 const th = document.createElement('th');
                 th.textContent = col;
@@ -162,6 +176,24 @@ document.getElementById("consulta-form").addEventListener("submit", e => {
 
             data.registros.forEach(reg => {
                 const row = document.createElement('tr');
+
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.classList.add('selecionar-registro');
+                if (!checkboxVisiveis) {
+                    checkbox.style.display = 'none'
+                }
+                else {
+                    checkbox.style.display = ''
+                }
+                checkbox.value = reg.id;
+
+                const tdCheckbox = document.createElement('td');
+                tdCheckbox.classList.add('col-checkbox');
+                tdCheckbox.style.display = 'none'
+                tdCheckbox.appendChild(checkbox);
+                row.appendChild(tdCheckbox);
+
                 data.colunas.forEach(col => {
                     const td = document.createElement('td');
                     td.textContent = reg[col];
@@ -204,14 +236,14 @@ document.getElementById("limpar").addEventListener("click", () => {
 
 document.getElementById('toggle-excluir-varios').addEventListener('change', function () {
     if (this.checked) {
-        document.querySelectorAll('.col-checkbox').forEach(el => el.style.visibility = 'visible');
-        document.querySelectorAll('.selecionar-registro').forEach(cb => cb.style.visibility = 'visible');
+        document.querySelectorAll('.col-checkbox').forEach(el => el.style.display = '');
+        document.querySelectorAll('.selecionar-registro').forEach(cb => cb.style.display = '');
         checkboxVisiveis = true
     }
     else {
-        document.querySelectorAll('.col-checkbox').forEach(el => el.style.visibility = 'hidden');
+        document.querySelectorAll('.col-checkbox').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.selecionar-registro').forEach(cb => {
-            cb.style.visibility = 'hidden'
+            cb.style.display = 'none'
             cb.checked = false
         });
         checkboxVisiveis = false
@@ -252,5 +284,9 @@ document.getElementById('excluir-varios').addEventListener("click", (e) => {
 document.getElementById("cancelar-selecao").addEventListener('click', () => {
     Array.from(document.querySelectorAll('.selecionar-registro:checked')).map(el => el.checked = false)
 })
+
+if (localStorage.getItem('modo-escuro') === 'true') {
+    document.body.classList.add('modo-escuro')
+}
 
 document.getElementById('select-tabela').dispatchEvent(new Event('change'))
