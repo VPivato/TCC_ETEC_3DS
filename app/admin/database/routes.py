@@ -1,17 +1,21 @@
 from flask import Blueprint, render_template, session, redirect, url_for, request, jsonify
 from sqlalchemy import func
 from datetime import datetime
-from ..models.usuario import Usuarios
-from ..models.notificacao import Notificacoes
-from ..models.feedback import Feedbacks
-from ..extensions import db
+
+from ...models.usuario import Usuarios
+from ...models.notificacao import Notificacoes
+from ...models.feedback import Feedbacks
+from ...models.produto import Produtos
+
+from ...extensions import db
 
 database_bp = Blueprint("database", __name__, url_prefix="/database")
 
 MODELOS = {
     'Usuarios': Usuarios,
     "Notificacoes": Notificacoes,
-    "Feedbacks": Feedbacks
+    "Feedbacks": Feedbacks,
+    "Produtos": Produtos,
 }
 
 @database_bp.route('/', methods=["POST", "GET"])

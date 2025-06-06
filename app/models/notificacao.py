@@ -2,6 +2,8 @@ from datetime import datetime
 from ..extensions import db
 
 class Notificacoes(db.Model):
+    __tablename__ = "notificacoes"
+
     id = db.Column(db.Integer, primary_key=True)
     mensagem = db.Column(db.String(200), nullable=False)
     data = db.Column(db.DateTime, default=datetime.now)

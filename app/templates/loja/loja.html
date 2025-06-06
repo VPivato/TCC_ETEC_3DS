@@ -1,0 +1,179 @@
+{% extends 'shared/base.html' %}
+
+{% block title %}Loja{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/shared/header_relative.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/loja/loja-style.css') }}">
+
+<!-- SwiperJS CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+{% endblock %}
+
+{% block content %}
+<main>
+    <section id="section-produtos">
+        <div id="categoria-salgados" class="categoria-produto">
+            <h1 id="titulo-salgados" class="titulo-categoria">Salgados</h1>
+            <div class="container swiper">
+                <div class="card-wrapper">
+                    <ul id="produtos-container" class="swiper-wrapper">
+                        {% for salgado in salgados %}
+                        <li class="card-produto swiper-slide">
+                            <a href="#" class="card-link">
+                                <img src="{{ url_for('static', filename=salgado.imagem_produto) }}"
+                                    class="img-produto">
+                                <h2 class="nome-produto">{{ salgado.descricao_produto }}</h2>
+                                <p class="preco-produto">R${{ salgado.preco_produto }}</p>
+                                <button type="button" class="btn-adicionar-produto">+</button>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-button-next"></div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div id="categoria-doces" class="categoria-produto">
+            <h1 id="titulo-salgados" class="titulo-categoria">Doces</h1>
+            <div class="container swiper">
+                <div class="card-wrapper">
+                    <ul id="produtos-container" class="swiper-wrapper">
+                        <li class="card-produto swiper-slide">
+                            <a href="#" class="card-link">
+                                <img src="{{ url_for('static', filename='images/perfil/cat.jfif') }}"
+                                    class="img-produto">
+                                <h2 class="nome-produto">Gatinho</h2>
+                                <p class="preco-produto">R$7,99</p>
+                                <button type="button" class="btn-adicionar-produto">+</button>
+                            </a>
+                        </li>
+
+                        <li class="card-produto swiper-slide">
+                            <a href="#" class="card-link">
+                                <img src="{{ url_for('static', filename='images/perfil/cat.jfif') }}"
+                                    class="img-produto">
+                                <h2 class="nome-produto">Gatinho</h2>
+                                <p class="preco-produto">R$7,99</p>
+                                <button type="button" class="btn-adicionar-produto">+</button>
+                            </a>
+                        </li>
+
+                        <li class="card-produto swiper-slide">
+                            <a href="#" class="card-link">
+                                <img src="{{ url_for('static', filename='images/perfil/cat.jfif') }}"
+                                    class="img-produto">
+                                <h2 class="nome-produto">Gatinho</h2>
+                                <p class="preco-produto">R$7,99</p>
+                                <button type="button" class="btn-adicionar-produto">+</button>
+                            </a>
+                        </li>
+
+                        <li class="card-produto swiper-slide">
+                            <a href="#" class="card-link">
+                                <img src="{{ url_for('static', filename='images/perfil/cat.jfif') }}"
+                                    class="img-produto">
+                                <h2 class="nome-produto">Gatinho</h2>
+                                <p class="preco-produto">R$7,99</p>
+                                <button type="button" class="btn-adicionar-produto">+</button>
+                            </a>
+                        </li>
+
+                        <li class="card-produto swiper-slide">
+                            <a href="#" class="card-link">
+                                <img src="{{ url_for('static', filename='images/perfil/cat.jfif') }}"
+                                    class="img-produto">
+                                <h2 class="nome-produto">Gatinho</h2>
+                                <p class="preco-produto">R$7,99</p>
+                                <button type="button" class="btn-adicionar-produto">+</button>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-button-next"></div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div id="categoria-bebidas" class="categoria-produto">
+            <h1 id="titulo-salgados" class="titulo-categoria">Bebidas</h1>
+            <div class="container swiper">
+                <div class="card-wrapper">
+                    <ul id="produtos-container" class="swiper-wrapper">
+                        <li class="card-produto swiper-slide">
+                            <a href="#" class="card-link">
+                                <img src="{{ url_for('static', filename='images/perfil/cat.jfif') }}"
+                                    class="img-produto">
+                                <h2 class="nome-produto">Gatinho</h2>
+                                <p class="preco-produto">R$7,99</p>
+                                <button type="button" class="btn-adicionar-produto">+</button>
+                            </a>
+                        </li>
+
+                        <li class="card-produto swiper-slide">
+                            <a href="#" class="card-link">
+                                <img src="{{ url_for('static', filename='images/perfil/cat.jfif') }}"
+                                    class="img-produto">
+                                <h2 class="nome-produto">Gatinho</h2>
+                                <p class="preco-produto">R$7,99</p>
+                                <button type="button" class="btn-adicionar-produto">+</button>
+                            </a>
+                        </li>
+
+                        <li class="card-produto swiper-slide">
+                            <a href="#" class="card-link">
+                                <img src="{{ url_for('static', filename='images/perfil/cat.jfif') }}"
+                                    class="img-produto">
+                                <h2 class="nome-produto">Gatinho</h2>
+                                <p class="preco-produto">R$7,99</p>
+                                <button type="button" class="btn-adicionar-produto">+</button>
+                            </a>
+                        </li>
+
+                        <li class="card-produto swiper-slide">
+                            <a href="#" class="card-link">
+                                <img src="{{ url_for('static', filename='images/perfil/cat.jfif') }}"
+                                    class="img-produto">
+                                <h2 class="nome-produto">Gatinho</h2>
+                                <p class="preco-produto">R$7,99</p>
+                                <button type="button" class="btn-adicionar-produto">+</button>
+                            </a>
+                        </li>
+
+                        <li class="card-produto swiper-slide">
+                            <a href="#" class="card-link">
+                                <img src="{{ url_for('static', filename='images/perfil/cat.jfif') }}"
+                                    class="img-produto">
+                                <h2 class="nome-produto">Gatinho</h2>
+                                <p class="preco-produto">R$7,99</p>
+                                <button type="button" class="btn-adicionar-produto">+</button>
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-button-next"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <aside id="aside-carrinho">
+
+    </aside>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<!-- SwiperJS JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+<script src="{{ url_for('static', filename='js/loja/loja-script.js') }}"></script>
+{% endblock %}

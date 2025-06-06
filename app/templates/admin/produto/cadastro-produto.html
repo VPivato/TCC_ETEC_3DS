@@ -1,0 +1,64 @@
+{% extends 'shared/base.html' %}
+
+{% block title %}Cadastro de produtos{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/shared/header_relative.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/produto/produto-style.css') }}">
+{% endblock %}
+
+{% block content %}
+<main>
+
+    <div id="content">
+        <div id="form-container">
+            <h1>Cadastro de Produtos</h1>
+            <form enctype="multipart/form-data" action="{{ url_for('produto.cadastrar') }}" method="post"
+                id="form-cadastro-produto" onsubmit="return confirm('Confirmar o cadastro do produto?')">
+
+                <label for="descricao">Descrição do produto</label>
+                <input type="text" name="descricao" id="descricao" required maxlength="40"
+                    placeholder="Coxinha de jaca">
+
+                <label for="categoria">Categoria do produto</label>
+                <select name="categoria" id="categoria">
+                    {% for categoria in categorias %}
+                    <option value="{{ categoria}}">{{ categoria }}</option>
+                    {% endfor %}
+                </select>
+
+                <label for="preco">Preço do produto</label>
+                <input type="number" step=".01" name="preco" id="preco" required placeholder="6,99">
+
+                <label for="estoque">Quantidade inicial em estoque</label>
+                <input type="number" step="1" name="estoque" id="estoque" required placeholder="20">
+
+                <label for="imagem">Imagem do produto</label>
+                <input type="file" name="imagem" id="imagem">
+
+                <div id="btn-container">
+                    <button type="submit" id="enviar">Enviar</button>
+                    <button type="reset" id="cancelar">Cancelar</button>
+                </div>
+            </form>
+        </div>
+        <div id="database-container">
+            <h2>Tabela de Produtos</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <td>a</td>
+                        <td>b</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block extra_js %}{% endblock %}
