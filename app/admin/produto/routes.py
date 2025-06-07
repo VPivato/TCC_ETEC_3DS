@@ -6,7 +6,7 @@ from ...extensions import db
 
 produto_bp = Blueprint("produto", __name__, url_prefix="/produto")
 
-@produto_bp.route('/')
+@produto_bp.route('/', methods=['POST', 'GET'])
 def produto():
     colunas_produto = Produtos.__table__.columns.keys()
     registros_produto = Produtos.query.order_by(Produtos.id).all()
@@ -44,6 +44,24 @@ def excluir_produto(id):
     produto = Produtos.query.get_or_404(id)
     try:
         db.session.delete(produto)
+        db.session.commit()
+        return redirect(url_for('produto.produto'))
+    except Exception as e:
+        db.session.rollback()
+        return f"ERROR: {e}"
+
+
+
+@produto_bp.route('/editar/<int:id>', methods=['POST', 'GET'])
+def editar_produto(id):
+    produto = Produtos.query.get_or_404(id)
+
+    try:
+        produto.descricao_produto = request.form.get('descricao')
+        produto.categoria_produto = request.form.get('categoria').upper()
+        produto.preco_produto = request.form.get('preco')
+        produto.estoque_produto = request.form.get('estoque')
+        
         db.session.commit()
         return redirect(url_for('produto.produto'))
     except Exception as e:

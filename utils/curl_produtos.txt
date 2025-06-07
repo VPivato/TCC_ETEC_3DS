@@ -1,7 +1,7 @@
 curl -X POST http://localhost:5000/produto/cadastrar-multiplos 
   -H "Content-Type: application/json" 
   -d "[
-    {""descricao_produto"": ""Pururuca pacon"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 0, ""estoque_produto"": 0, ""imagem_produto"": ""keleck_pururuca_bacon.jpg""}, 
+    {""descricao_produto"": ""Pururuca bacon"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 0, ""estoque_produto"": 0, ""imagem_produto"": ""keleck_pururuca_bacon.jpg""}, 
     {""descricao_produto"": ""Biscoito polvilho"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 0, ""estoque_produto"": 0, ""imagem_produto"": ""panda_polvilho_salgado.jpg""}, 
     {""descricao_produto"": ""Batata cebola e salsa"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 0, ""estoque_produto"": 0, ""imagem_produto"": ""keleck_batata_cebola.jpg""}, 
     {""descricao_produto"": ""Batata original"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 0, ""estoque_produto"": 0, ""imagem_produto"": ""keleck_batata_original.jpg""}, 
