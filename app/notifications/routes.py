@@ -7,8 +7,11 @@ notificacao_bp = Blueprint("notificacao", __name__, url_prefix="/notificacao")
 
 @notificacao_bp.route('/')
 def controle_notificacao():
-    notificacoes = Notificacoes.query.order_by(Notificacoes.data.desc()).all()
-    return render_template ("admin/notifications/controle_notificacao.html", notificacoes=notificacoes)
+    colunas = Notificacoes.__table__.columns.keys()
+    registros = Notificacoes.query.order_by(Notificacoes.data.desc()).all()
+    return render_template ("admin/notifications/controle_notificacao.html", colunas=colunas, registros=registros)
+
+
 
 @notificacao_bp.route("/enviar", methods=["POST"])
 def enviar():
@@ -20,7 +23,9 @@ def enviar():
         db.session.commit()
     return redirect(url_for("notificacao.controle_notificacao"))
 
-@notificacao_bp.route('/excluir/<int:id>')
+
+
+@notificacao_bp.route('/excluir/<int:id>', methods=['POST', 'GET'])
 def excluir(id:int):
     excluir_notificacao = Notificacoes.query.get_or_404(id)
     try:
@@ -28,7 +33,10 @@ def excluir(id:int):
         db.session.commit()
         return redirect(url_for("notificacao.controle_notificacao"))
     except Exception as e:
+        db.session.rollback()
         return f"ERROR: {e}"
+
+
 
 @notificacao_bp.route('/marcar_como_vista', methods=["POST", "GET"])
 def marcar_como_vista():
@@ -38,6 +46,8 @@ def marcar_como_vista():
         db.session.commit()
         return jsonify({'status': 'success'})
     return jsonify({'status': 'error'}), 400
+
+
 
 @notificacao_bp.route('/atualizar_notificacoes', methods=['POST'])
 def atualizar_notificacoes():

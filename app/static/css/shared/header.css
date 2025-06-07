@@ -27,6 +27,8 @@
     position: fixed;
     border: none;
     outline: none;
+    opacity: 1 !important;
+    margin: 0 !important;
 }
 
 #logo {

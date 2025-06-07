@@ -7,6 +7,7 @@
 
 body,
 html {
+    width: 100%;
     height: 100vh;
 }
 
@@ -81,9 +82,11 @@ h1 {
     font-size: 1.3rem;
     background-color: #f8f8f8;
     box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.15);
+    height: max-content;
 }
 
-#form-cadastro-produto input, #form-cadastro-produto select {
+#form-cadastro-produto input,
+#form-cadastro-produto select {
     background-color: #ebebeb;
     height: 40px;
     width: 100%;
@@ -98,7 +101,6 @@ h1 {
 }
 
 input#imagem {
-    width: fit-content;
     display: block;
     padding: 10px;
     height: fit-content;
@@ -110,21 +112,34 @@ input#imagem:hover {
     cursor: pointer;
 }
 
-#database-container {
-    width: 60%;
-    max-height: 78vh;
+#preview {
+    width: 200px;
+    height: 200px;
+    aspect-ratio: 1 / 1;
+    box-shadow: 4px 4px 3px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    object-fit: cover;
+}
+
+#visualizacao-tabela {
     overflow: auto;
-    padding: 0 30px;
+    max-height: 75vh;
+    box-shadow: 0 0 8px 5px rgba(0, 0, 0, .2);
+    border-radius: 15px 15px 0 0;
 }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
+    border-collapse: collapse !important;
     font-size: .9rem;
-    margin: 20px 0;
     border-radius: 15px 15px 0 0;
-    overflow: hidden;
-    box-shadow: 0 0 20px 5px rgba(0, 0, 0, .15);
+    overflow: auto;
+}
+
+thead th {
+    position: sticky;
+    top: 0;
+    background-color: #aa0404;
+    z-index: 10;
 }
 
 table thead tr {
@@ -137,7 +152,10 @@ table thead tr {
 th,
 td {
     padding: 10px 15px;
-    font-family: "Poppins", sans-serif;
+    min-width: 100px;
+    max-width: 500px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
 }
 
 td {
@@ -157,15 +175,47 @@ tbody tr:hover {
     color: #aa0404;
 }
 
-a {
+a,
+.form-excluir button {
+    font-weight: normal;
+    display: block;
+    font-size: .9rem;
     text-decoration: none;
     color: #0000ee;
+    opacity: .75;
+    transition: none;
+    outline: none;
+    border: none;
+    background-color: transparent;
 }
 
 a:visited {
-    color: #0000ee;
+    color: #0000ee !important;
 }
 
-a:hover {
-    color: red;
+a:hover,
+.form-excluir button:hover {
+    color: red !important;
+    opacity: 1;
+}
+
+@media (max-width: 1800px) {
+    #content {
+        flex-direction: column;
+    }
+
+    #form-container {
+        width: 70%;
+        margin-bottom: 30px;
+    }
+
+    table {
+        width: 100%;
+    }
+}
+
+@media (max-width: 800px) {
+    #form-container {
+        width: 100%;
+    }
 }

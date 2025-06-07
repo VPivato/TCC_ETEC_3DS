@@ -1,5 +1,5 @@
 new Swiper('.card-wrapper', {
-    loop: true,
+    loop: false,
     spaceBetween: 30,
 
     navigation: {

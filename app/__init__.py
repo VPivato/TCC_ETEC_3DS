@@ -7,6 +7,10 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object("config.Config")
 
+    @app.template_filter('getattr')
+    def get_attr(obj, attr_name):
+        return getattr(obj, attr_name)
+
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
     db.init_app(app)
@@ -17,7 +21,7 @@ def create_app():
     from .perfil.routes import perfil_bp
     from .notifications.routes import notificacao_bp
     from .admin.database.routes import database_bp
-    from .admin.produtos.routes import produto_bp
+    from .admin.produto.routes import produto_bp
     from .loja.routes import loja_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(home_bp)
