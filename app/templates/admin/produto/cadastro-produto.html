@@ -36,7 +36,7 @@
 
                 <label for="imagem">Imagem do produto</label>
                 <input type="file" name="imagem" id="imagem" onchange="previewImagem()">
-                <img src="/static/uploads/default.png" id="preview">
+                <img src="/static/uploads/default.png" id="preview-cadastro">
 
                 <div id="btn-container">
                     <button type="submit" id="enviar">Enviar</button>
@@ -69,11 +69,11 @@
                                 <button type="submit"
                                     onclick="return confirm(`Confirmar exclusão do registro?`)">Excluir</button>
                             </form>
-                            <button type="button" class="btn btn-sm btn-primary btn-editar" data-id="{{ registro.id }}"
+                            <button type="button" class="btn-editar" data-id="{{ registro.id }}"
                                 data-descricao="{{ registro.descricao_produto }}"
                                 data-categoria="{{ registro.categoria_produto }}"
                                 data-preco="{{ registro.preco_produto }}" data-estoque="{{ registro.estoque_produto }}"
-                                data-imagem="{{ registro.imagem_produto }}" data-bs-toggle="modal"
+                                data-imagem="{{ registro.imagem_produto or '' }}" data-bs-toggle="modal"
                                 data-bs-target="#modalEditar">
                                 Editar
                             </button>
@@ -122,7 +122,8 @@
                         </div>
                         <div class="mb-3">
                             <label>Imagem</label>
-                            <input type="file" class="form-control" id="editar-imagem">
+                            <input type="file" class="form-control" id="editar-imagem" name="imagem" style="margin-bottom: 10px;">
+                            <img src="" id="preview-modal">
                         </div>
                     </div>
                     <div class="modal-footer">

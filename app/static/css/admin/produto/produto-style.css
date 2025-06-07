@@ -112,7 +112,7 @@ input#imagem:hover {
     cursor: pointer;
 }
 
-#preview {
+#preview-cadastro, #preview-modal {
     width: 200px;
     height: 200px;
     aspect-ratio: 1 / 1;
@@ -176,7 +176,7 @@ tbody tr:hover {
 }
 
 a,
-.form-excluir button {
+.form-excluir button, .btn-editar {
     font-weight: normal;
     display: block;
     font-size: .9rem;
@@ -194,7 +194,7 @@ a:visited {
 }
 
 a:hover,
-.form-excluir button:hover {
+.form-excluir button:hover, .btn-editar:hover {
     color: red !important;
     opacity: 1;
 }

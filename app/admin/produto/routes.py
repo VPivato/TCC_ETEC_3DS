@@ -61,6 +61,17 @@ def editar_produto(id):
         produto.categoria_produto = request.form.get('categoria').upper()
         produto.preco_produto = request.form.get('preco')
         produto.estoque_produto = request.form.get('estoque')
+
+        imagem = request.files.get('imagem')
+
+        if imagem and imagem.filename != '':
+            filename = secure_filename(imagem.filename)
+            # Cria pasta se não existir
+            os.makedirs(current_app.config['UPLOAD_FOLDER'], exist_ok=True)
+            # Caminho completo para salvar
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            imagem.save(filepath)
+            produto.imagem_produto = f'uploads/{filename}'
         
         db.session.commit()
         return redirect(url_for('produto.produto'))
