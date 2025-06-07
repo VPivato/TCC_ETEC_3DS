@@ -5,10 +5,10 @@ from ..models.usuario import Usuarios
 
 notificacao_bp = Blueprint("notificacao", __name__, url_prefix="/notificacao")
 
-@notificacao_bp.route('/')
+@notificacao_bp.route('/', methods=['POST', 'GET'])
 def controle_notificacao():
     colunas = Notificacoes.__table__.columns.keys()
-    registros = Notificacoes.query.order_by(Notificacoes.data.desc()).all()
+    registros = Notificacoes.query.order_by(Notificacoes.data_notificacao.desc()).all()
     return render_template ("admin/notifications/controle_notificacao.html", colunas=colunas, registros=registros)
 
 
@@ -18,7 +18,7 @@ def enviar():
     if request.method == "POST":
         Usuarios.query.update({Usuarios.ultima_notificacao_vista: False})
         mensagem = request.form["mensagem-notificacao"]
-        nova_notificacao = Notificacoes(mensagem=mensagem)
+        nova_notificacao = Notificacoes(mensagem_notificacao=mensagem)
         db.session.add(nova_notificacao)
         db.session.commit()
     return redirect(url_for("notificacao.controle_notificacao"))
@@ -26,12 +26,26 @@ def enviar():
 
 
 @notificacao_bp.route('/excluir/<int:id>', methods=['POST', 'GET'])
-def excluir(id:int):
+def excluir_notificacao(id:int):
     excluir_notificacao = Notificacoes.query.get_or_404(id)
     try:
         db.session.delete(excluir_notificacao)
         db.session.commit()
         return redirect(url_for("notificacao.controle_notificacao"))
+    except Exception as e:
+        db.session.rollback()
+        return f"ERROR: {e}"
+
+
+
+@notificacao_bp.route('/editar/<int:id>', methods=['POST', 'GET'])
+def editar_notificacao(id):
+    notificacao = Notificacoes.query.get_or_404(id)
+
+    try:
+        notificacao.mensagem_notificacao = request.form.get('mensagem')
+        db.session.commit()
+        return redirect(url_for('notificacao.controle_notificacao'))
     except Exception as e:
         db.session.rollback()
         return f"ERROR: {e}"
