@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template, request, jsonify
+import os
+from flask import Blueprint, render_template, request, jsonify, current_app
 from sqlalchemy import func
 from datetime import datetime
 
@@ -61,15 +62,25 @@ def get_registros():
 
 @database_bp.route('/excluir/<modelo>/<int:id>', methods=['POST'])
 def excluir_registro(modelo, id):
-    modelo_classe = MODELOS.get(modelo)
-    if not modelo_classe:
-        return jsonify({'erro': 'Modelo inválido'}), 400
-
-    registro = db.session.get(modelo_classe, id)
-    if not registro:
-        return jsonify({'erro': 'Registro não encontrado'}), 404
-
     try:
+        modelo_classe = MODELOS.get(modelo)
+        if not modelo_classe:
+            return jsonify({'erro': 'Modelo inválido'}), 400
+
+        registro = db.session.get(modelo_classe, id)
+        if not registro:
+            return jsonify({'erro': 'Registro não encontrado'}), 404
+
+        # Busca e exclui imagem, se houver
+        for attr_name in dir(registro):
+            if 'imagem' in attr_name.lower():
+                imagem_path = getattr(registro, attr_name, None)
+                if isinstance(imagem_path, str) and imagem_path.strip():
+                    caminho_imagem = os.path.join(current_app.static_folder, imagem_path)
+                    if os.path.exists(caminho_imagem):
+                        os.remove(caminho_imagem)
+                break  # remove apenas a primeira imagem
+        
         db.session.delete(registro)
         db.session.commit()
         return jsonify({'sucesso': True})
@@ -158,6 +169,14 @@ def excluir_varios():
     try:
         registros = db.session.query(modelo).filter(modelo.id.in_(ids)).all()
         for registro in registros:
+            for attr_name in dir(registro): # Busca e exclui imagem, se houver
+                if 'imagem' in attr_name.lower():
+                    imagem_path = getattr(registro, attr_name, None)
+                    if isinstance(imagem_path, str) and imagem_path.strip():
+                        caminho_imagem = os.path.join(current_app.static_folder, imagem_path)
+                        if os.path.exists(caminho_imagem):
+                            os.remove(caminho_imagem)
+                    break  # remove apenas a primeira imagem
             db.session.delete(registro)
         db.session.commit()
         return jsonify({'sucesso': True, 'mensagem': f'{len(registros)} registros excluídos.'})

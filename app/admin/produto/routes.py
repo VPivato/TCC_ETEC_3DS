@@ -43,6 +43,10 @@ def cadastrar():
 def excluir_produto(id):
     produto = Produtos.query.get_or_404(id)
     try:
+        if produto.imagem_produto:  # Ex: 'uploads/imagem.jpg'
+            caminho_imagem = os.path.join(current_app.static_folder, produto.imagem_produto)
+            if os.path.exists(caminho_imagem): # Verifica se o arquivo existe e remove
+                os.remove(caminho_imagem)
         db.session.delete(produto)
         db.session.commit()
         return redirect(url_for('produto.produto'))
