@@ -29,6 +29,7 @@
     outline: none;
     opacity: 1 !important;
     margin: 0 !important;
+    z-index: 999 !important;
 }
 
 #logo {

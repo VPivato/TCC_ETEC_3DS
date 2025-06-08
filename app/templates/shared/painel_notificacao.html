@@ -12,8 +12,8 @@
             {% if notificacoes %}
             {% for notificacao in notificacoes %}
             <li class="notificacao">
-                {{ notificacao.mensagem }}
-                <span class="notificacao-data">{{ notificacao.data.strftime("%d-%m-%Y %H:%M") }}</span>
+                {{ notificacao.mensagem_notificacao }}
+                <span class="notificacao-data">{{ notificacao.data_notificacao.strftime("%d-%m-%Y %H:%M") }}</span>
             </li>
             {% endfor %}
             {% else %}
