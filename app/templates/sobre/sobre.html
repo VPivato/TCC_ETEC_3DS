@@ -1,0 +1,143 @@
+{% extends 'shared/base.html' %}
+
+{% block title %}Sobre{% endblock %}
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+Display:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/sobre/sobre-style.css') }}" />
+{% endblock %}
+
+{% block content %}
+<main class="principal">
+    <div class="imagemCover">
+        <div class="txtimgcover">
+            <h1 id="txt1" class="txts">FOODPAY</h1>
+            <p id="txt2" class="txts">O FoodPay é uma solução inovadora que simplifica pagamentos em
+                estabelecimentos gastronômicos.
+                Com tecnologia segura e prática, ele permite que clientes realizem transações de forma rápida e
+                conveniente, sem a necessidade de dinheiro
+                físico ou cartões. Ideal para restaurantes, bares e lanchonetes, o FoodPay melhora a experiência do
+                consumidor e
+                otimiza a gestão financeira dos negócios. Uma maneira moderna e eficiente de pagar pela sua refeição
+            </p>
+        </div>
+    </div>
+
+    <p id="txt3">Nossa Cultura</p>
+    <div class="listcard"><!-- div de todos os card -->
+        <div class="cardcap"> <!-- div de cada card -->
+            <img class="card-img-top" src="{{ url_for('static', filename='images/sobre/historia.png') }}"
+                alt="Card image cap">
+            <div class="bodycard">
+                <h4 class="card-text">História</h4>
+                <p class="txtspequenoscard">Começamos como um projeto de
+                    TCC, que nos uniu com um propósito</p>
+            </div>
+        </div>
+
+        <!-- card 2-->
+        <div class="cardcap"> <!-- div de cada card -->
+            <img class="card-img-top" src="{{ url_for('static', filename='images/sobre/relogio.png') }}"
+                alt="Card image cap">
+            <div class="bodycard">
+                <h4 class="card-text">Tempo</h4>
+                <p class="txtspequenoscard">Trabalhamos para eliminar filas e
+                    dar a você mais liberdade para aproveitar o que realmente importa!</p>
+            </div>
+        </div>
+
+        <!-- card 3-->
+        <div class="cardcap"> <!-- div de cada card -->
+            <img class="card-img-top" src="{{ url_for('static', filename='images/sobre/uniao.png') }}"
+                alt="Card image cap">
+
+            <div class="bodycard">
+                <h4 class="card-text">União</h4>
+                <p class="txtspequenoscard">Estamos sempre juntos,
+                    fortalecendo conexões e tornando cada interação mais especial. </p>
+            </div>
+        </div>
+
+        <!-- card 4-->
+        <div class="cardcap"> <!-- div de cada card -->
+            <img class="card-img-top" src="{{ url_for('static', filename='images/sobre/fila.png') }}"
+                alt="Card image cap">
+            <div class="bodycard">
+                <h4 class="card-text">Filas</h4>
+                <p class="txtspequenoscard">Eliminamos as filas para que você
+                    tenha mais liberdade e aproveite o que realmente importa</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="sec">
+        <div class="msg">
+            <h2 class="msgtitle">Somos mais que números ou apenas uma empresa</h2>
+            <p class="msgtxt"> Somos um coletivo movido por propósito: unir pessoas
+                para transformar
+                rotinas com soluções práticas e cuidadosas.
+                Queremos facilitar seu dia com eficiência,
+                qualidade e
+                leveza — porque, no fim,
+                tudo é sobre você</p>
+        </div>
+    </div>
+
+    <!-- Equipe -->
+    <div class="nossa_equipe">
+        <h1 id="time">Nosso Time!</h1>
+        <div class="pessoas">
+            <figure class="figpes">
+                <img src="{{ url_for('static', filename='images/sobre/cat.jpg') }}" alt="" class="equipe">
+                <figcaption class="namefulano">Luana</figcaption>
+            </figure>
+
+            <figure class="figpes">
+                <img src="{{ url_for('static', filename='images/sobre/cat.jpg') }}" alt="" class="equipe">
+                <figcaption class="namefulano">Matheus Abner</figcaption>
+            </figure>
+            <figure class="figpes">
+                <img src="{{ url_for('static', filename='images/sobre/cat.jpg') }}" alt="" class="equipe">
+                <figcaption class="namefulano">Samuel</figcaption>
+            </figure>
+
+            <figure class="figpes">
+                <img src="{{ url_for('static', filename='images/sobre/cat.jpg') }}" alt="" class="equipe">
+                <figcaption class="namefulano">Victor Chuma</figcaption>
+            </figure>
+
+            <figure class="figpes">
+                <img src="{{ url_for('static', filename='images/sobre/cat.jpg') }}" alt="" class="equipe">
+                <figcaption class="namefulano">VIctor Hugo</figcaption>
+            </figure>
+
+            <figure class="figpes">
+                <img src="{{ url_for('static', filename='images/sobre/cat.jpg') }}" alt="" class="equipe">
+                <figcaption class="namefulano">VInicius Pivato</figcaption>
+            </figure>
+
+            <figure class="figpes">
+                <img src="{{ url_for('static', filename='images/sobre/cat.jpg') }}" alt="" class="equipe">
+                <figcaption class="namefulano">Yasmim</figcaption>
+            </figure>
+        </div>
+    </div>
+</main>
+
+<!-- Rodapé -->
+<footer id="rodape">
+    <div class="rodape-conteudo">
+        <img src="{{ url_for('static', filename='images/home/Logo.png') }}" alt="Logo FoodPay" class="rodape-logo">
+        <p>&copy; 2025 FoodPay. Todos os direitos reservados.</p>
+        <div class="links-rodape">
+            <a href="#">Política de Privacidade</a>
+            <a href="#">Termos de Uso</a>
+            <a href="{{ url_for('feedback.feedback')}}">Contato</a>
+        </div>
+    </div>
+</footer>
+{% endblock %}
+
+{% block extra_js %}{% endblock %}

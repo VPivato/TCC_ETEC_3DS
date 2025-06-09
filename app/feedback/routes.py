@@ -22,19 +22,3 @@ def enviar_feedback():
             return "Duvida/Reclamação enviada com sucesso!"
         except Exception as e:
             return f"Error: {e}"
-
-
-@feedback_bp.route('/database_feedbacks')
-def database_feedbacks():
-    feedbacks = Feedbacks.query.order_by(Feedbacks.id_feedback).all()
-    return render_template("feedback/database_feedbacks.html", feedbacks=feedbacks)
-
-@feedback_bp.route('/database_feedbacks/excluir_feedback/<int:id>')
-def excluir_feedback(id:int):
-    excluir_feedback = Feedbacks.query.get_or_404(id)
-    try:
-        db.session.delete(excluir_feedback)
-        db.session.commit()
-        return redirect(url_for("feedback.database_feedbacks"))
-    except Exception as e:
-        return f"Error: {e}"

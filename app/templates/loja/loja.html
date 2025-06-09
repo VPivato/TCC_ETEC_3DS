@@ -2,15 +2,15 @@
 
 {% block title %}Loja{% endblock %}
 {% block extra_css %}
+<!-- Bootstrap 5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
 <link rel="stylesheet" href="{{ url_for('static', filename='css/shared/header_relative.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/loja/loja-style.css') }}">
 
 <!-- SwiperJS CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-
-<!-- Bootstrap 5 -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 {% endblock %}
 
 {% block content %}
@@ -18,9 +18,9 @@
     <section id="section-produtos">
         <div id="categoria-salgados" class="categoria-produto">
             <h1 id="titulo-salgados" class="titulo-categoria">Salgados</h1>
-            <div class="container swiper">
+            <div class="swiper-container swiper">
                 <div class="card-wrapper">
-                    <ul id="produtos-container" class="swiper-wrapper">
+                    <ul class="swiper-wrapper produtos-container">
                         {% for salgado in salgados %}
                         <li class="card-produto swiper-slide">
                             <a href="#" class="card-link">
@@ -50,9 +50,9 @@
 
         <div id="categoria-doces" class="categoria-produto">
             <h1 id="titulo-doces" class="titulo-categoria">Doces</h1>
-            <div class="container swiper">
+            <div class="swiper-container swiper">
                 <div class="card-wrapper">
-                    <ul id="produtos-container" class="swiper-wrapper">
+                    <ul class="swiper-wrapper produtos-container">
                         {% for doce in doces %}
                         <li class="card-produto swiper-slide">
                             <a href="#" class="card-link">
@@ -81,9 +81,9 @@
 
         <div id="categoria-bebidas" class="categoria-produto">
             <h1 id="titulo-bebidas" class="titulo-categoria">Bebidas</h1>
-            <div class="container swiper">
+            <div class="swiper-container swiper">
                 <div class="card-wrapper">
-                    <ul id="produtos-container" class="swiper-wrapper">
+                    <ul class="swiper-wrapper produtos-container">
                         {% for bebida in bebidas %}
                         <li class="card-produto swiper-slide">
                             <a href="#" class="card-link">
@@ -109,7 +109,7 @@
         </div>
     </section>
 
-    <aside id="aside-carrinho" class="sticky-top d-none d-md-block">
+    <aside id="aside-carrinho" class="d-none d-md-block">
         <div class="card shadow-sm d-flex flex-column" style="height: 90vh;">
             <!-- Título -->
             <div class="card-header bg-primary text-white" style="background-color: #2e9a60 !important;">

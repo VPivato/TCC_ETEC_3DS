@@ -53,6 +53,7 @@
 }
 
 .button {
+    font-size: .9rem !important;
     width: 42px;
     height: 42px;
     border-radius: 50%;

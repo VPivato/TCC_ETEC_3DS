@@ -13,6 +13,7 @@ html {
 
 body {
     background-color: #eee;
+    overflow-y: scroll;
 }
 
 main {

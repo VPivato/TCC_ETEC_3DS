@@ -7,10 +7,12 @@
 body,
 html {
     height: 100%;
+    overflow-x: hidden;
 }
 
 body {
     background-color: #eee !important;
+    overflow-y: scroll;
 }
 
 main {
@@ -18,12 +20,13 @@ main {
     justify-content: space-between;
     align-items: center;
     height: 90vh;
+    overflow-x: hidden;
 }
 
 #section-produtos {
     width: 70%;
     max-height: 90vh;
-    overflow-y: auto;
+    overflow-y: scroll;
 }
 
 .categoria-produto {
@@ -59,7 +62,7 @@ main {
 }
 
 /* Layout do container swiper */
-.container.swiper {
+.swiper-container {
     padding: 1rem 0;
 }
 

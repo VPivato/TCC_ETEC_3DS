@@ -23,6 +23,7 @@ def create_app():
     from .admin.database.routes import database_bp
     from .admin.produto.routes import produto_bp
     from .loja.routes import loja_bp
+    from .sobre.routes import sobre_bp
     app.register_blueprint(auth_bp)
     app.register_blueprint(home_bp)
     app.register_blueprint(feedback_bp)
@@ -31,6 +32,7 @@ def create_app():
     app.register_blueprint(database_bp)
     app.register_blueprint(produto_bp)
     app.register_blueprint(loja_bp)
+    app.register_blueprint(sobre_bp)
 
     with app.app_context():
         db.create_all()
