@@ -1,26 +1,26 @@
 curl -X POST http://localhost:5000/produto/cadastrar-multiplos 
   -H "Content-Type: application/json" 
   -d "[
-    {""descricao_produto"": ""Pururuca bacon"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 3, ""estoque_produto"": 0, ""imagem_produto"": ""keleck_pururuca_bacon.jpg""}, 
-    {""descricao_produto"": ""Biscoito polvilho"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 3, ""estoque_produto"": 0, ""imagem_produto"": ""panda_polvilho_salgado.jpg""}, 
-    {""descricao_produto"": ""Batata cebola e salsa"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 3, ""estoque_produto"": 0, ""imagem_produto"": ""keleck_batata_cebola.jpg""}, 
-    {""descricao_produto"": ""Batata original"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 3, ""estoque_produto"": 0, ""imagem_produto"": ""keleck_batata_original.jpg""}, 
-    {""descricao_produto"": ""Batata churrasco"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 3, ""estoque_produto"": 0, ""imagem_produto"": ""keleck_batata_churrasco.jpg""}, 
-    {""descricao_produto"": ""Torcida"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 3, ""estoque_produto"": 0, ""imagem_produto"": ""salgadinho_torcida.jpg""}, 
-    {""descricao_produto"": ""Salgado 1"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 6, ""estoque_produto"": 0, ""imagem_produto"": ""17.jpg""}, 
-    {""descricao_produto"": ""Salgado 2"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 6, ""estoque_produto"": 0, ""imagem_produto"": ""18.jpg""}, 
-    {""descricao_produto"": ""Salgado 3"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 6, ""estoque_produto"": 0, ""imagem_produto"": ""19.jpg""}, 
-    {""descricao_produto"": ""Salgado 4"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 6, ""estoque_produto"": 0, ""imagem_produto"": ""20.jpg""}, 
+    {""descricao_produto"": ""Pururuca bacon"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 3, ""estoque_produto"": 10, ""imagem_produto"": ""keleck_pururuca_bacon.jpg""}, 
+    {""descricao_produto"": ""Biscoito polvilho"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 3, ""estoque_produto"": 10, ""imagem_produto"": ""panda_polvilho_salgado.jpg""}, 
+    {""descricao_produto"": ""Batata cebola e salsa"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 3, ""estoque_produto"": 10, ""imagem_produto"": ""keleck_batata_cebola.jpg""}, 
+    {""descricao_produto"": ""Batata original"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 3, ""estoque_produto"": 10, ""imagem_produto"": ""keleck_batata_original.jpg""}, 
+    {""descricao_produto"": ""Batata churrasco"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 3, ""estoque_produto"": 10, ""imagem_produto"": ""keleck_batata_churrasco.jpg""}, 
+    {""descricao_produto"": ""Torcida"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 3, ""estoque_produto"": 10, ""imagem_produto"": ""salgadinho_torcida.jpg""}, 
+    {""descricao_produto"": ""Salgado 1"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 6, ""estoque_produto"": 10, ""imagem_produto"": ""17.jpg""}, 
+    {""descricao_produto"": ""Salgado 2"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 6, ""estoque_produto"": 10, ""imagem_produto"": ""18.jpg""}, 
+    {""descricao_produto"": ""Salgado 3"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 6, ""estoque_produto"": 10, ""imagem_produto"": ""19.jpg""}, 
+    {""descricao_produto"": ""Salgado 4"", ""categoria_produto"": ""SALGADO"", ""preco_produto"": 6, ""estoque_produto"": 10, ""imagem_produto"": ""20.jpg""}, 
 
-    {""descricao_produto"": ""Fini"", ""categoria_produto"": ""DOCE"", ""preco_produto"": 1.5, ""estoque_produto"": 0, ""imagem_produto"": ""fini_tubes.jpg""}, 
-    {""descricao_produto"": ""Doce de leite"", ""categoria_produto"": ""DOCE"", ""preco_produto"": 3, ""estoque_produto"": 0, ""imagem_produto"": ""doce_leite.jpg""}, 
-    {""descricao_produto"": ""Pirulito 7Belo"", ""categoria_produto"": ""DOCE"", ""preco_produto"": 0.5, ""estoque_produto"": 0, ""imagem_produto"": ""pirulito_7belo.jpg""}, 
-    {""descricao_produto"": ""Trento chocolate"", ""categoria_produto"": ""DOCE"", ""preco_produto"": 3, ""estoque_produto"": 0, ""imagem_produto"": ""trento_chocolate.jpg""}, 
-    {""descricao_produto"": ""Brigadeiro"", ""categoria_produto"": ""DOCE"", ""preco_produto"": 3.5, ""estoque_produto"": 0, ""imagem_produto"": ""doce_brigadeiro.jpg""}, 
+    {""descricao_produto"": ""Fini"", ""categoria_produto"": ""DOCE"", ""preco_produto"": 1.5, ""estoque_produto"": 10, ""imagem_produto"": ""fini_tubes.jpg""}, 
+    {""descricao_produto"": ""Doce de leite"", ""categoria_produto"": ""DOCE"", ""preco_produto"": 3, ""estoque_produto"": 10, ""imagem_produto"": ""doce_leite.jpg""}, 
+    {""descricao_produto"": ""Pirulito 7Belo"", ""categoria_produto"": ""DOCE"", ""preco_produto"": 0.5, ""estoque_produto"": 10, ""imagem_produto"": ""pirulito_7belo.jpg""}, 
+    {""descricao_produto"": ""Trento chocolate"", ""categoria_produto"": ""DOCE"", ""preco_produto"": 3, ""estoque_produto"": 10, ""imagem_produto"": ""trento_chocolate.jpg""}, 
+    {""descricao_produto"": ""Brigadeiro"", ""categoria_produto"": ""DOCE"", ""preco_produto"": 3.5, ""estoque_produto"": 10, ""imagem_produto"": ""doce_brigadeiro.jpg""}, 
     
-    {""descricao_produto"": ""Coca-cola zero"", ""categoria_produto"": ""BEBIDA"", ""preco_produto"": 3, ""estoque_produto"": 0, ""imagem_produto"": ""coca_cola_zero.jpg""}, 
-    {""descricao_produto"": ""Coca-cola original"", ""categoria_produto"": ""BEBIDA"", ""preco_produto"": 3, ""estoque_produto"": 0, ""imagem_produto"": ""coca_cola_original.jpg""}, 
-    {""descricao_produto"": ""Tilly uva"", ""categoria_produto"": ""BEBIDA"", ""preco_produto"": 3, ""estoque_produto"": 0, ""imagem_produto"": ""tilly_uva.jpg""}, 
-    {""descricao_produto"": ""Tilly cítrico"", ""categoria_produto"": ""BEBIDA"", ""preco_produto"": 3, ""estoque_produto"": 0, ""imagem_produto"": ""tilly_citrico.jpg""}, 
-    {""descricao_produto"": ""Guaraná antartica"", ""categoria_produto"": ""BEBIDA"", ""preco_produto"": 3, ""estoque_produto"": 0, ""imagem_produto"": ""guarana_antartica.jpg""}
+    {""descricao_produto"": ""Coca-cola zero"", ""categoria_produto"": ""BEBIDA"", ""preco_produto"": 3, ""estoque_produto"": 10, ""imagem_produto"": ""coca_cola_zero.jpg""}, 
+    {""descricao_produto"": ""Coca-cola original"", ""categoria_produto"": ""BEBIDA"", ""preco_produto"": 3, ""estoque_produto"": 10, ""imagem_produto"": ""coca_cola_original.jpg""}, 
+    {""descricao_produto"": ""Tilly uva"", ""categoria_produto"": ""BEBIDA"", ""preco_produto"": 3, ""estoque_produto"": 10, ""imagem_produto"": ""tilly_uva.jpg""}, 
+    {""descricao_produto"": ""Tilly cítrico"", ""categoria_produto"": ""BEBIDA"", ""preco_produto"": 3, ""estoque_produto"": 10, ""imagem_produto"": ""tilly_citrico.jpg""}, 
+    {""descricao_produto"": ""Guaraná antartica"", ""categoria_produto"": ""BEBIDA"", ""preco_produto"": 3, ""estoque_produto"": 10, ""imagem_produto"": ""guarana_antartica.jpg""}
   ]"

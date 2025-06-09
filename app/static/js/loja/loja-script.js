@@ -38,14 +38,19 @@ function feedbackVisualBotao(idProduto) {
 
 let carrinho = {};
 let total = 0;
-function adicionarProduto(id, nome, preco) {
+function adicionarProduto(id, nome, preco, estoqueDisponivel) {
     if (carrinho[id]) {
+        if (carrinho[id].quantidade >= estoqueDisponivel) {
+            alert(`Estoque insuficiente! Apenas ${estoqueDisponivel} unidades disponíveis.`);
+            return;
+        }
         carrinho[id].quantidade += 1;
     } else {
         carrinho[id] = {
             nome: nome,
             preco: parseFloat(preco),
-            quantidade: 1
+            quantidade: 1,
+            estoque: estoqueDisponivel
         };
     }
     atualizarCarrinho();

@@ -73,7 +73,7 @@
     background: rgba(255, 255, 255, 0.1);
 }
 
-a {
+#navegacao a {
     text-decoration: none;
     color: #fff;
     font-size: 1.1rem;
@@ -81,7 +81,7 @@ a {
     transition: color 0.3s ease;
 }
 
-a:hover {
+ #navegacao a:hover {
     color: #ffe0b2;
 }
 

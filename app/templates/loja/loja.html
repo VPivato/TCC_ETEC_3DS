@@ -22,17 +22,24 @@
                 <div class="card-wrapper">
                     <ul class="swiper-wrapper produtos-container">
                         {% for salgado in salgados %}
-                        <li class="card-produto swiper-slide">
-                            <a href="#" class="card-link">
+                        <li
+                            class="card-produto swiper-slide {% if salgado.estoque_produto == 0 %} disabled-produto {% elif salgado.estoque_produto <= 5 %} estoque-baixo {% endif %}">
+                            <a href="javascript:void(0)" class="card-link">
                                 <img src="{{ url_for('static', filename=salgado.imagem_produto) }}" class="img-produto">
-                                <h2 class="nome-produto">
+                                <h2 class="nome-produto mb-0">
                                     <div class="marquee-container">
                                         <span class="marquee-text">{{ salgado.descricao_produto }}</span>
                                     </div>
                                 </h2>
+                                <p class="estoque-produto">
+                                    <small>
+                                        Disponível: {{ salgado.estoque_produto }}
+                                    </small>
+                                </p>
                                 <p class="preco-produto">R$ {{ "%.2f"|format(salgado.preco_produto) }}</p>
-                                <button type="button" class="btn-adicionar-produto"
-                                    onclick="adicionarProduto('{{ salgado.id }}', '{{ salgado.descricao_produto }}', '{{ salgado.preco_produto }}')"
+                                <button type="button" class="btn-adicionar-produto" {% if salgado.estoque_produto==0 %}
+                                    disabled {% endif %}
+                                    onclick="adicionarProduto('{{ salgado.id }}', '{{ salgado.descricao_produto }}', '{{ salgado.preco_produto }}', '{{ salgado.estoque_produto }}')"
                                     id="btn-produto-{{ salgado.id }}">+</button>
                             </a>
                         </li>
@@ -54,17 +61,24 @@
                 <div class="card-wrapper">
                     <ul class="swiper-wrapper produtos-container">
                         {% for doce in doces %}
-                        <li class="card-produto swiper-slide">
-                            <a href="#" class="card-link">
+                        <li
+                            class="card-produto swiper-slide {% if doce.estoque_produto == 0 %} disabled-produto {% elif doce.estoque_produto <= 5 %} estoque-baixo {% endif %}">
+                            <a href="javascript:void(0)" class="card-link">
                                 <img src="{{ url_for('static', filename=doce.imagem_produto) }}" class="img-produto">
-                                <h2 class="nome-produto">
+                                <h2 class="nome-produto mb-0">
                                     <div class="marquee-container">
                                         <span class="marquee-text">{{ doce.descricao_produto }}</span>
                                     </div>
                                 </h2>
+                                <p class="estoque-produto">
+                                    <small>
+                                        Disponível: {{ doce.estoque_produto }}
+                                    </small>
+                                </p>
                                 <p class="preco-produto">R$ {{ "%.2f"|format(doce.preco_produto) }}</p>
-                                <button type="button" class="btn-adicionar-produto"
-                                    onclick="adicionarProduto('{{ doce.id }}', '{{ doce.descricao_produto }}', '{{ doce.preco_produto }}')"
+                                <button type="button" class="btn-adicionar-produto" {% if doce.estoque_produto==0 %}
+                                    disabled {% endif %}
+                                    onclick="adicionarProduto('{{ doce.id }}', '{{ doce.descricao_produto }}', '{{ doce.preco_produto }}', '{{ doce.estoque_produto }}')"
                                     id="btn-produto-{{ doce.id }}">+</button>
                             </a>
                         </li>
@@ -85,17 +99,24 @@
                 <div class="card-wrapper">
                     <ul class="swiper-wrapper produtos-container">
                         {% for bebida in bebidas %}
-                        <li class="card-produto swiper-slide">
-                            <a href="#" class="card-link">
+                        <li
+                            class="card-produto swiper-slide {% if bebida.estoque_produto == 0 %} disabled-produto {% elif bebida.estoque_produto <= 5 %} estoque-baixo {% endif %}">
+                            <a href="javascript:void(0)" class="card-link">
                                 <img src="{{ url_for('static', filename=bebida.imagem_produto) }}" class="img-produto">
-                                <h2 class="nome-produto">
+                                <h2 class="nome-produto mb-0">
                                     <div class="marquee-container">
                                         <span class="marquee-text">{{ bebida.descricao_produto }}</span>
                                     </div>
                                 </h2>
+                                <p class="estoque-produto">
+                                    <small>
+                                        Disponível: {{ bebida.estoque_produto }}
+                                    </small>
+                                </p>
                                 <p class="preco-produto">R$ {{ "%.2f"|format(bebida.preco_produto) }}</p>
-                                <button type="button" class="btn-adicionar-produto"
-                                    onclick="adicionarProduto('{{ bebida.id }}', '{{ bebida.descricao_produto }}', '{{ bebida.preco_produto }}')"
+                                <button type="button" class="btn-adicionar-produto" {% if bebida.estoque_produto==0 %}
+                                    disabled {% endif %}
+                                    onclick="adicionarProduto('{{ bebida.id }}', '{{ bebida.descricao_produto }}', '{{ bebida.preco_produto }}', '{{ bebida.estoque_produto }}')"
                                     id="btn-produto-{{ bebida.id }}">+</button>
                             </a>
                         </li>

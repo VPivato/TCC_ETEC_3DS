@@ -113,7 +113,8 @@ input#imagem:hover {
     cursor: pointer;
 }
 
-#preview-cadastro, #preview-modal {
+#preview-cadastro,
+#preview-modal {
     width: 200px;
     height: 200px;
     aspect-ratio: 1 / 1;
@@ -127,6 +128,7 @@ input#imagem:hover {
     max-height: 75vh;
     box-shadow: 0 0 8px 5px rgba(0, 0, 0, .2);
     border-radius: 15px 15px 0 0;
+    max-width: 60%;
 }
 
 table {
@@ -177,7 +179,8 @@ tbody tr:hover {
 }
 
 a,
-.form-excluir button, .btn-editar {
+.form-excluir button,
+.btn-editar {
     font-weight: normal;
     display: block;
     font-size: .9rem;
@@ -195,7 +198,8 @@ a:visited {
 }
 
 a:hover,
-.form-excluir button:hover, .btn-editar:hover {
+.form-excluir button:hover,
+.btn-editar:hover {
     color: red !important;
     opacity: 1;
 }
@@ -212,6 +216,10 @@ a:hover,
 
     table {
         width: 100%;
+    }
+
+    #visualizacao-tabela {
+        max-width: 100%;
     }
 }
 

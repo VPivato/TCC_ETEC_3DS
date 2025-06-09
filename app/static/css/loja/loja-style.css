@@ -199,6 +199,18 @@ main {
     margin-left: 5px;
 }
 
+/* Estilo para produtos com estoque 0 */
+.disabled-produto {
+    opacity: 0.5;
+    user-select: none;
+}
+
+/* Estilo para estoque baixo (≤ 5) */
+.estoque-baixo .estoque-produto small {
+    color: #da0012;
+    font-weight: bold;
+}
+
 @media (max-width: 768px) {
     main {
         flex-direction: column-reverse;
