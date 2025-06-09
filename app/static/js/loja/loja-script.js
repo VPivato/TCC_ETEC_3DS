@@ -105,15 +105,50 @@ function removerProduto(id) {
     }
 }
 
-function finalizarCompra() {
+async function finalizarCompra() {
     if (Object.keys(carrinho).length === 0) {
-        alert('Seu carrinho está vazio!');
+        Swal.fire({
+            icon: 'warning',
+            title: 'Carrinho vazio!',
+            text: 'Adicione produtos antes de finalizar a compra.'
+        });
         return;
     }
-    alert('Compra finalizada! (simulação)');
-    // Aqui você pode enviar o carrinho para o backend no futuro
-    carrinho = {};
-    atualizarCarrinho();
+
+    try {
+        const resposta = await fetch('/loja/finalizar-compra', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ carrinho })
+        });
+
+        const resultado = await resposta.json();
+
+        if (resposta.ok) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Compra finalizada!',
+                confirmButtonText: 'OK',
+            }).then(() => {
+                location.reload();
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Erro ao finalizar',
+                text: resultado.erro || 'Ocorreu um erro inesperado.'
+            });
+        }
+    } catch (erro) {
+        console.error('Erro na requisição:', erro);
+        Swal.fire({
+            icon: 'error',
+            title: 'Erro de rede',
+            text: 'Não foi possível se conectar ao servidor.'
+        });
+    }
 }
 
 function cancelarCompra() {

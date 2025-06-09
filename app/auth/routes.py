@@ -21,7 +21,7 @@ def entrar():
 
     # Se usuario existir, senha descriptografada coincidir com a digitada, e codigo estiver correto
     if usuario_bd and usuario_bd.check_senha(senha) and codigo_bd == codigo:
-        session['username'] = nome
+        session['rm'] = nome
         session["email"] = usuario_bd.email_usuario
         return redirect(url_for("home.home")) # Direciona para página Home
     # Se não existir
@@ -49,7 +49,7 @@ def registrar():
         try:
             db.session.add(novo_usuario)
             db.session.commit()
-            session["username"] = nome
+            session["rm"] = nome
             session["email"] = email
             return redirect(url_for("home.home")) # Redireciona para pagina Home
         except Exception as e:

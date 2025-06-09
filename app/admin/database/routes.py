@@ -7,6 +7,8 @@ from ...models.usuario import Usuarios
 from ...models.notificacao import Notificacoes
 from ...models.feedback import Feedbacks
 from ...models.produto import Produtos
+from ...models.pedido import Pedido
+from ...models.item_pedido import ItemPedido
 
 from ...extensions import db
 
@@ -17,6 +19,8 @@ MODELOS = {
     "Notificacoes": Notificacoes,
     "Feedbacks": Feedbacks,
     "Produtos": Produtos,
+    "Pedidos": Pedido,
+    "ItemPedido": ItemPedido,
 }
 
 @database_bp.route('/', methods=["POST", "GET"])
