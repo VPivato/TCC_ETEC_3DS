@@ -83,3 +83,7 @@ document.querySelectorAll('.btn-editar').forEach(button => {
         form.action = `/produto/editar/${id}`;
     });
 });
+
+if (localStorage.getItem('modo-escuro') === 'true') {
+    document.body.classList.add('modo-escuro')
+}

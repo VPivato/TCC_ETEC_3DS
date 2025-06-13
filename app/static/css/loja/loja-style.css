@@ -27,6 +27,7 @@ main {
     width: 70%;
     max-height: 90vh;
     overflow-y: scroll;
+    padding-top: 20px;
 }
 
 .categoria-produto {
@@ -144,14 +145,18 @@ main {
     width: 30%;
     height: 90vh;
     overflow-y: auto;
-    background: #EEE;
-    background: linear-gradient(315deg, #d3d3d3 40%, #e2e2e2 100%);
+    background: #28a745;
     display: flex;
     justify-content: center;
 }
 
+#aside-carrinho .card-header {
+    border-radius: 0 !important;
+}
+
 #aside-carrinho>div {
     width: 100%;
+    border: none !important;
 }
 
 .marquee-container {

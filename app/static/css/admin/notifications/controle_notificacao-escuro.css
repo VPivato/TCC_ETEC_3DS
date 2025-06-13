@@ -1,0 +1,53 @@
+body.modo-escuro {
+    background: #17041f;
+    background: linear-gradient(135deg, #17041f 0%, #08031f 100%);
+    color: #d0d0d0;
+}
+
+body.modo-escuro #form-container {
+    background: #211726;
+    background: linear-gradient(135deg, #211726 0%, #1d183d 100%);
+    box-shadow: 4px 4px 8px #20355a26;
+}
+
+body.modo-escuro #form-container textarea {
+    background-color: #e1dbebd8 !important;
+}
+
+body.modo-escuro tr:nth-of-type(odd) {
+    background-color: #211726 !important;
+}
+
+body.modo-escuro tr:nth-of-type(even) {
+    background-color: #1c1424 !important;
+}
+
+body.modo-escuro table button {
+    color: #3e82ff;
+}
+
+body.modo-escuro tbody tr:hover {
+    color: #da2929 !important;
+}
+
+body.modo-escuro tbody tr:hover .btn-excluir {
+    color: #da2929 !important;
+}
+
+body.modo-escuro .modal-content {
+    background: #211726;
+    background: linear-gradient(135deg, #211726 0%, #1d183d 100%);
+    box-shadow: 4px 4px 8px #20355a26;
+}
+
+body.modo-escuro .modal-content .btn-close {
+    filter: invert(100%);
+}
+
+body.modo-escuro .modal-content input, body.modo-escuro .modal-content select {
+    background-color: #e1dbebd8 !important;
+}
+
+body.modo-escuro .modal-content input[type=file] {
+    color: #888 !important;
+}

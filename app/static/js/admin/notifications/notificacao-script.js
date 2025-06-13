@@ -14,3 +14,7 @@ document.querySelectorAll('.btn-editar').forEach(button => {
         form.action = `/notificacao/editar/${id}`;
     });
 });
+
+if (localStorage.getItem('modo-escuro') === 'true') {
+    document.body.classList.add('modo-escuro')
+}

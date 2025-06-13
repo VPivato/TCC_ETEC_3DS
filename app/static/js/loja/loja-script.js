@@ -168,3 +168,7 @@ marquees.forEach(container => {
         container.parentElement.classList.add('marquee-animar');
     }
 });
+
+if (localStorage.getItem('modo-escuro') === 'true') {
+    document.body.classList.add('modo-escuro')
+}
