@@ -1,0 +1,132 @@
+{% extends 'shared/base.html' %}
+
+{% block title %}Pedidos{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/shared/header_relative.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/pedido/pedido-style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/pedido/pedido-escuro.css') }}">
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Gestão de Pedidos</h2>
+
+    <div class="mb-4">
+        <div class="btn-group" role="group" aria-label="Filtros de status">
+            <a href="{{ url_for('pedido.visualizar_pedidos', status='pendente') }}"
+                class="btn btn-{{ 'primary' if filtro_status == 'pendente' else 'outline-primary' }}">
+                Pendentes
+            </a>
+            <a href="{{ url_for('pedido.visualizar_pedidos', status='retirado') }}"
+                class="btn btn-{{ 'success' if filtro_status == 'retirado' else 'outline-success' }}">
+                Retirados
+            </a>
+            <a href="{{ url_for('pedido.visualizar_pedidos', status='cancelado') }}"
+                class="btn btn-{{ 'danger' if filtro_status == 'cancelado' else 'outline-danger' }}">
+                Cancelados
+            </a>
+            <a href="{{ url_for('pedido.visualizar_pedidos', status='todos') }}"
+                class="btn btn-{{ 'secondary' if filtro_status == 'todos' else 'outline-secondary' }}">
+                Todos
+            </a>
+        </div>
+    </div>
+
+    {% if pedidos %}
+    {% for pedido in pedidos %}
+    <div class="card mb-3 shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div class="w-100" data-bs-toggle="collapse" data-bs-target="#pedido{{ pedido.id }}" aria-expanded="false"
+                role="button">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="mb-0">Pedido #{{ pedido.id }}</h6>
+                        <small class="text-muted">
+                            ID Usuário: {{ pedido.usuario.id }}<br>
+                            Código ETEC: {{ pedido.usuario.codigo_etec_usuario }}<br>
+                            RM: {{ pedido.usuario.nome_usuario }}
+                        </small>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-{{ 
+                                'warning' if pedido.status == 'pendente' else 
+                                'success' if pedido.status == 'retirado' else 
+                                'danger' 
+                            }}">
+                            {{ pedido.status.capitalize() }}
+                        </span>
+                        <br>
+                        <small class="text-muted">
+                            {{ pedido.data_hora.strftime('%d/%m/%Y %H:%M') }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="pedido{{ pedido.id }}" class="collapse">
+            <div class="card-body">
+                <h6>Itens do Pedido:</h6>
+                <ul class="list-group mb-3">
+                    {% for item in pedido.itens %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>{{ item.produto.descricao_produto }}<br>
+                            Quantidade: {{ item.quantidade }} x R$ {{ '%.2f'|format(item.preco_unitario) }}
+                        </div>
+                        <div>
+                            <strong>R$ {{ '%.2f'|format(item.quantidade * item.preco_unitario) }}</strong>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                <div class="text-end">
+                    <h5>Total: <strong>R$ {{ '%.2f'|format(pedido.total) }}</strong></h5>
+                </div>
+            </div>
+
+            <div class="card-footer text-end">
+                {% if pedido.status == 'pendente' %}
+                <form action="{{ url_for('pedido.finalizar_pedido', pedido_id=pedido.id) }}" method="post"
+                    class="d-inline">
+                    <button type="button" class="btn btn-success btn-sm"
+                        onclick="confirmarFinalizacao('{{ pedido.id }}')">
+                        Marcar como Retirado
+                    </button>
+                </form>
+                <form action="{{ url_for('pedido.cancelar_pedido', pedido_id=pedido.id) }}" method="post"
+                    class="d-inline">
+                    <button type="button" class="btn btn-danger btn-sm"
+                        onclick="confirmarCancelamento('{{ pedido.id }}')">
+                        Cancelar Pedido
+                    </button>
+                </form>
+                {% elif pedido.status == 'retirado' %}
+                <button class="btn btn-secondary btn-sm" disabled>Pedido Retirado</button>
+                {% elif pedido.status == 'cancelado' %}
+                <button class="btn btn-secondary btn-sm" disabled>Pedido Cancelado</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="nenhum-pedido alert alert-info">
+        Nenhum pedido encontrado.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin/pedido/pedido-script.js') }}"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- SweetAlert2 JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% endblock %}

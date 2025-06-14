@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, session, jsonify
+from ..models.usuario import Usuarios
 from ..models.produto import Produtos
 from ..models.pedido import Pedido
 from ..models.item_pedido import ItemPedido
@@ -23,12 +24,12 @@ def finalizar_compra():
     if not isinstance(carrinho, dict) or not carrinho:
         return jsonify({'erro': 'Carrinho vazio ou formato incorreto'}), 400
 
-    rm_aluno = session.get('rm')
-    if not rm_aluno:
+    usuario = Usuarios.query.filter_by(email_usuario=session.get('email')).first()
+    if not usuario:
         return jsonify({'erro': 'Usuário não autenticado'}), 403
 
     total = 0
-    pedido = Pedido(total=0, rm_aluno=rm_aluno)
+    pedido = Pedido(total=0, id_usuario=usuario.id)
     db.session.add(pedido)
 
     for id_str, item in carrinho.items():

@@ -6,3 +6,5 @@ class ItemPedido(db.Model):
     produto_id = db.Column(db.Integer, db.ForeignKey('produtos.id'), nullable=False)
     quantidade = db.Column(db.Integer, nullable=False)
     preco_unitario = db.Column(db.Float, nullable=False)
+
+    produto = db.relationship('Produtos', backref='itens_pedido')
