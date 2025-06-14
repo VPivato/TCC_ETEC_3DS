@@ -2,7 +2,7 @@ function confirmarFinalizacao(pedidoId) {
     Swal.fire({
         title: 'Tem certeza?',
         text: "Deseja marcar o pedido #" + pedidoId + " como retirado?",
-        icon: 'warning',
+        icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#28a745',
         cancelButtonColor: '#d33',
