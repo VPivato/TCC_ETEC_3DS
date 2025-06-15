@@ -34,24 +34,31 @@ function confirmarCancelamento(pedidoId) {
 
 // Toast após redirecionamento
 document.addEventListener('DOMContentLoaded', function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const toastMessage = urlParams.get('toast');
-
-    if (toastMessage) {
+    // 1) Toast
+    const params = new URLSearchParams(window.location.search);
+    const toast = params.get('toast');
+    if (toast) {
         Swal.fire({
             toast: true,
             position: 'bottom-end',
             icon: 'success',
-            title: toastMessage,
+            title: toast,
             showConfirmButton: false,
             timer: 3000,
             timerProgressBar: true
         });
-
-        // Remove o ?toast= da URL após exibir
+        // limpar ?toast=…
         const newUrl = window.location.origin + window.location.pathname +
             window.location.search.replace(/([&?])toast=[^&]+(&|$)/, '$1')
                 .replace(/(&|\?)$/, '');
         window.history.replaceState({}, document.title, newUrl);
     }
+
+    // 2) Collapse header
+    document.querySelectorAll('.collapse.pedido-body').forEach(p => {
+        const id = p.id.replace('pedido', ''),
+            info = document.getElementById('info-header-' + id);
+        p.addEventListener('show.bs.collapse', () => info.classList.add('show'));
+        p.addEventListener('hide.bs.collapse', () => info.classList.remove('show'));
+    });
 });

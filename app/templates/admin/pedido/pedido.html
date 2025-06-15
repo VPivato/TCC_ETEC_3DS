@@ -5,120 +5,204 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/shared/header_relative.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/pedido/pedido-style.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/admin/pedido/pedido-escuro.css') }}">
+
 <!-- Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 {% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="mb-4">Gestão de Pedidos</h2>
 
-    <div class="mb-4">
-        <div class="btn-group" role="group" aria-label="Filtros de status">
-            <a href="{{ url_for('pedido.visualizar_pedidos', status='pendente') }}"
-                class="btn btn-{{ 'primary' if filtro_status == 'pendente' else 'outline-primary' }}">
-                Pendentes
-            </a>
-            <a href="{{ url_for('pedido.visualizar_pedidos', status='retirado') }}"
-                class="btn btn-{{ 'success' if filtro_status == 'retirado' else 'outline-success' }}">
-                Retirados
-            </a>
-            <a href="{{ url_for('pedido.visualizar_pedidos', status='cancelado') }}"
-                class="btn btn-{{ 'danger' if filtro_status == 'cancelado' else 'outline-danger' }}">
-                Cancelados
-            </a>
-            <a href="{{ url_for('pedido.visualizar_pedidos', status='todos') }}"
-                class="btn btn-{{ 'secondary' if filtro_status == 'todos' else 'outline-secondary' }}">
-                Todos
-            </a>
-        </div>
-    </div>
-
-    {% if pedidos %}
-    {% for pedido in pedidos %}
-    <div class="card mb-3 shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <div class="w-100" data-bs-toggle="collapse" data-bs-target="#pedido{{ pedido.id }}" aria-expanded="false"
-                role="button">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <h6 class="mb-0">Pedido #{{ pedido.id }}</h6>
-                        <small class="text-muted">
-                            ID Usuário: {{ pedido.usuario.id }}<br>
-                            Código ETEC: {{ pedido.usuario.codigo_etec_usuario }}<br>
-                            RM: {{ pedido.usuario.nome_usuario }}
-                        </small>
-                    </div>
-                    <div class="text-end">
-                        <span class="badge bg-{{ 
-                                'warning' if pedido.status == 'pendente' else 
-                                'success' if pedido.status == 'retirado' else 
-                                'danger' 
-                            }}">
-                            {{ pedido.status.capitalize() }}
-                        </span>
-                        <br>
-                        <small class="text-muted">
-                            {{ pedido.data_hora.strftime('%d/%m/%Y %H:%M') }}
-                        </small>
-                    </div>
+<main class="mt-5">
+    <div id="esquerda">
+        <div id="principal-esquerda">
+            <h2 class="mb-4">Gestão de Pedidos</h2>
+            <form class="d-flex mb-3" method="get">
+                <div class="input-group input-group-sm" style="max-width: 200px;">
+                    <label class="input-group-text bg-light" for="ordenar">
+                        <i class="bi bi-sort-down"></i>
+                    </label>
+                    <select class="form-select" id="ordenar" name="ordenar" onchange="this.form.submit()">
+                        <option value="desc" {% if ordenar=='desc' %}selected{% endif %}>Mais recentes</option>
+                        <option value="asc" {% if ordenar=='asc' %}selected{% endif %}>Mais antigos</option>
+                    </select>
                 </div>
-            </div>
-        </div>
 
-        <div id="pedido{{ pedido.id }}" class="collapse">
-            <div class="card-body">
-                <h6>Itens do Pedido:</h6>
-                <ul class="list-group mb-3">
-                    {% for item in pedido.itens %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <div>{{ item.produto.descricao_produto }}<br>
-                            Quantidade: {{ item.quantidade }} x R$ {{ '%.2f'|format(item.preco_unitario) }}
-                        </div>
-                        <div>
-                            <strong>R$ {{ '%.2f'|format(item.quantidade * item.preco_unitario) }}</strong>
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-
-                <div class="text-end">
-                    <h5>Total: <strong>R$ {{ '%.2f'|format(pedido.total) }}</strong></h5>
-                </div>
-            </div>
-
-            <div class="card-footer text-end">
-                {% if pedido.status == 'pendente' %}
-                <form action="{{ url_for('pedido.finalizar_pedido', pedido_id=pedido.id) }}" method="post"
-                    class="d-inline">
-                    <button type="button" class="btn btn-success btn-sm"
-                        onclick="confirmarFinalizacao('{{ pedido.id }}')">
-                        Marcar como Retirado
-                    </button>
-                </form>
-                <form action="{{ url_for('pedido.cancelar_pedido', pedido_id=pedido.id) }}" method="post"
-                    class="d-inline">
-                    <button type="button" class="btn btn-danger btn-sm"
-                        onclick="confirmarCancelamento('{{ pedido.id }}')">
-                        Cancelar Pedido
-                    </button>
-                </form>
-                {% elif pedido.status == 'retirado' %}
-                <button class="btn btn-secondary btn-sm" disabled>Pedido Retirado</button>
-                {% elif pedido.status == 'cancelado' %}
-                <button class="btn btn-secondary btn-sm" disabled>Pedido Cancelado</button>
+                <!-- Preservar outros filtros -->
+                <input type="hidden" name="status" value="{{ filtro_status }}">
+                {% if campo_busca %}
+                <input type="hidden" name="campo" value="{{ campo_busca }}">
                 {% endif %}
+                {% if termo_busca %}
+                <input type="hidden" name="busca" value="{{ termo_busca }}">
+                {% endif %}
+            </form>
+
+            <div class="mb-4">
+                <div class="row g-2">
+                    <div class="col-6 col-md">
+                        <a href="{{ url_for('pedido.visualizar_pedidos', status='pendente', campo=request.args.get('campo'), busca=request.args.get('busca'), ordenar=request.args.get('ordenar')) }}"
+                            class="btn w-100 btn-{{ 'primary' if filtro_status == 'pendente' else 'outline-primary' }}">
+                            Pendentes
+                        </a>
+                    </div>
+                    <div class="col-6 col-md">
+                        <a href="{{ url_for('pedido.visualizar_pedidos', status='retirado', campo=request.args.get('campo'), busca=request.args.get('busca'), ordenar=request.args.get('ordenar')) }}"
+                            class="btn w-100 btn-{{ 'success' if filtro_status == 'retirado' else 'outline-success' }}">
+                            Retirados
+                        </a>
+                    </div>
+                    <div class="col-6 col-md">
+                        <a href="{{ url_for('pedido.visualizar_pedidos', status='cancelado', campo=request.args.get('campo'), busca=request.args.get('busca'), ordenar=request.args.get('ordenar')) }}"
+                            class="btn w-100 btn-{{ 'danger' if filtro_status == 'cancelado' else 'outline-danger' }}">
+                            Cancelados
+                        </a>
+                    </div>
+                    <div class="col-6 col-md">
+                        <a href="{{ url_for('pedido.visualizar_pedidos', status='todos', campo=request.args.get('campo'), busca=request.args.get('busca'), ordenar=request.args.get('ordenar')) }}"
+                            class="btn w-100 btn-{{ 'secondary' if filtro_status == 'todos' else 'outline-secondary' }}">
+                            Todos
+                        </a>
+                    </div>
+                </div>
             </div>
+
+            <form class="row g-2 align-items-center mb-4" method="get">
+                <input type="hidden" name="status" value="{{ filtro_status }}">
+
+                <div class="col-auto">
+                    <select name="campo" class="form-select" required>
+                        <option value="">Pesquisar por...</option>
+                        <option value="id_pedido" {% if request.args.get('campo')=='id_pedido' %}selected{% endif %}>ID
+                            Pedido
+                        </option>
+                        <option value="id_usuario" {% if request.args.get('campo')=='id_usuario' %}selected{% endif %}>
+                            ID
+                            Usuário</option>
+                        <option value="rm" {% if request.args.get('campo')=='rm' %}selected{% endif %}>RM</option>
+                        <option value="codigo_etec" {% if request.args.get('campo')=='codigo_etec' %}selected{% endif
+                            %}>
+                            Código
+                            ETEC</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <input type="text" name="busca" class="form-control" placeholder="Digite o termo"
+                        value="{{ request.args.get('busca') or '' }}" required>
+                </div>
+                <div class="btn-container">
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Buscar
+                        </button>
+                    </div>
+                    <div class="col-auto">
+                        <a href="{{ url_for('pedido.visualizar_pedidos', status='pendente') }}"
+                            class="btn btn-secondary">
+                            Limpar
+                        </a>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
-    {% endfor %}
-    {% else %}
-    <div class="nenhum-pedido alert alert-info">
-        Nenhum pedido encontrado.
+
+    <div id="direita">
+        <div id="container-pedidos">
+            {% if pedidos %}
+            {% for pedido in pedidos %}
+            <div class="card mb-3 shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="w-100" data-bs-toggle="collapse" data-bs-target="#pedido{{ pedido.id }}"
+                        aria-expanded="false" role="button">
+
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="mb-0">Pedido #{{ pedido.id }}</h6>
+                                <small class="text-muted">
+                                    ID Usuário: {{ pedido.usuario.id }}
+                                </small>
+
+                                <!-- Informações extras só aparecem quando o card está expandido -->
+                                <div class="collapse mt-1" id="info-header-{{ pedido.id }}">
+                                    <small class="text-muted d-block">
+                                        Código ETEC: {{ pedido.usuario.codigo_etec_usuario }}<br>
+                                        RM: {{ pedido.usuario.nome_usuario }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="text-end">
+                                <span class="badge bg-{{ 
+                    'warning' if pedido.status == 'pendente' else 
+                    'success' if pedido.status == 'retirado' else 
+                    'danger' 
+                }}">
+                                    {{ pedido.status.capitalize() }}
+                                </span>
+                                <br>
+                                <small class="text-muted">
+                                    {{ pedido.data_hora.strftime('%d/%m/%Y %H:%M') }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="pedido{{ pedido.id }}" class="collapse pedido-body">
+                    <div class="card-body">
+                        <h6>Itens do Pedido:</h6>
+                        <ul class="list-group mb-3">
+                            {% for item in pedido.itens %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>{{ item.produto.descricao_produto }}<br>
+                                    Quantidade: {{ item.quantidade }} x R$ {{ '%.2f'|format(item.preco_unitario) }}
+                                </div>
+                                <div>
+                                    <strong>R$ {{ '%.2f'|format(item.quantidade * item.preco_unitario) }}</strong>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+
+                        <div class="text-end">
+                            <h5>Total: <strong>R$ {{ '%.2f'|format(pedido.total) }}</strong></h5>
+                        </div>
+                    </div>
+
+                    <div class="card-footer text-end">
+                        {% if pedido.status == 'pendente' %}
+                        <form action="{{ url_for('pedido.finalizar_pedido', pedido_id=pedido.id) }}" method="post"
+                            class="d-inline">
+                            <button type="button" class="btn btn-success btn-sm"
+                                onclick="confirmarFinalizacao('{{ pedido.id }}')">
+                                Marcar como Retirado
+                            </button>
+                        </form>
+                        <form action="{{ url_for('pedido.cancelar_pedido', pedido_id=pedido.id) }}" method="post"
+                            class="d-inline">
+                            <button type="button" class="btn btn-danger btn-sm"
+                                onclick="confirmarCancelamento('{{ pedido.id }}')">
+                                Cancelar Pedido
+                            </button>
+                        </form>
+                        {% elif pedido.status == 'retirado' %}
+                        <button class="btn btn-secondary btn-sm" disabled>Pedido Retirado</button>
+                        {% elif pedido.status == 'cancelado' %}
+                        <button class="btn btn-secondary btn-sm" disabled>Pedido Cancelado</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="nenhum-pedido alert alert-info">
+                Nenhum pedido encontrado.
+            </div>
+            {% endif %}
+        </div>
     </div>
-    {% endif %}
-</div>
+</main>
 {% endblock %}
 
 {% block extra_js %}

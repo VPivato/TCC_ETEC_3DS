@@ -1,19 +1,48 @@
-from flask import Blueprint, render_template, flash, redirect, url_for, request
-from ...models import Pedido
+from flask import Blueprint, render_template, redirect, url_for, request
+from datetime import datetime
+from ...models.pedido import Pedido
+from ...models.usuario import Usuarios
 from ...extensions import db
 
 pedido_bp = Blueprint('pedido', __name__, url_prefix='/pedido')
 
 @pedido_bp.route('/')
 def visualizar_pedidos():
-    filtro_status = request.args.get('status', 'pendente')  # padrão 'pendente'
+    ordenar = request.args.get('ordenar', 'desc')  # padrão decrescente
 
-    if filtro_status == 'todos':
-        pedidos = Pedido.query.order_by(Pedido.data_hora.desc()).all()
+    # Filtro de status
+    filtro_status = request.args.get('status', 'pendente')
+
+    # Query inicial
+    query = Pedido.query
+
+    if filtro_status != 'todos':
+        query = query.filter_by(status=filtro_status)
+
+    # Ordenação
+    if ordenar == 'asc':
+        query = query.order_by(Pedido.data_hora.asc())
     else:
-        pedidos = Pedido.query.filter_by(status=filtro_status).order_by(Pedido.data_hora.desc()).all()
-        
-    return render_template('admin/pedido/pedido.html', pedidos=pedidos, filtro_status=filtro_status)
+        query = query.order_by(Pedido.data_hora.desc())
+
+    # Busca
+    campo_busca = request.args.get('campo')
+    termo_busca = request.args.get('busca')
+
+    if campo_busca and termo_busca:
+        if campo_busca == 'id_pedido':
+            query = query.filter(Pedido.id == termo_busca)
+        elif campo_busca == 'id_usuario':
+            query = query.filter(Pedido.id_usuario == termo_busca)
+        elif campo_busca == 'rm':
+            query = query.join(Usuarios).filter(Usuarios.nome_usuario.ilike(f'%{termo_busca}%'))
+        elif campo_busca == 'codigo_etec':
+            query = query.join(Usuarios).filter(Usuarios.codigo_etec_usuario.ilike(f'%{termo_busca}%'))
+
+    # Resultado final
+    pedidos = query.all()
+
+    return render_template('admin/pedido/pedido.html', pedidos=pedidos, filtro_status=filtro_status, ordenar=ordenar, campo_busca=campo_busca, termo_busca=termo_busca)
 
 
 
@@ -21,10 +50,11 @@ def visualizar_pedidos():
 def finalizar_pedido(pedido_id):
     pedido = Pedido.query.get_or_404(pedido_id)
     if pedido.status != 'pendente':
-        return redirect(url_for('admin.visualizar_pedidos'))
+        return redirect(url_for('pedido.visualizar_pedidos'))
     
     try:
         pedido.status = 'retirado'
+        pedido.data_retirada = datetime.now()
         db.session.commit()
         return redirect(url_for('pedido.visualizar_pedidos', toast=f'Pedido #{pedido.id} marcado como retirado!'))
     except Exception as e:
@@ -37,10 +67,11 @@ def finalizar_pedido(pedido_id):
 def cancelar_pedido(pedido_id):
     pedido = Pedido.query.get_or_404(pedido_id)
     if pedido.status != 'pendente':
-        return redirect(url_for('admin.visualizar_pedidos'))
+        return redirect(url_for('pedido.visualizar_pedidos'))
     
     try:
         pedido.status = 'cancelado'
+        pedido.data_cancelamento = datetime.now()
         db.session.commit()
         return redirect(url_for('pedido.visualizar_pedidos', toast=f'Pedido #{pedido.id} foi cancelado com sucesso!'))
     except Exception as e:

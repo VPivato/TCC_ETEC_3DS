@@ -1,6 +1,75 @@
+html,
+body {
+    height: 100%;
+}
+
+body {
+    background-color: #eee !important;
+}
+
+main {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: start;
+    padding: 0 3rem;
+    gap: 1rem;
+}
+
+#esquerda {
+    height: 82vh;
+    width: 40%;
+    border-right: 4px dotted #cfcdda;
+    padding-right: 10px;
+}
+
+#principal-esquerda {
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 3px #02001a23;
+}
+
+.btn-container>div {
+    width: max-content;
+    display: inline;
+}
+
+#direita {
+    width: 100%;
+}
+
 .nenhum-pedido {
     background-color: #ceffbb !important;
     border: 1px solid #45b618 !important;
     color: #004b22 !important;
     box-shadow: 2px 2px 3px #02001a23 !important;
+}
+
+#container-pedidos {
+    max-height: 82vh;
+    overflow-y: auto;
+}
+
+@media (max-width: 1200px) {
+    main {
+        flex-direction: column;
+    }
+
+    #esquerda {
+        height: auto;
+        width: 100%;
+        border-right: none;
+        padding-right: 0;
+    }
+}
+
+@media (max-width: 650px) {
+    main {
+        padding: 0 1rem;
+    }
+
+    .card-footer .btn {
+        margin-bottom: 5px;
+    }
 }
