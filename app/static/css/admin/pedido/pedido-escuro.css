@@ -1,0 +1,34 @@
+body.modo-escuro {
+    background: #17041f;
+    background: linear-gradient(135deg, #17041f 0%, #08031f 100%);
+    color: #d0d0d0;
+}
+
+body.modo-escuro #principal-esquerda {
+    background: #211726;
+    background: linear-gradient(135deg, #211726 0%, #1d183d 100%);
+    box-shadow: 4px 4px 8px #20355a26;
+}
+
+body.modo-escuro .card {
+    background: #211726;
+    background: linear-gradient(135deg, #211726 0%, #1d183d 100%);
+    box-shadow: 4px 4px 8px #20355a26;
+}
+
+body.modo-escuro .card-body li {
+    background: #211726;
+    background: linear-gradient(170deg, #211726 0%, #1d183d 100%);
+}
+
+body.modo-escuro .card *:not(.badge) {
+    color: #d0d0d0 !important;
+}
+
+body.modo-escuro .card .badge {
+    text-shadow: 1px 1px 3px #000220;
+}
+
+body.modo-escuro #esquerda input, body.modo-escuro #esquerda select, body.modo-escuro #esquerda label {
+    background-color: #e1dbebd8 !important;
+}

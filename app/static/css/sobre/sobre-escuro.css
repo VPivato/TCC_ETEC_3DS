@@ -1,0 +1,23 @@
+body.modo-escuro {
+    background: #17041f;
+    background: linear-gradient(135deg, #17041f 0%, #08031f 100%);
+    color: #d0d0d0;
+}
+
+body.modo-escuro .cardcap {
+    background: #211726;
+    background: linear-gradient(135deg, #211726 0%, #1d183d 100%);
+    box-shadow: 4px 4px 8px #20355a26;
+}
+
+body.modo-escuro .card-img-top {
+    filter: invert(100%);
+}
+
+body.modo-escuro .txtspequenoscard {
+    color: #d0d0d0;
+}
+
+body.modo-escuro .sec {
+    background-color: #13553f;
+}

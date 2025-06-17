@@ -7,6 +7,7 @@
     <title>{% block title %}Base{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/shared/header.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/shared/painel_notificacao.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/shared/favicon.png') }}" type="image/x-icon">
     {% block extra_css %}{% endblock %}
 </head>
 

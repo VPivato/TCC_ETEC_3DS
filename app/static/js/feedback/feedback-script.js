@@ -6,3 +6,7 @@ textarea_feedback.addEventListener("input", () => {
     restante = tamanho_maximo - textarea_feedback.value.length
     contador_feedback.innerHTML = restante
 })
+
+if (localStorage.getItem('modo-escuro') === 'true') {
+    document.body.classList.add('modo-escuro')
+}
