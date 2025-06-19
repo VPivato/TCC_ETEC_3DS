@@ -3,7 +3,7 @@ from ..extensions import db
 
 class Pedido(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    id_usuario = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
+    id_usuario = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
     data_hora = db.Column(db.DateTime, default=datetime.now)
     data_retirada = db.Column(db.DateTime, nullable=True)
     data_cancelamento = db.Column(db.DateTime, nullable=True)

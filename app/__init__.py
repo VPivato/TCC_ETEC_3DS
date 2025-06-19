@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, session
 from .extensions import db
 from .models import *
 
@@ -10,6 +10,14 @@ def create_app():
     @app.template_filter('getattr')
     def get_attr(obj, attr_name):
         return getattr(obj, attr_name)
+    
+    @app.context_processor
+    def inject_user():
+        user_id = session.get('user_id')
+        if user_id:
+            usuario = Usuarios.query.get(user_id)
+            return dict(user_logado=usuario)
+        return dict(user_logado=None)
 
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 

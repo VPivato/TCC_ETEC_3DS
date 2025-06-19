@@ -83,7 +83,9 @@
                                 <button type="button" class="btn-adicionar-produto" {% if doce.estoque_produto==0 %}
                                     disabled {% endif %}
                                     onclick="adicionarProduto('{{ doce.id }}', '{{ doce.descricao_produto }}', '{{ doce.preco_produto }}', '{{ doce.estoque_produto }}')"
-                                    id="btn-produto-{{ doce.id }}">+</button>
+                                    id="btn-produto-{{ doce.id }}">
+                                    +
+                                </button>
                             </a>
                         </li>
                         {% endfor %}

@@ -27,6 +27,29 @@ botoes.forEach(botao => {
     })
 })
 
+document.getElementById('edit-pfp').addEventListener('click', function (e) {
+    e.preventDefault();
+    document.getElementById('foto-input').click();
+});
+document.getElementById('foto-perfil').addEventListener('click', () => {
+    document.getElementById('foto-input').click();
+});
+// Preview da imagem selecionada
+document.getElementById('foto-input').addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    const img = document.getElementById('foto-perfil');
+
+    if (file) {
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+            img.src = event.target.result;
+        }
+
+        reader.readAsDataURL(file);
+    }
+});
+
 // MODO ESCURO
 const modo_escuro_toggle = document.getElementById('modo-escuro-toggle')
 modo_escuro_toggle.addEventListener('change', () => {

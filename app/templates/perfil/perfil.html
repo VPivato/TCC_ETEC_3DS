@@ -2,15 +2,16 @@
 
 {% block title %}Perfil{% endblock %}
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/perfil/perfil-style.css')}}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/shared/header_relative.css')}}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/perfil/perfil-style.css')}}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/perfil/perfil-escuro.css')}}">
 {% endblock %}
 
 {% block content %}
 <div id="container">
     <aside id="esquerda">
         <div id="perfil-wrapper">
-            <img src="{{ url_for('static', filename='images/perfil/cat.jfif') }}" alt="" id="pfp">
+            <img src="{{ url_for('static', filename=user_logado.imagem_usuario) }}" alt="" id="pfp">
             <p id="nome-usuario">Fulano da Silva</p>
             <p id="rm-usuario">RM: {{ session["rm"]}}</p>
         </div>
@@ -63,12 +64,18 @@
         <div id="conteudo-geral" class="conteudo-pagina ativo">
             <div class="main-content">
                 <h1 id="titulo-gerais" class="titulo-conteudo">Informações Gerais</h1>
-                <div id="foto-perfil-wrapper">
-                    <img src="{{ url_for('static', filename='images/perfil/cat.jfif') }}" alt="" id="foto-perfil">
-                    <button id="edit-pfp">
-                        <img src="{{ url_for('static', filename='images/perfil/edit.png') }}" id="edit-icon-perfil">
-                    </button>
-                </div>
+
+                <form action="{{ url_for('perfil.upload_pfp') }}" method="POST" enctype="multipart/form-data">
+                    <div id="foto-perfil-wrapper">
+                        <img src="{{ url_for('static', filename=user_logado.imagem_usuario) }}" alt="Foto de perfil"
+                            id="foto-perfil">
+                        <input type="file" name="foto_perfil" id="foto-input" accept="image/*" style="display:none;">
+                        <button type="button" id="edit-pfp">
+                            <img src="{{ url_for('static', filename='images/perfil/edit.png') }}" id="edit-icon-perfil">
+                        </button>
+                    </div>
+                    <button type="submit" id="salvar-pfp">Salvar</button>
+                </form>
 
                 <form action="" method="POST" id="perfil-informacoes-basicas">
                     <label for="nome-perfil" class="label-opcao">Nome de usuário</label>
@@ -119,7 +126,7 @@
 
                 <p class="label-opcao">Desabilitar notificações</p>
                 <label class="switch">
-                    <input type="checkbox" id="notif-toggle" {% if not user.notificacoes_ativas %}checked{% endif %}>
+                    <input type="checkbox" id="notif-toggle" {% if not user_logado.notificacoes_ativas %}checked{% endif %}>
                     <span class="slider round"></span>
                 </label>
             </div>

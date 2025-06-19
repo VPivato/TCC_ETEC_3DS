@@ -24,7 +24,7 @@ def finalizar_compra():
     if not isinstance(carrinho, dict) or not carrinho:
         return jsonify({'erro': 'Carrinho vazio ou formato incorreto'}), 400
 
-    usuario = Usuarios.query.filter_by(email_usuario=session.get('email')).first()
+    usuario = Usuarios.query.get(session['user_id'])
     if not usuario:
         return jsonify({'erro': 'Usuário não autenticado'}), 403
 

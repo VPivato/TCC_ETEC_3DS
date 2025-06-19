@@ -40,7 +40,7 @@
                 {% include 'shared/painel_notificacao.html' %}
                 {% else %}
                 <button id="user-icon" class="button">
-                    <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Usuário" />
+                    <img src="{{ url_for('static', filename=(user_logado.imagem_usuario if user_logado else 'uploads/pfp/default.jpg')) }}" alt="Usuário" />
                 </button>
                 {% endif %}
             </button>

@@ -11,6 +11,7 @@ class Usuarios(db.Model):
     codigo_etec_usuario = db.Column(db.String(30), nullable=False)
     hash_senha_usuario = db.Column(db.String(100), nullable=False)
     data_criacao_usuario = db.Column(db.DateTime, default=datetime.now)
+    imagem_usuario = db.Column(db.String(255), nullable=True, default='uploads/pfp/default.jpg')
 
     notificacoes_ativas = db.Column(db.Boolean, default=True)
     ultima_notificacao_vista = db.Column(db.Boolean, default=False)

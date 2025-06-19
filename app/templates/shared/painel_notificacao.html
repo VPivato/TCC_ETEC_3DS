@@ -2,7 +2,7 @@
     <div id="sino">
         <img src="{{ url_for('static', filename='images/perfil/notif.png') }}" id="notif-icon-perfil"
             class="icon-perfil">
-        {% if not user.ultima_notificacao_vista and user.notificacoes_ativas %}
+        {% if not user_logado.ultima_notificacao_vista and user_logado.notificacoes_ativas %}
         <span id="notif-contador"></span>
         {% endif %}
     </div>
