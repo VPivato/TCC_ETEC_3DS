@@ -62,7 +62,7 @@ if (localStorage.getItem('modo-escuro') === 'true') {
     modo_escuro_toggle.checked = true
 }
 
-// DESATIVAR NOTIFCAÇÕES
+// DESATIVAR NOTIFICAÇÕES
 const desativar_notificacoes_toggle = document.querySelector("#notif-toggle")
 const notif_container = document.querySelector("#notif-container")
 desativar_notificacoes_toggle.addEventListener("change", () => {
@@ -118,10 +118,41 @@ if (localStorage.getItem('desativar-notificacoes') === 'true') {
 
 // CONFIRMAÇÃO SAIR 
 document.querySelector('#sair-wrapper').addEventListener("click", () => {
-    if (confirm("Deseja mesmo sair?")) {
-        window.location.href = "sair"
-    }
-    else {
-        window.location.href = ""
-    }
+    Swal.fire({
+        title: 'Deseja mesmo sair?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Sair',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            window.location.href = "sair"
+        }
+        else {
+            window.location.href = ""
+        }
+    });
 });
+
+//CONFIRMAÇÃO ERXCLUIR CONTA
+document.getElementById('form-excluir-conta').addEventListener('submit', function (e) {
+    e.preventDefault()
+    Swal.fire({
+        title: 'Excluir sua conta?',
+        icon: 'warning',
+        text: 'Essa ação é IRREVERSÍVEL',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Sim, excluir',
+        cancelButtonText: 'Não, voltar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            e.target.submit()
+        }
+        else {
+            window.location.href = ""
+        }
+    })
+})

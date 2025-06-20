@@ -14,11 +14,12 @@ def enviar_feedback():
         nome_feedback = request.form["nome_feedback"]
         email_feedback = request.form["email_feedback"]
         tipo_feedback = request.form["tipo_feedback"]
+        assunto_feedback = request.form['assunto_feedback']
         texto_feedback = request.form["texto_feedback"]
-        novo_feedback = Feedbacks(nome_feedback=nome_feedback, email_feedback=email_feedback, tipo_feedback=tipo_feedback, texto_feedback=texto_feedback)
+        novo_feedback = Feedbacks(nome_feedback=nome_feedback, email_feedback=email_feedback, tipo_feedback=tipo_feedback, assunto_feedback=assunto_feedback, texto_feedback=texto_feedback)
         try:
             db.session.add(novo_feedback)
             db.session.commit()
-            return "Duvida/Reclamação enviada com sucesso!"
+            return 'OK'
         except Exception as e:
             return f"Error: {e}"

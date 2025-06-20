@@ -257,28 +257,54 @@ document.getElementById('excluir-varios').addEventListener("click", (e) => {
         .map(cb => parseInt(cb.value));
 
     if (selecionados.length === 0) {
-        alert("Selecione pelo menos um registro.");
+        Swal.fire({
+            title: 'Nada selecionado.',
+            icon: 'warning',
+            text: 'Selecione ao menos um registro',
+            confirmButtonColor: '#198754',
+            confirmButtonText: 'OK',
+        })
         return;
     }
 
-    if (!confirm(`Deseja excluir ${selecionados.length} registro(s)?`)) return;
+    Swal.fire({
+        title: `Excluir ${selecionados.length} registros?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        confirmButtonText: 'Sim, excluir',
+        cancelButtonText: 'Não, voltar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('/database/excluir_varios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ modelo, ids: selecionados })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.sucesso) {
+                        Swal.fire({
+                            toast: true,
+                            position: 'bottom-end',
+                            icon: 'success',
+                            title: data.mensagem,
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+                        carregarTabela(modelo, checkboxVisiveis); // recarrega a tabela
+                    } else {
+                        alert(data.erro || "Erro desconhecido.");
+                    }
 
-    fetch('/database/excluir_varios', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ modelo, ids: selecionados })
-    })
-        .then(res => res.json())
-        .then(data => {
-            if (data.sucesso) {
-                alert(data.mensagem);
-                carregarTabela(modelo, checkboxVisiveis); // recarrega a tabela
-            } else {
-                alert(data.erro || "Erro desconhecido.");
-            }
-
-            document.getElementById('cancelar-selecao').click();
-        });
+                    document.getElementById('cancelar-selecao').click();
+                });
+        }
+        else {
+            return
+        }
+    });
 })
 
 document.getElementById("cancelar-selecao").addEventListener('click', () => {

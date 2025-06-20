@@ -13,7 +13,7 @@
         <div id="perfil-wrapper">
             <img src="{{ url_for('static', filename=user_logado.imagem_usuario) }}" alt="" id="pfp">
             <p id="nome-usuario">Fulano da Silva</p>
-            <p id="rm-usuario">RM: {{ session["rm"]}}</p>
+            <p id="rm-usuario">RM: {{ user_logado.nome_usuario }}</p>
         </div>
 
         <section id="lower-section">
@@ -126,7 +126,8 @@
 
                 <p class="label-opcao">Desabilitar notificações</p>
                 <label class="switch">
-                    <input type="checkbox" id="notif-toggle" {% if not user_logado.notificacoes_ativas %}checked{% endif %}>
+                    <input type="checkbox" id="notif-toggle" {% if not user_logado.notificacoes_ativas %}checked{% endif
+                        %}>
                     <span class="slider round"></span>
                 </label>
             </div>
@@ -135,8 +136,7 @@
                 <h1 id="titulo-perigo" class="titulo-conteudo">Zona perigosa</h1>
 
                 <p class="label-opcao">Excluir conta?</p>
-                <form method="POST" action="{{ url_for('perfil.excluir_perfil') }}"
-                    onsubmit="return confirm('Tem certeza que deseja excluir sua conta? ESSA AÇÃO É IRREVERSÍVEL');">
+                <form action="{{ url_for('perfil.excluir_perfil') }}" method="POST" id="form-excluir-conta">
                     <button type="submit" id="excluir-perfil" class="btn btn-danger">Excluir</button>
                 </form>
             </div>

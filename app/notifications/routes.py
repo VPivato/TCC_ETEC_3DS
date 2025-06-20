@@ -25,7 +25,7 @@ def enviar():
 
 
 
-@notificacao_bp.route('/excluir/<int:id>', methods=['POST', 'GET'])
+@notificacao_bp.route('/excluir/<int:id>', methods=['POST'])
 def excluir_notificacao(id:int):
     excluir_notificacao = Notificacoes.query.get_or_404(id)
     try:
@@ -54,7 +54,7 @@ def editar_notificacao(id):
 
 @notificacao_bp.route('/marcar_como_vista', methods=["POST", "GET"])
 def marcar_como_vista():
-    user = Usuarios.query.filter_by(email_usuario=session["email"]).first()
+    user = Usuarios.query.get(session['user_id'])
     if user:
         user.ultima_notificacao_vista = True
         db.session.commit()
@@ -68,7 +68,7 @@ def atualizar_notificacoes():
     data = request.get_json()
     estado = data.get('notificacoes_ativas')
 
-    usuario = Usuarios.query.filter_by(email_usuario=session["email"]).first()
+    usuario = Usuarios.query.get(session['user_id'])
     if usuario:
         usuario.notificacoes_ativas = estado
         db.session.commit()
