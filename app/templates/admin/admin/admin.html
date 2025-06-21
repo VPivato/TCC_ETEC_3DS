@@ -1,0 +1,336 @@
+{% extends 'shared/base.html' %}
+
+{% block title %}Painel administrativo{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/shared/header_relative.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin/admin-style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/admin/admin-escuro.css') }}">
+{% endblock %}
+
+{% block content %}
+<main>
+    <!-- Sidebar -->
+    <div class="sidebar d-flex flex-column">
+        <h3 class="text-white text-center py-3 border-bottom mt-4">Admin</h3>
+        <a href="javascript:void(0)" class="active"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        <a href="{{ url_for('notificacao.controle_notificacao') }}" target="_blank"><i class="bi bi-bell"></i>
+            Notificações</a>
+        <a href="{{ url_for('produto.produto') }}" target="_blank"><i class="bi bi-box-seam"></i> Produtos</a>
+        <a href="{{ url_for('pedido.visualizar_pedidos') }}" target="_blank"><i class="bi bi-receipt"></i> Pedidos</a>
+        <a href="{{ url_for('database.database') }}" target="_blank"><i class="bi bi-database"></i> Banco de Dados</a>
+        <a href="javascript:void(0)" id="sair-btn" class="mt-auto border-top"><i class="bi bi-box-arrow-right"></i> Sair</a>
+    </div>
+
+    <!-- Conteúdo Principal -->
+    <div class="content">
+        <h1 class="mb-4">Dashboard Administrativo</h1>
+        <p class="lead">Bem-vindo! Aqui você pode acompanhar informações gerais sobre várias áreas do sistema.</p>
+        <!-- Dashboard Swiper -->
+        <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+
+                <!-- Slide 1 - Notificações -->
+                <div class="swiper-slide">
+                    <div class="card shadow h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title mb-4">
+                                <i class="bi bi-bell"></i> Notificações
+                            </h5>
+
+                            <!-- Cards principais -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-6">
+                                    <div class="card text-bg-primary shadow">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-white">Total de Notificações</h6>
+                                            <p class="fs-4 fw-bold mb-0 text-white">48</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card text-bg-secondary shadow">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-white">Última Notificação</h6>
+                                            <p class="fs-5 fw-semibold mb-0 text-white">Há 2 dias</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Lista das últimas notificações -->
+                            <div class="mb-4">
+                                <h6 class="mb-3">Últimas Notificações Enviadas</h6>
+                                <div class="list-group">
+
+                                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            <div class="fw-semibold">Aviso de manutenção</div>
+                                            Sistema ficará indisponível amanhã das 2h às 4h.
+                                        </div>
+                                        <span class="badge bg-light text-dark rounded-pill">Hoje</span>
+                                    </div>
+
+                                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            <div class="fw-semibold">Nova funcionalidade</div>
+                                            Adicionamos a opção de rastrear seus pedidos em tempo real.
+                                        </div>
+                                        <span class="badge bg-light text-dark rounded-pill">Ontem</span>
+                                    </div>
+
+                                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            <div class="fw-semibold">Promoção especial</div>
+                                            Aproveite 10% de desconto nos produtos selecionados.
+                                        </div>
+                                        <span class="badge bg-light text-dark rounded-pill">Há 4 dias</span>
+                                    </div>
+
+                                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            <div class="fw-semibold">Aviso de manutenção</div>
+                                            Sistema ficará indisponível amanhã das 1h às 2h.
+                                        </div>
+                                        <span class="badge bg-light text-dark rounded-pill">Há 6 dias</span>
+                                    </div>
+
+                                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            <div class="fw-semibold">Nova funcionalidade</div>
+                                            Adicionamos a opção de gerar pdf para o histórico de pedidos.
+                                        </div>
+                                        <span class="badge bg-light text-dark rounded-pill">Há 1 semanas</span>
+                                    </div>
+
+                                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                                        <div class="ms-2 me-auto">
+                                            <div class="fw-semibold">Promoção especial</div>
+                                            Aproveite 10% de desconto nos produtos salgados até o final de semana.
+                                        </div>
+                                        <span class="badge bg-light text-dark rounded-pill">Há 2 semanas</span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 2 - Produtos -->
+                <div class="swiper-slide">
+                    <div class="card shadow h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title mb-4">
+                                <i class="bi bi-box-seam"></i> Produtos
+                            </h5>
+
+                            <!-- Indicadores principais -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-6 col-md-4">
+                                    <div class="card text-bg-primary shadow">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-white">Total de Produtos</h6>
+                                            <p class="fs-4 fw-bold mb-0 text-white">284</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="card text-bg-danger shadow">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-white">Produtos Esgotados</h6>
+                                            <p class="fs-4 fw-bold mb-0 text-white">12</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="card text-bg-secondary shadow">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-white">Estoque Baixo (≤10)</h6>
+                                            <p class="fs-4 fw-bold mb-0 text-white">35</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Produtos mais vendidos -->
+                            <div class="mb-4">
+                                <h6 class="mb-3">Mais Vendidos (Último Mês)</h6>
+                                <div class="d-flex gap-3 flex-wrap">
+                                    <div class="p-3 bg-light rounded shadow-sm flex-grow-1">
+                                        <strong>Produto A</strong><br>
+                                        <small>120 unidades</small>
+                                    </div>
+                                    <div class="p-3 bg-light rounded shadow-sm flex-grow-1">
+                                        <strong>Produto B</strong><br>
+                                        <small>98 unidades</small>
+                                    </div>
+                                    <div class="p-3 bg-light rounded shadow-sm flex-grow-1">
+                                        <strong>Produto C</strong><br>
+                                        <small>85 unidades</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Gráfico -->
+                            <div class="grafico-container flex-grow-1">
+                                <canvas id="grafico-produtos"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 3 - Pedidos -->
+                <div class="swiper-slide">
+                    <div class="card shadow h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title mb-4">
+                                <i class="bi bi-receipt"></i> Pedidos
+                            </h5>
+
+                            <!-- Indicadores principais em cards -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-6 col-md-3">
+                                    <div class="card text-bg-primary shadow">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-white">Total</h6>
+                                            <p class="fs-4 fw-bold mb-0 text-white">124</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="card text-bg-success shadow">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-white">Finalizados</h6>
+                                            <p class="fs-4 fw-bold mb-0 text-white">98</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="card text-bg-warning shadow">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-white">Pendentes</h6>
+                                            <p class="fs-4 fw-bold mb-0 text-white">21</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="card text-bg-danger shadow">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-white">Cancelados</h6>
+                                            <p class="fs-4 fw-bold mb-0 text-white">5</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Indicadores financeiros e operacionais -->
+                            <div class="row text-center mb-4">
+                                <div class="col">
+                                    <h6>Valor Total</h6>
+                                    <p class="fs-5 fw-semibold">R$ 25.000,00</p>
+                                </div>
+                                <div class="col">
+                                    <h6>Taxa Cancelamento</h6>
+                                    <p class="fs-5 fw-semibold text-danger">4%</p>
+                                </div>
+                                <div class="col">
+                                    <h6>Variação mensal</h6>
+                                    <p class="fs-5 fw-semibold">+4.5%</p>
+                                </div>
+                            </div>
+
+                            <!-- Gráfico -->
+                            <div class="grafico-container flex-grow-1">
+                                <canvas id="grafico-pedidos"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Slide 4 - Banco de Dados -->
+                <div class="swiper-slide">
+                    <div class="card shadow h-100">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title mb-4">
+                                <i class="bi bi-database"></i> Banco de Dados
+                            </h5>
+
+                            <!-- Cards principais -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-6 col-md-4">
+                                    <div class="card text-bg-primary shadow">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-white">Usuários Cadastrados</h6>
+                                            <p class="fs-4 fw-bold mb-0 text-white">320</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-4">
+                                    <div class="card text-bg-success shadow">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-white">Feedbacks Recebidos</h6>
+                                            <p class="fs-4 fw-bold mb-0 text-white">128</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <div class="card text-bg-secondary shadow">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-white">Tabelas no Banco</h6>
+                                            <p class="fs-4 fw-bold mb-0 text-white">12</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Distribuição de Feedbacks -->
+                            <div class="mb-4">
+                                <h6 class="mb-3">Distribuição de Feedbacks</h6>
+                                <div class="d-flex gap-3 flex-wrap">
+
+                                    <div class="p-3 bg-light rounded shadow-sm flex-grow-1 text-center">
+                                        <strong>Dúvida</strong><br>
+                                        <small>35%</small>
+                                    </div>
+
+                                    <div class="p-3 bg-light rounded shadow-sm flex-grow-1 text-center">
+                                        <strong>Reclamação</strong><br>
+                                        <small>25%</small>
+                                    </div>
+
+                                    <div class="p-3 bg-light rounded shadow-sm flex-grow-1 text-center">
+                                        <strong>Sugestão</strong><br>
+                                        <small>20%</small>
+                                    </div>
+
+                                    <div class="p-3 bg-light rounded shadow-sm flex-grow-1 text-center">
+                                        <strong>Elogio</strong><br>
+                                        <small>20%</small>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <!-- Gráfico de crescimento -->
+                            <div class="grafico-container">
+                                <canvas id="grafico-usuarios"></canvas>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+        </div>
+    </div>
+    </div>
+</main>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin/admin/admin-script.js') }}"></script>
+{% endblock %}

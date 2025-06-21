@@ -136,7 +136,7 @@ document.querySelector('#sair-wrapper').addEventListener("click", () => {
     });
 });
 
-//CONFIRMAÇÃO ERXCLUIR CONTA
+//CONFIRMAÇÃO EXCLUIR CONTA
 document.getElementById('form-excluir-conta').addEventListener('submit', function (e) {
     e.preventDefault()
     Swal.fire({

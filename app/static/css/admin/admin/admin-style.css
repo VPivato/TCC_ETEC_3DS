@@ -1,0 +1,115 @@
+html,
+body {
+    height: 100%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    margin: 0;
+    background-color: #eee;
+    overflow-y: scroll;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+}
+
+.sidebar {
+    width: 250px;
+    background: #1C5C20;
+    background: linear-gradient(180deg, rgba(28, 92, 32, 1) 40%, rgba(33, 112, 26, 1) 100%);
+    flex-shrink: 0;
+}
+
+.sidebar a {
+    color: white;
+    padding: 15px;
+    display: block;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    transition: 0.1s ease-out;
+    background-color: #278d2e;
+    cursor: pointer;
+}
+
+.sidebar a.active {
+    background-color: #268c2d7c
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    padding: 20px;
+}
+
+.swiper {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.swiper-wrapper {
+    flex: 1;
+}
+
+.swiper-slide {
+    width: 100% !important;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.swiper-slide:active {
+    cursor: grabbing;
+}
+
+.swiper-slide .card {
+    width: 90%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Pagination e navigation fora dos cards */
+.swiper-pagination {
+    position: relative;
+    margin-top: 10px;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+    color: #343a40;
+}
+
+.card-title i {
+    margin-right: 8px;
+}
+
+.row h6 {
+    color: #6c757d;
+    font-weight: 600;
+}
+
+canvas {
+    max-height: 375px;
+}
+
+.list-group-item .badge {
+    min-width: 70px;
+    text-align: center;
+    padding: 5px 10px;
+    box-shadow: 2px 2px 3px #03001a1c;
+}
