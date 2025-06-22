@@ -10,7 +10,7 @@ body.modo-escuro #form-container {
     box-shadow: 4px 4px 8px #20355a26;
 }
 
-body.modo-escuro #form-container textarea {
+body.modo-escuro #form-container textarea, body.modo-escuro #form-container #titulo-notificacao {
     background-color: #e1dbebd8 !important;
 }
 

@@ -85,6 +85,20 @@ h1 {
     height: max-content;
 }
 
+#titulo-notificacao {
+    background-color: #ebebeb;
+    height: 40px;
+    width: 100%;
+    font-size: 1.3rem;
+    padding-left: 5px;
+    border-radius: 10px;
+    outline: none;
+    border: none;
+    margin: 0 0 15px 0;
+    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.15);
+    letter-spacing: normal;
+}
+
 #mensagem-notificacao {
     background-color: #ebebeb;
     height: 350px;
@@ -103,6 +117,7 @@ h1 {
 #visualizacao-tabela {
     overflow: auto;
     max-height: 75vh;
+    max-width: 60%;
     box-shadow: 0 0 8px 5px rgba(0, 0, 0, .2);
     border-radius: 15px 15px 0 0;
 }
@@ -155,7 +170,8 @@ tbody tr:hover {
 }
 
 a,
-.form-excluir button, .btn-editar {
+.form-excluir button,
+.btn-editar {
     font-weight: normal;
     display: block;
     font-size: .9rem;
@@ -173,7 +189,8 @@ a:visited {
 }
 
 a:hover,
-.form-excluir button:hover, .btn-editar:hover {
+.form-excluir button:hover,
+.btn-editar:hover {
     color: red !important;
     opacity: 1;
 }
@@ -191,6 +208,10 @@ a:hover,
     #form-container {
         width: 50%;
         margin-bottom: 30px;
+    }
+
+    #visualizacao-tabela {
+        max-width: 100%;
     }
 
     table {

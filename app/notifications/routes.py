@@ -17,8 +17,9 @@ def controle_notificacao():
 def enviar():
     if request.method == "POST":
         Usuarios.query.update({Usuarios.ultima_notificacao_vista: False})
+        titulo = request.form['titulo-notificacao']
         mensagem = request.form["mensagem-notificacao"]
-        nova_notificacao = Notificacoes(mensagem_notificacao=mensagem)
+        nova_notificacao = Notificacoes(titulo_notificacao=titulo, mensagem_notificacao=mensagem)
         db.session.add(nova_notificacao)
         db.session.commit()
     return redirect(url_for("notificacao.controle_notificacao"))

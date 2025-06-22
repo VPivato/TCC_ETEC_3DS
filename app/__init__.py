@@ -30,7 +30,7 @@ def create_app():
     from .perfil.routes import perfil_bp
     from .feedback.routes import feedback_bp
     
-    from .admin.routes import admin_bp
+    from .admin.admin.routes import admin_bp
     from .admin.database.routes import database_bp
     from .notifications.routes import notificacao_bp
     from .admin.produto.routes import produto_bp

@@ -16,7 +16,11 @@
         <div id="form-container">
             <h1>Controle de Notificações</h1>
             <form action="{{ url_for('notificacao.enviar')}}" method="POST" id="form-notificacao">
-                <textarea name="mensagem-notificacao" id="mensagem-notificacao" maxlength="200"></textarea>
+                <label for="titulo-notificacao">Título</label>
+                <input type="text" id="titulo-notificacao" name="titulo-notificacao" maxlength="50" required>
+
+                <label for="mensagem-notificacao"> Mensagem</label>
+                <textarea name="mensagem-notificacao" id="mensagem-notificacao" maxlength="200" required></textarea>
                 <div id="btn-container">
                     <button type="submit" id="enviar">Enviar</button>
                     <button type="reset" id="cancelar">Cancelar</button>
