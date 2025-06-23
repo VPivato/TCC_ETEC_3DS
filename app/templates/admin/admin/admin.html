@@ -124,9 +124,9 @@
                             <!-- Produtos mais vendidos -->
                             <div class="mb-4">
                                 <h6 class="mb-3">Mais Vendidos (Último Mês)</h6>
-                                <div class="d-flex gap-3 flex-wrap">
+                                <div class="d-flex gap-3 flex-wrap" id="mais-vendidos-container">
                                     {% for nome, quantidade in mais_vendidos %}
-                                    <div class="p-3 bg-light rounded shadow-sm flex-grow-1">
+                                    <div class="p-3 bg-light rounded shadow-sm flex-grow-1 mais-vendidos-item">
                                         <strong>{{ nome }}</strong><br>
                                         <small>{{ quantidade }} unidades</small>
                                     </div>
@@ -263,24 +263,24 @@
                             <!-- Distribuição de Feedbacks -->
                             <div class="mb-4">
                                 <h6 class="mb-3">Distribuição de Feedbacks</h6>
-                                <div class="d-flex gap-3 flex-wrap">
+                                <div class="d-flex gap-3 flex-wrap" id="distribuicao-feedbacks-container">
 
-                                    <div class="p-3 bg-light rounded shadow-sm flex-grow-1 text-center">
+                                    <div class="p-3 bg-light rounded shadow-sm flex-grow-1 text-center distribuicao-feedbacks-item">
                                         <strong>Dúvida</strong><br>
                                         <small>{{ distribuicao_feedback['duvida'] }}%</small>
                                     </div>
 
-                                    <div class="p-3 bg-light rounded shadow-sm flex-grow-1 text-center">
+                                    <div class="p-3 bg-light rounded shadow-sm flex-grow-1 text-center distribuicao-feedbacks-item">
                                         <strong>Reclamação</strong><br>
                                         <small>{{ distribuicao_feedback['reclamacao'] }}%</small>
                                     </div>
 
-                                    <div class="p-3 bg-light rounded shadow-sm flex-grow-1 text-center">
+                                    <div class="p-3 bg-light rounded shadow-sm flex-grow-1 text-center distribuicao-feedbacks-item">
                                         <strong>Sugestão</strong><br>
                                         <small>{{ distribuicao_feedback['sugestao'] }}%</small>
                                     </div>
 
-                                    <div class="p-3 bg-light rounded shadow-sm flex-grow-1 text-center">
+                                    <div class="p-3 bg-light rounded shadow-sm flex-grow-1 text-center distribuicao-feedbacks-item">
                                         <strong>Elogio</strong><br>
                                         <small>{{ distribuicao_feedback['elogio'] }}%</small>
                                     </div>

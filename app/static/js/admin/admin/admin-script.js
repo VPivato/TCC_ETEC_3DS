@@ -1,3 +1,7 @@
+if (localStorage.getItem('modo-escuro') === 'true') {
+    document.body.classList.add('modo-escuro')
+}
+
 const swiper = new Swiper('.mySwiper', {
     slidesPerView: 1,
     spaceBetween: 30,
