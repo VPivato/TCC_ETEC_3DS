@@ -101,6 +101,7 @@
     border-right: 2px solid #ccc;
     font-size: 1rem;
     text-align: justify;
+    word-wrap: anywhere;
 }
 
 .notificacao:nth-child(even) {

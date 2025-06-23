@@ -62,7 +62,8 @@
                             <!-- Lista das últimas notificações -->
                             <div class="mb-4">
                                 <h6 class="mb-3">Últimas Notificações Enviadas</h6>
-                                <div class="list-group overflow-auto" style="max-height: 450px;">
+                                <div class="list-group overflow-auto" style="max-height: 450px;"
+                                    id="lista-ultimas-notificacoes">
                                     {% for n in lista_notificacoes %}
                                     <div class="list-group-item d-flex justify-content-between align-items-start">
                                         <div class="ms-2 me-auto" style="word-wrap: anywhere;">
@@ -139,6 +140,10 @@
                                 data-values_produtos='{{ values_produtos | tojson | safe }}'>
                                 <canvas id="grafico-produtos"></canvas>
                             </div>
+
+                            <div class="grafico-indisponivel text-muted d-none">
+                                Gráfico indisponível para telas muito pequenas.
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -210,6 +215,10 @@
                                 data-labels_pedidos='{{ semanas | tojson | safe }}'
                                 data-values_pedidos='{{ pedidos_por_semana | tojson | safe }}'>
                                 <canvas id="grafico-pedidos"></canvas>
+                            </div>
+
+                            <div class="grafico-indisponivel text-muted d-none">
+                                Gráfico indisponível para telas muito pequenas.
                             </div>
                         </div>
                     </div>
@@ -285,14 +294,21 @@
                                 data-values_usuarios='{{ usuarios_por_mes_atuais | tojson | safe }}'>
                                 <canvas id="grafico-usuarios"></canvas>
                             </div>
+
+                            <div class="grafico-indisponivel text-muted d-none">
+                                Gráfico indisponível para telas muito pequenas.
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Navigation Buttons -->
+            <!-- Botões de navegação -->
             <div class="swiper-button-prev"></div>
             <div class="swiper-button-next"></div>
+
+            <!-- Pontos de paginação -->
+            <div class="swiper-pagination"></div>
         </div>
     </div>
     </div>
@@ -302,4 +318,4 @@
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/admin/admin/admin-script.js') }}"></script>
-{% endblock %}
+{% endblock %}''

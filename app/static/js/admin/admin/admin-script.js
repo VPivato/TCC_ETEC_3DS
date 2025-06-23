@@ -8,6 +8,11 @@ const swiper = new Swiper('.mySwiper', {
         prevEl: '.swiper-button-prev'
     },
 
+    pagination: {
+        el: '.swiper-pagination',
+        clickable: true,
+    },
+
     observer: true,
     observeParents: true,
 });
