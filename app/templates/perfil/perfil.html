@@ -105,6 +105,40 @@
         <div id="conteudo-comprovantes" class="conteudo-pagina">
             <div class="main-content">
                 <h1 id="titulo-comprovantes" class="titulo-conteudo">Comprovantes</h1>
+
+                {% if pedidos %}
+                <div class="row row-cols-1 row-cols-md-1 g-4">
+                    {% for pedido in pedidos %}
+                    <div class="col">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Pedido #{{ pedido.id }}</h5>
+                                <p class="card-text">
+                                    Data: {{ pedido.data_hora.strftime('%d/%m/%Y %H:%M') }}<br>
+                                    Total: R$ {{ '%.2f'|format(pedido.total) }}<br>
+                                    Status:
+                                    {% if pedido.status == 'retirado' %}
+                                    <span class="badge bg-success">Retirado</span>
+                                    {% elif pedido.status == 'cancelado' %}
+                                    <span class="badge bg-danger">Cancelado</span>
+                                    {% else %}
+                                    <span class="badge bg-warning text-dark">Pendente</span>
+                                    {% endif %}
+                                </p>
+                                <a href="{{ url_for('perfil.baixar_comprovante', pedido_id=pedido.id) }}"
+                                    class="btn btn-outline-primary btn-sm">
+                                    Baixar comprovante (PDF)
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="alert alert-info" role="alert">
+                    Você ainda não fez nenhum pedido.
+                </div>
+                {% endif %}
             </div>
         </div>
 

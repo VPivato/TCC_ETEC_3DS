@@ -243,6 +243,8 @@ input:disabled {
 
 .conteudo-pagina.ativo {
     display: block;
+    max-height: 88vh;
+    overflow: auto;
 }
 
 .switch {
