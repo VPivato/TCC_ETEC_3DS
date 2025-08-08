@@ -115,25 +115,113 @@ async function finalizarCompra() {
         return;
     }
 
+    // Mostra confirmação com o total
+    const confirmResult = await Swal.fire({
+        title: 'Confirmar compra?',
+        html: `<strong>Total:</strong> R$ ${total.toFixed(2)}<br><small>Deseja prosseguir?</small>`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Confirmar',
+        cancelButtonText: 'Cancelar'
+    });
+
+    if (!confirmResult.isConfirmed) return;
+
+    // Indica processamento
+    Swal.fire({
+        title: 'Processando pagamento...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
     try {
         const resposta = await fetch('/loja/finalizar-compra', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ carrinho })
         });
 
         const resultado = await resposta.json();
+        Swal.close();
 
         if (resposta.ok) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Compra finalizada!',
-                confirmButtonText: 'OK',
-            }).then(() => {
-                location.reload();
+            // Monta HTML do recibo para o modal
+            const pedido = resultado.pedido;
+            let itensHtml = '';
+            pedido.itens.forEach(it => {
+                itensHtml += `
+                    <div class="d-flex justify-content-between border-bottom py-2">
+                        <div>
+                            <div class="fw-bold">${it.descricao}</div>
+                            <div class="small text-muted">R$ ${parseFloat(it.preco_unitario).toFixed(2)} cada</div>
+                        </div>
+                        <div class="text-end">
+                            <div>Qtd: ${it.quantidade}</div>
+                            <div class="fw-bold">R$ ${parseFloat(it.subtotal).toFixed(2)}</div>
+                        </div>
+                    </div>
+                `;
             });
+
+            const htmlComprovante = `
+                <div class="container-fluid p-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h5 class="mb-1">FoodPay</h5>
+                <small>Comprovante de Compra</small>
+            </div>
+            <div class="text-end">
+                <div>Pedido: <strong>#${pedido.id}</strong></div>
+                <div>Data: ${new Date(pedido.data_hora).toLocaleString('pt-BR')}</div>
+                <div>Cliente: <strong>${pedido.usuario.nome}</strong></div>
+                <div>Email: <small>${pedido.usuario.email}</small></div>
+            </div>
+        </div>
+
+        <table class="table table-sm table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th>Produto</th>
+                    <th>Qtd</th>
+                    <th class="text-end">Valor Unit.</th>
+                    <th class="text-end">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${pedido.itens.map(it => `
+                    <tr>
+                        <td>${it.descricao}</td>
+                        <td>${it.quantidade}</td>
+                        <td class="text-end">R$ ${parseFloat(it.preco_unitario).toFixed(2)}</td>
+                        <td class="text-end">R$ ${parseFloat(it.subtotal).toFixed(2)}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+
+        <div class="text-end fw-bold fs-5 mt-3">
+            Total: R$ ${parseFloat(pedido.total).toFixed(2)}
+        </div>
+    </div>
+            `;
+
+            // Insere conteúdo no modal e configura link do botão de baixar
+            document.getElementById('conteudo-comprovante').innerHTML = htmlComprovante;
+            const btnPdf = document.getElementById('btnBaixarPDF');
+            btnPdf.href = resultado.comprovante_url;
+            btnPdf.setAttribute('target', '_blank');
+
+            // abre o modal bootstrap
+            const modalEl = document.getElementById('modalComprovante');
+            const bsModal = new bootstrap.Modal(modalEl);
+            bsModal.show();
+
+            // limpa carrinho e atualiza a UI
+            carrinho = {};
+            atualizarCarrinho();
+
         } else {
             Swal.fire({
                 icon: 'error',
@@ -143,6 +231,7 @@ async function finalizarCompra() {
         }
     } catch (erro) {
         console.error('Erro na requisição:', erro);
+        Swal.close();
         Swal.fire({
             icon: 'error',
             title: 'Erro de rede',

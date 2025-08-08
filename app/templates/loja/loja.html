@@ -180,6 +180,26 @@
     </div>
 </div>
 
+<div class="modal fade" id="modalComprovante" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content shadow-lg">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Comprovante de Compra</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="conteudo-comprovante">
+                <!-- Conteúdo gerado via JS -->
+            </div>
+            <div class="modal-footer">
+                <a id="btnBaixarPDF" href="#" class="btn btn-outline-primary" target="_blank">
+                    <i class="bi bi-download"></i> Baixar PDF
+                </a>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <button class="btn btn-primary position-fixed bottom-0 end-0 m-3 d-md-none" style="z-index: 100;" data-bs-toggle="modal"
     data-bs-target="#carrinhoModal">
     <i class="bi bi-cart4"></i> Carrinho

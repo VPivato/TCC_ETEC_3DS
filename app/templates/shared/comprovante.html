@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Comprovante - Pedido {{ pedido.id }}</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            color: #222;
+        }
+
+        .cabecalho {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .empresa {
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .dados {
+            text-align: right;
+            font-size: 0.9rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th,
+        td {
+            padding: 8px 6px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #f7f7f7;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .total {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+
+            body {
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="cabecalho">
+        <div>
+            <div class="empresa">Cantina - Nome da Etec</div>
+            <div class="endereco small">Comprovante de Compra</div>
+        </div>
+        <div class="dados">
+            <div>Pedido: <strong>#{{ pedido.id }}</strong></div>
+            <div>Data: {{ pedido.data_hora.strftime('%d/%m/%Y %H:%M') }}</div>
+            <div>Cliente: {{ usuario.nome_usuario }}</div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Qtd</th>
+                <th class="text-right">Valor unit.</th>
+                <th class="text-right">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for it in itens %}
+            <tr>
+                <td>{{ it.descricao }}</td>
+                <td>{{ it.quantidade }}</td>
+                <td class="text-right">R$ {{ it.preco_unitario }}</td>
+                <td class="text-right">R$ {{ it.subtotal }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="total text-right">
+        Total: R$ {{ "%.2f"|format(pedido.total) }}
+    </div>
+
+    <div style="margin-top:20px;">
+        <button class="no-print" onclick="window.print()">Imprimir / Salvar como PDF</button>
+        <a class="no-print" href="/" style="margin-left:10px;">Fechar</a>
+    </div>
+</body>
+
+</html>
