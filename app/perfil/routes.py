@@ -194,7 +194,9 @@ def excluir_perfil():
     if usuario:
         try:
             # Verifica se a foto não é a padrão antes de excluir
-            if usuario.imagem_usuario != 'uploads/pfp/default.jpg':
+            if os.path.normpath(usuario.imagem_usuario) != os.path.normpath('uploads/pfp/default.jpg'):
+                print(f"Imagem no banco: {repr(usuario.imagem_usuario)}")
+                print(f"Comparação com: {repr(os.path.normpath('uploads/pfp/default.jpg'))}")
                 caminho_arquivo = os.path.join(
                     current_app.root_path, 'static', usuario.imagem_usuario
                 )

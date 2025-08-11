@@ -1,0 +1,443 @@
+{% extends 'shared/base.html' %}
+
+{% block title %}Relatórios{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/shared/header_relative.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/relatorio/relatorio-style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/relatorio/relatorio-escuro.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <h1 class="mb-4">Relatórios</h1>
+
+
+    <div class="container-fluid mt-4">
+        <!-- Filtro de datas -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <form id="filtroDatas" class="row g-3 align-items-end">
+
+                    <div class="col">
+                        <label for="periodo" class="form-label">Período</label>
+                        <select class="form-select" id="periodo" name="periodo">
+                            <option value="ultima_semana">Última Semana</option>
+                            <option value="ultimo_mes">Último Mês</option>
+                            <option value="comeco_ano">Começo do Ano</option>
+                            <option value="personalizado">Personalizado</option>
+                        </select>
+                    </div>
+
+                    <div class="col campo-data" style="display:none;">
+                        <label for="dataInicio" class="form-label">Data Início</label>
+                        <input type="date" class="form-control" id="dataInicio" name="dataInicio">
+                    </div>
+
+                    <div class="col campo-data" style="display:none;">
+                        <label for="dataFim" class="form-label">Data Fim</label>
+                        <input type="date" class="form-control" id="dataFim" name="dataFim">
+                    </div>
+
+                    <div class="col">
+                        <button type="button" id="btnFiltrar" class="btn btn-primary w-100">
+                            Filtrar
+                        </button>
+                    </div>
+
+                    <div class="col">
+                        <button type="button" id="btnLimparFiltro" class="btn btn-secondary w-100">
+                            Limpar Filtro
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <!-- Abas de navegação -->
+        <ul class="nav nav-tabs" id="relatoriosTabs" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="geral-tab" data-bs-toggle="tab" data-bs-target="#geral"
+                    type="button" role="tab">Geral</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="produtos-tab" data-bs-toggle="tab" data-bs-target="#produtos" type="button"
+                    role="tab">Produtos</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="clientes-tab" data-bs-toggle="tab" data-bs-target="#clientes" type="button"
+                    role="tab">Clientes</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="pedidos-tab" data-bs-toggle="tab" data-bs-target="#pedidos" type="button"
+                    role="tab">Pedidos</button>
+            </li>
+        </ul>
+
+        <!-- Conteúdo das abas -->
+        <div class="tab-content mt-3">
+            <!-- Relatório Geral -->
+            <div class="tab-pane fade show active" id="geral" role="tabpanel">
+                <!-- KPI -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card bg-light shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Vendas Totais</h5>
+                                <h3 class="fw-bold">R$ 12.450,00</h3>
+                                <small>Últimos 30 dias</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-light shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Pedidos</h5>
+                                <h3 class="fw-bold">324</h3>
+                                <small>Últimos 30 dias</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-light shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Clientes Atendidos</h5>
+                                <h3 class="fw-bold">198</h3>
+                                <small>Últimos 30 dias</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-light shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Venda Média</h5>
+                                <h3 class="fw-bold">R$ 38,43</h3>
+                                <small>Últimos 30 dias</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráificos -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Vendas por Dia</h5>
+                                <canvas id="graficoVendasDia" height="280px"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Participação por Produto</h5>
+                                <canvas id="graficoProdutos" height="280px"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Relatório de Produtos -->
+            <div class="tab-pane fade" id="produtos" role="tabpanel">
+                <!-- KPIs Produtos -->
+                <div class="row g-3 mb-4 text-center">
+                    <div class="col-md-3 col-6">
+                        <div class="p-3 bg-light rounded shadow-sm">
+                            <h6 class="text-muted">Total de Produtos</h6>
+                            <h4 class="fw-bold" id="kpi-total-produtos">--</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="p-3 bg-light rounded shadow-sm">
+                            <h6 class="text-muted">Produtos Esgotados</h6>
+                            <h4 class="fw-bold text-danger" id="kpi-produtos-esgotados">--</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="p-3 bg-light rounded shadow-sm">
+                            <h6 class="text-muted">Estoque Baixo (&le; 5)</h6>
+                            <h4 class="fw-bold text-warning" id="kpi-produtos-estoque-baixo">--</h4>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="p-3 bg-light rounded shadow-sm">
+                            <h6 class="text-muted">Estoque total</h6>
+                            <h4 class="fw-bold" id="kpi-preco-medio">--</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficos -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Produtos com estoque baixo</h5>
+                                <canvas id="graficoVendasDia" height="300px"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Vendas por categoria</h5>
+                                <canvas id="graficoProdutos" height="300px"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filtro Produto -->
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-body">
+                        <form id="filtroProdutoForm" class="row g-3 align-items-center">
+                            <div class="col-md-6">
+                                <label for="produtoBusca" class="form-label">Buscar Produto (nome ou ID)</label>
+                                <input type="text" id="produtoBusca" name="produtoBusca" class="form-control"
+                                    placeholder="Ex: Coxinha, 15">
+                            </div>
+                            <div class="col-md-3">
+                                <button type="button" id="btnBuscarProduto"
+                                    class="btn btn-primary w-100">Buscar</button>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="button" id="btnLimparBusca"
+                                    class="btn btn-secondary w-100">Limpar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Informações produto específico -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush fs-6">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Faturamento</span>
+                                        <span class="fw-bold text-success">R$ 300,00 <small
+                                                class="text-success">(+12%)</small></span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Vendas</span>
+                                        <span class="fw-bold">54</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Estoque Atual</span>
+                                        <span class="fw-bold">10 unidades</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Presente em</span>
+                                        <span class="fw-bold">11% dos pedidos</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Crescimento Mensal</span>
+                                        <span class="fw-bold text-success">+8%</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="mb-0">Vendas do Produto Selecionado</h5>
+                                <canvas id="graficoVendasProduto" height="300px"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Relatório de Clientes -->
+            <div class="tab-pane fade" id="clientes" role="tabpanel">
+                <!-- KPIs de Clientes -->
+                <div class="row text-center mb-4">
+                    <div class="col-md-3">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h6 class="text-muted">Total de Clientes</h6>
+                                <h4 class="fw-bold">1.245</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h6 class="text-muted">Novos no Período</h6>
+                                <h4 class="fw-bold text-success">+85</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h6 class="text-muted">Clientes Ativos</h6>
+                                <h4 class="fw-bold">980</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h6 class="text-muted">Clientes Inativos</h6>
+                                <h4 class="fw-bold text-danger">265</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Crescimento -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Crescimento de Clientes</h5>
+                                <canvas id="graficoCrescimentoClientes" height="120"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de Top Clientes -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">Top Clientes (por faturamento)</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-striped align-middle">
+                                        <thead>
+                                            <tr>
+                                                <th>Cliente</th>
+                                                <th>Email</th>
+                                                <th>Pedidos</th>
+                                                <th>Faturamento</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Maria Silva</td>
+                                                <td>maria@email.com</td>
+                                                <td>15</td>
+                                                <td>R$ 1.250,00</td>
+                                            </tr>
+                                            <tr>
+                                                <td>João Pereira</td>
+                                                <td>joao@email.com</td>
+                                                <td>12</td>
+                                                <td>R$ 980,00</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Ana Souza</td>
+                                                <td>ana@email.com</td>
+                                                <td>10</td>
+                                                <td>R$ 890,00</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Relatório de Pedidos -->
+            <div class="tab-pane fade" id="pedidos" role="tabpanel">
+                <!-- KPIs -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-center shadow-sm">
+                            <div class="card-body">
+                                <h6 class="text-muted">Faturamento</h6>
+                                <h4 class="mb-0">R$ 45.230,00</h4>
+                                <small class="text-success">+12% este mês</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center shadow-sm">
+                            <div class="card-body">
+                                <h6 class="text-muted">Total de Pedidos</h6>
+                                <h4 class="mb-0">1.245</h4>
+                                <small class="text-primary">+5% em relação ao mês passado</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center shadow-sm">
+                            <div class="card-body">
+                                <h6 class="text-muted">Taxa de Cancelamento</h6>
+                                <h4 class="mb-0">3,2%</h4>
+                                <small class="text-danger">+0,4% este mês</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center shadow-sm">
+                            <div class="card-body">
+                                <h6 class="text-muted">Venda Média</h6>
+                                <h4 class="mb-0">R$ 36,30</h4>
+                                <small class="text-muted">+2% este mês</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficos -->
+                <div class="row">
+                    <!-- Donut de status dos pedidos -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header">
+                                <h6 class="mb-0">Status dos Pedidos</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="graficoDonutPedidos" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Linha de faturamento -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header">
+                                <h6 class="mb-0">Faturamento Diário</h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="graficoFaturamentoDiario" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Insights adicionais -->
+                <div class="card shadow-sm mt-3">
+                    <div class="card-header">
+                        <h6 class="mb-0">Resumo de Destaques</h6>
+                    </div>
+                    <div class="card-body">
+                        <p>📈 O pico de pedidos ocorreu no dia <strong>15/08</strong> com <strong>85 pedidos</strong>
+                            realizados.</p>
+                        <p>📉 O menor volume foi no dia <strong>03/08</strong> com apenas <strong>20 pedidos</strong>.
+                        </p>
+                        <p>🔍 O produto mais vendido no período foi <strong>Pizza Calabresa</strong>, representando
+                            <strong>18%</strong> de todos os pedidos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin/relatorio/relatorio-script.js') }}"></script>
+
+<!-- Chart.js para gráficos -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
