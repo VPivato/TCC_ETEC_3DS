@@ -81,7 +81,7 @@ def excluir_registro(modelo, id):
                 imagem_path = getattr(registro, attr_name, None)
                 if isinstance(imagem_path, str) and imagem_path.strip():
                     caminho_imagem = os.path.join(current_app.static_folder, imagem_path)
-                    if os.path.exists(caminho_imagem):
+                    if os.path.exists(caminho_imagem) and os.path.normpath(imagem_path) != os.path.normpath('uploads/pfp/default.jpg'):
                         os.remove(caminho_imagem)
                 break  # remove apenas a primeira imagem
         
@@ -178,7 +178,7 @@ def excluir_varios():
                     imagem_path = getattr(registro, attr_name, None)
                     if isinstance(imagem_path, str) and imagem_path.strip():
                         caminho_imagem = os.path.join(current_app.static_folder, imagem_path)
-                        if os.path.exists(caminho_imagem):
+                        if os.path.exists(caminho_imagem) and os.path.normpath(imagem_path) != os.path.normpath('uploads/pfp/default.jpg'):
                             os.remove(caminho_imagem)
                     break  # remove apenas a primeira imagem
             db.session.delete(registro)
