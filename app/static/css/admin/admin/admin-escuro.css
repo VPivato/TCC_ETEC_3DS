@@ -4,19 +4,15 @@ body.modo-escuro {
     color: #d0d0d0;
 }
 
-body.modo-escuro .swiper-slide>.card {
+body.modo-escuro .card {
     background: #211726;
     background: linear-gradient(135deg, #211726 0%, #1d183d 100%);
-    box-shadow: 4px 4px 8px #20355a26;
-    color: #d0d0d0;
 }
 
-body.modo-escuro #lista-ultimas-notificacoes .list-group-item,
-body.modo-escuro #mais-vendidos-container .mais-vendidos-item,
-body.modo-escuro #distribuicao-feedbacks-container .distribuicao-feedbacks-item {
-    background: #211726;
-    background: linear-gradient(175deg, #211726 0%, #1d183d 100%);
-    box-shadow: 4px 4px 8px #20355a26;
-    color: #d0d0d0;
-    border: 1px solid #ffffff50;
+body.modo-escuro .card-body h6 {
+    color: #d0d0d0 !important;
+}
+
+body.modo-escuro #icon-sair {
+    filter: invert(100%);
 }
