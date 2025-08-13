@@ -16,40 +16,44 @@
         <!-- Filtro de datas -->
         <div class="card mb-4 shadow-sm">
             <div class="card-body">
-                <form id="filtroDatas" class="row g-3 align-items-end">
-
+                <form id="filtroDatas" class="row g-3 align-items-end" method="get"
+                    action="{{ url_for('relatorio.relatorio') }}">
                     <div class="col">
                         <label for="periodo" class="form-label">Período</label>
                         <select class="form-select" id="periodo" name="periodo">
-                            <option value="ultima_semana">Última Semana</option>
-                            <option value="ultimo_mes">Último Mês</option>
-                            <option value="comeco_ano">Começo do Ano</option>
-                            <option value="personalizado">Personalizado</option>
+                            <option value="ultima_semana" {% if periodo=='ultima_semana' %}selected{% endif %}>Última
+                                Semana</option>
+                            <option value="ultimo_mes" {% if periodo=='ultimo_mes' %}selected{% endif %}>Último Mês
+                            </option>
+                            <option value="comeco_ano" {% if periodo=='comeco_ano' %}selected{% endif %}>Começo do Ano
+                            </option>
+                            <option value="personalizado" {% if periodo=='personalizado' %}selected{% endif %}>
+                                Personalizado</option>
                         </select>
                     </div>
 
-                    <div class="col campo-data" style="display:none;">
+                    <div class="col campo-data" {% if periodo !='personalizado' %}style="display:none;" {% endif %}>
                         <label for="dataInicio" class="form-label">Data Início</label>
-                        <input type="date" class="form-control" id="dataInicio" name="dataInicio">
+                        <input type="date" class="form-control" id="dataInicio" name="dataInicio"
+                            value="{{ data_inicio }}">
                     </div>
 
-                    <div class="col campo-data" style="display:none;">
+                    <div class="col campo-data" {% if periodo !='personalizado' %}style="display:none;" {% endif %}>
                         <label for="dataFim" class="form-label">Data Fim</label>
-                        <input type="date" class="form-control" id="dataFim" name="dataFim">
+                        <input type="date" class="form-control" id="dataFim" name="dataFim" value="{{ data_fim }}">
                     </div>
 
                     <div class="col">
-                        <button type="button" id="btnFiltrar" class="btn btn-primary w-100">
+                        <button type="submit" class="btn btn-primary w-100">
                             Filtrar
                         </button>
                     </div>
 
                     <div class="col">
-                        <button type="button" id="btnLimparFiltro" class="btn btn-secondary w-100">
+                        <a href="{{ url_for('relatorio.relatorio') }}" class="btn btn-secondary w-100">
                             Limpar Filtro
-                        </button>
+                        </a>
                     </div>
-
                 </form>
             </div>
         </div>
@@ -78,14 +82,14 @@
         <div class="tab-content mt-3">
             <!-- Relatório Geral -->
             <div class="tab-pane fade show active" id="geral" role="tabpanel">
-                <!-- KPI -->
+                <!-- KPIs -->
                 <div class="row mb-4">
                     <div class="col-md-3">
                         <div class="card bg-light shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title">Vendas Totais</h5>
-                                <h3 class="fw-bold">R$ 12.450,00</h3>
-                                <small>Últimos 30 dias</small>
+                                <h3 class="fw-bold">R$ {{ "%.2f" | format(geral.kpis.vendas_totais) }}</h3>
+                                <small>{{ periodo_formatado }}</small>
                             </div>
                         </div>
                     </div>
@@ -93,8 +97,8 @@
                         <div class="card bg-light shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title">Pedidos</h5>
-                                <h3 class="fw-bold">324</h3>
-                                <small>Últimos 30 dias</small>
+                                <h3 class="fw-bold">{{ geral.kpis.total_pedidos }}</h3>
+                                <small>{{ periodo_formatado }}</small>
                             </div>
                         </div>
                     </div>
@@ -102,8 +106,8 @@
                         <div class="card bg-light shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title">Clientes Atendidos</h5>
-                                <h3 class="fw-bold">198</h3>
-                                <small>Últimos 30 dias</small>
+                                <h3 class="fw-bold">{{ geral.kpis.clientes_atendidos }}</h3>
+                                <small>{{ periodo_formatado }}</small>
                             </div>
                         </div>
                     </div>
@@ -111,28 +115,33 @@
                         <div class="card bg-light shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title">Venda Média</h5>
-                                <h3 class="fw-bold">R$ 38,43</h3>
-                                <small>Últimos 30 dias</small>
+                                <h3 class="fw-bold">R$ {{ "%.2f" | format(geral.kpis.venda_media) }}</h3>
+                                <small>{{ periodo_formatado }}</small>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Gráificos -->
+                <!-- Gráficos -->
                 <div class="row mb-4">
+                    <!-- Vendas por Dia -->
                     <div class="col-md-6">
                         <div class="card shadow-sm">
                             <div class="card-body">
-                                <h5 class="card-title">Vendas por Dia</h5>
-                                <canvas id="graficoVendasDia" height="280px"></canvas>
+                                <h5 class="card-title">Vendas por Dia (R$)</h5>
+                                <canvas id="graficoVendasDia" data-labels='{{ geral.grafico_vendas_dia.labels | tojson }}'
+                                    data-valores='{{ geral.grafico_vendas_dia.valores | tojson }}'></canvas>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Participação por Produto -->
                     <div class="col-md-6">
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title">Participação por Produto</h5>
-                                <canvas id="graficoProdutos" height="280px"></canvas>
+                                <canvas id="graficoProdutos" data-labels='{{ geral.grafico_produtos.labels | tojson }}'
+                                    data-valores='{{ geral.grafico_produtos.valores | tojson }}'></canvas>
                             </div>
                         </div>
                     </div>
@@ -426,7 +435,8 @@
                         <p>📉 O menor volume foi no dia <strong>03/08</strong> com apenas <strong>20 pedidos</strong>.
                         </p>
                         <p>🔍 O produto mais vendido no período foi <strong>Pizza Calabresa</strong>, representando
-                            <strong>18%</strong> de todos os pedidos.</p>
+                            <strong>18%</strong> de todos os pedidos.
+                        </p>
                     </div>
                 </div>
             </div>

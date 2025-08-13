@@ -1,40 +1,57 @@
-document.getElementById("btnFiltrar").addEventListener("click", function () {
-    const dataInicio = document.getElementById("dataInicio").value;
-    const dataFim = document.getElementById("dataFim").value;
+document.addEventListener("DOMContentLoaded", function () {
+    // --- Gráfico Vendas por Dia ---
+    const canvasVendas = document.getElementById('graficoVendasDia');
+    const labelsVendas = JSON.parse(canvasVendas.dataset.labels);
+    const valoresVendas = JSON.parse(canvasVendas.dataset.valores);
 
-    if (!dataInicio || !dataFim) {
-        alert("Selecione ambas as datas para filtrar.");
-        return;
-    }
-
-    console.log("Filtrando de", dataInicio, "até", dataFim);
-    // Aqui você chama sua rota Flask passando essas datas como parâmetros
-    // e atualiza as seções ativas
-});
-
-document.getElementById("btnLimparFiltro").addEventListener("click", function () {
-    document.getElementById("dataInicio").value = "";
-    document.getElementById("dataFim").value = "";
-    console.log("Filtro limpo");
-    // Aqui você recarrega os dados sem filtro
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-    const selectPeriodo = document.getElementById('periodo');
-    const camposData = document.querySelectorAll('.campo-data');
-
-    // Função para alternar visibilidade
-    function atualizarCamposData() {
-        if (selectPeriodo.value === 'personalizado') {
-            camposData.forEach(campo => campo.style.display = 'block');
-        } else {
-            camposData.forEach(campo => campo.style.display = 'none');
+    new Chart(canvasVendas.getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: labelsVendas,
+            datasets: [{
+                label: 'Vendas',
+                data: valoresVendas,
+                borderColor: '#0d6efd',
+                backgroundColor: '#0d6efd33',
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: '' }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
         }
-    }
+    });
 
-    // Evento para mudança no select
-    selectPeriodo.addEventListener('change', atualizarCamposData);
+    // --- Gráfico Participação por Produto ---
+    const canvasProdutos = document.getElementById('graficoProdutos');
+    const labelsProdutos = JSON.parse(canvasProdutos.dataset.labels);
+    const valoresProdutos = JSON.parse(canvasProdutos.dataset.valores);
 
-    // Inicializa o estado correto
-    atualizarCamposData();
-})
+    new Chart(canvasProdutos.getContext('2d'), {
+        type: 'pie',
+        data: {
+            labels: labelsProdutos,
+            datasets: [{
+                data: valoresProdutos,
+                backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        boxWidth: 20, // largura do quadrado de cor
+                        padding: 15    // espaço entre itens
+                    }
+                }
+            }
+        }
+    });
+});
