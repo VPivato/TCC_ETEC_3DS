@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, jsonify
 from datetime import datetime, timedelta
 from collections import defaultdict
 
@@ -42,6 +42,7 @@ def relatorio():
             pass
     
     dados_geral = gerar_relatorio_geral(data_inicio, data_fim)
+    dados_produtos = gerar_relatorio_produtos()
 
     return render_template('admin/relatorio/relatorio.html', 
                            periodo=periodo,
@@ -49,9 +50,140 @@ def relatorio():
                            data_inicio=data_inicio.strftime("%Y-%m-%d") if data_inicio else "",
                            data_fim=data_fim.strftime("%Y-%m-%d") if data_fim else "",
 
-                           geral=dados_geral
+                           geral=dados_geral,
+                           produto=dados_produtos
                            )
 
+
+@relatorio_bp.route("/produto", methods=["POST"])
+def relatorio_produto():
+    dados = request.get_json()
+    produto_busca = dados.get("produtoBusca")
+    periodo = dados.get("periodo")
+    data_inicio = dados.get("dataInicio")
+    data_fim = dados.get("dataFim")
+
+    # --- Ajuste do período ---
+    try:
+        if periodo != "personalizado":
+            if periodo == "ultima_semana":
+                data_inicio = datetime.now() - timedelta(days=7)
+                inicio_anterior = data_inicio - timedelta(days=7)
+                fim_anterior = datetime.now() - timedelta(days=7)
+            elif periodo == "ultimo_mes":
+                data_inicio = datetime.now() - timedelta(days=30)
+                inicio_anterior = data_inicio - timedelta(days=30)
+                fim_anterior = datetime.now() - timedelta(days=30)
+            elif periodo == "comeco_ano":
+                data_inicio = datetime(datetime.now().year, 1, 1)
+                inicio_anterior = datetime(datetime.now().year - 1, 1, 1)
+                fim_anterior = datetime(datetime.now().year - 1, 12, 31)
+            data_inicio = data_inicio.replace(hour=0, minute=0, second=0)
+            data_fim = datetime.now().replace(hour=23, minute=59, second=59)
+        else:
+            # Período personalizado
+            data_inicio = datetime.strptime(data_inicio, "%Y-%m-%d").replace(hour=0, minute=0, second=0)
+            data_fim = datetime.strptime(data_fim, "%Y-%m-%d").replace(hour=23, minute=59, second=59)
+            inicio_anterior = fim_anterior = None  # sem variação
+    except Exception:
+        return jsonify({"erro": "Datas inválidas."}), 400
+
+    # --- Buscar produto ---
+    produto = None
+    if produto_busca.isdigit():
+        produto = Produtos.query.get(int(produto_busca))
+    else:
+        produto = Produtos.query.filter(Produtos.descricao_produto.ilike(f"%{produto_busca}%")).first()
+    if not produto:
+        return jsonify({"erro": "Produto não encontrado."}), 404
+
+    # --- Pedidos retirados no período ---
+    pedidos = (Pedido.query
+               .filter(Pedido.status == "retirado",
+                       Pedido.data_hora >= data_inicio,
+                       Pedido.data_hora <= data_fim)
+               .all())
+
+    # --- Cálculos ---
+    total_vendas = 0
+    total_faturamento_produto = 0
+    pedidos_com_produto = 0
+    vendas_por_dia = {}
+
+    for p in pedidos:
+        itens_produto = [i for i in p.itens if i.produto_id == produto.id]
+        if itens_produto:
+            pedidos_com_produto += 1
+            total_vendas += sum(i.quantidade for i in itens_produto)
+            total_faturamento_produto += sum(i.quantidade * i.preco_unitario for i in itens_produto)
+
+            dia = p.data_hora.strftime("%d/%m")
+            vendas_por_dia[dia] = vendas_por_dia.get(dia, 0) + sum(i.preco_unitario for i in itens_produto)
+
+    total_pedidos = len(pedidos)
+    percentual_pedidos = round((pedidos_com_produto / total_pedidos) * 100, 1) if total_pedidos > 0 else 0
+
+    # --- Variação de faturamento ---
+    if inicio_anterior and fim_anterior:
+        pedidos_anteriores = (Pedido.query
+                              .filter(Pedido.status == "retirado",
+                                      Pedido.data_hora >= inicio_anterior,
+                                      Pedido.data_hora <= fim_anterior)
+                              .all())
+
+        faturamento_anterior = sum(
+            i.quantidade * i.preco_unitario
+            for p in pedidos_anteriores
+            for i in p.itens
+            if i.produto_id == produto.id
+        )
+
+        variacao_faturamento = round(
+            ((total_faturamento_produto - faturamento_anterior) / faturamento_anterior) * 100,
+            1
+        ) if faturamento_anterior > 0 else 0
+    else:
+        variacao_faturamento = None  # para período personalizado
+
+    # Estoque atual
+    estoque_atual = produto.estoque_produto
+
+    # Descrição produto
+    descricao = produto.descricao_produto
+    # ID do produto
+    id_prod = int(produto.id)
+    # Categoria
+    categ = produto.categoria_produto
+
+    # Faturamento total de todos os pedidos retirados no período
+    pedidos_no_periodo = Pedido.query.filter(
+        Pedido.status == "retirado",
+        Pedido.data_hora >= data_inicio,
+        Pedido.data_hora <= data_fim
+    ).all()
+    faturamento_total = sum(
+        item.quantidade * item.preco_unitario
+        for p in pedidos_no_periodo
+        for item in p.itens
+    )
+    participacao_percentual = round((total_faturamento_produto / faturamento_total) * 100, 1) if faturamento_total > 0 else 0
+
+
+    return jsonify({
+        "descricao": descricao,
+        "id_prod": id_prod,
+        "categ": categ,
+        "faturamento": total_faturamento_produto,
+        "variacaoFaturamento": variacao_faturamento,
+        "vendas": total_vendas,
+        "estoque": estoque_atual,
+        "percentualPedidos": percentual_pedidos,
+        "percentualParticipacao": participacao_percentual,
+        "grafico": {
+            "labels": list(vendas_por_dia.keys()),
+            "valores": list(vendas_por_dia.values())
+        }
+    })
 
 
 def gerar_relatorio_geral(data_inicio, data_fim):
@@ -106,5 +238,53 @@ def gerar_relatorio_geral(data_inicio, data_fim):
         "grafico_produtos": {
             "labels": labels_produtos,
             "valores": valores_produtos
+        }
+    }
+
+
+def gerar_relatorio_produtos():
+    todos_produtos = db.session.query(Produtos).all()
+
+    # KPIs
+    total_produtos = len(todos_produtos)
+    produtos_esgotados = sum(1 for p in todos_produtos if p.estoque_produto == 0)
+    produtos_estoque_baixo = [p for p in todos_produtos if 0 < p.estoque_produto <= 5]
+    estoque_total = sum(p.estoque_produto for p in todos_produtos)
+
+    kpis_estoque = {
+        "total_produtos": total_produtos,
+        "produtos_esgotados": produtos_esgotados,
+        "produtos_estoque_baixo": len(produtos_estoque_baixo),
+        "estoque_total": estoque_total
+    }
+
+    # Dados para gráfico de barras (estoque baixo)
+    labels_estoque_baixo = [p.descricao_produto for p in produtos_estoque_baixo]
+    valores_estoque_baixo = [p.estoque_produto for p in produtos_estoque_baixo]
+
+    # Dados para gráfico donut (vendas por categoria)
+    pedidos_retirados = db.session.query(Pedido).filter(Pedido.status == "retirado").all()
+
+    vendas_por_categoria = {"SALGADO": 0, "DOCE": 0, "BEBIDA": 0}
+
+    for pedido in pedidos_retirados:
+        for item in pedido.itens:
+            categoria = item.produto.categoria_produto
+            if categoria in vendas_por_categoria:
+                valor_item = item.quantidade * item.produto.preco_produto
+                vendas_por_categoria[categoria] += valor_item
+
+    labels_vendas_categoria = list(vendas_por_categoria.keys())
+    valores_vendas_categoria = list(vendas_por_categoria.values())
+
+    return {
+        "kpis": kpis_estoque,
+        "grafico_estoque_baixo": {
+            "labels": labels_estoque_baixo,
+            "valores": valores_estoque_baixo
+        },
+        "grafico_vendas_categoria": {
+            "labels": labels_vendas_categoria,
+            "valores": valores_vendas_categoria
         }
     }

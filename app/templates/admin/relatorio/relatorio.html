@@ -129,7 +129,8 @@
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title">Vendas por Dia (R$)</h5>
-                                <canvas id="graficoVendasDia" data-labels='{{ geral.grafico_vendas_dia.labels | tojson }}'
+                                <canvas id="graficoVendasDia"
+                                    data-labels='{{ geral.grafico_vendas_dia.labels | tojson }}'
                                     data-valores='{{ geral.grafico_vendas_dia.valores | tojson }}'></canvas>
                             </div>
                         </div>
@@ -155,25 +156,27 @@
                     <div class="col-md-3 col-6">
                         <div class="p-3 bg-light rounded shadow-sm">
                             <h6 class="text-muted">Total de Produtos</h6>
-                            <h4 class="fw-bold" id="kpi-total-produtos">--</h4>
+                            <h4 class="fw-bold" id="kpi-total-produtos">{{ produto.kpis.total_produtos }}</h4>
                         </div>
                     </div>
                     <div class="col-md-3 col-6">
                         <div class="p-3 bg-light rounded shadow-sm">
                             <h6 class="text-muted">Produtos Esgotados</h6>
-                            <h4 class="fw-bold text-danger" id="kpi-produtos-esgotados">--</h4>
+                            <h4 class="fw-bold text-danger" id="kpi-produtos-esgotados">{{
+                                produto.kpis.produtos_esgotados }}</h4>
                         </div>
                     </div>
                     <div class="col-md-3 col-6">
                         <div class="p-3 bg-light rounded shadow-sm">
                             <h6 class="text-muted">Estoque Baixo (&le; 5)</h6>
-                            <h4 class="fw-bold text-warning" id="kpi-produtos-estoque-baixo">--</h4>
+                            <h4 class="fw-bold text-warning" id="kpi-produtos-estoque-baixo">{{
+                                produto.kpis.produtos_estoque_baixo }}</h4>
                         </div>
                     </div>
                     <div class="col-md-3 col-6">
                         <div class="p-3 bg-light rounded shadow-sm">
                             <h6 class="text-muted">Estoque total</h6>
-                            <h4 class="fw-bold" id="kpi-preco-medio">--</h4>
+                            <h4 class="fw-bold" id="kpi-preco-medio">{{ produto.kpis.estoque_total }}</h4>
                         </div>
                     </div>
                 </div>
@@ -184,15 +187,19 @@
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title">Produtos com estoque baixo</h5>
-                                <canvas id="graficoVendasDia" height="300px"></canvas>
+                                <canvas id="graficoEstoqueBaixo" height="300px"
+                                    data-labels='{{ produto.grafico_estoque_baixo.labels | tojson }}'
+                                    data-valores='{{ produto.grafico_estoque_baixo.valores | tojson }}'></canvas>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="card shadow-sm">
                             <div class="card-body">
-                                <h5 class="card-title">Vendas por categoria</h5>
-                                <canvas id="graficoProdutos" height="300px"></canvas>
+                                <h5 class="card-title">Vendas por categoria (R$)</h5>
+                                <canvas id="graficoVendasCategoria" height="300px"
+                                    data-labels='{{ produto.grafico_vendas_categoria.labels | tojson }}'
+                                    data-valores='{{ produto.grafico_vendas_categoria.valores | tojson }}'></canvas>
                             </div>
                         </div>
                     </div>
@@ -224,27 +231,35 @@
                     <div class="col-md-6">
                         <div class="card shadow-sm">
                             <div class="card-body">
+                                <h5 class="mb-2">Informações do Produto Selecionado</h5>
                                 <ul class="list-group list-group-flush fs-6">
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Descrição</span>
+                                        <span class="fw-bold" id="descricaoProduto">--</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>Categoria</span>
+                                        <span class="fw-bold" id="categoriaProduto">--</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <span>Faturamento</span>
-                                        <span class="fw-bold text-success">R$ 300,00 <small
-                                                class="text-success">(+12%)</small></span>
+                                        <span class="fw-bold text-success" id="faturamentoProduto">R$ 0</span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <span>Vendas</span>
-                                        <span class="fw-bold">54</span>
+                                        <span class="fw-bold" id="vendasProduto">0</span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <span>Estoque Atual</span>
-                                        <span class="fw-bold">10 unidades</span>
+                                        <span class="fw-bold" id="estoqueProduto">0 unidades</span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                         <span>Presente em</span>
-                                        <span class="fw-bold">11% dos pedidos</span>
+                                        <span class="fw-bold" id="presenteEm">0% dos pedidos</span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>Crescimento Mensal</span>
-                                        <span class="fw-bold text-success">+8%</span>
+                                        <span>Participação no faturamento total</span>
+                                        <span class="fw-bold" id="participacaoTotal">0%</span>
                                     </li>
                                 </ul>
                             </div>
@@ -450,4 +465,6 @@
 
 <!-- Chart.js para gráficos -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Chart.js plugin -->
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 {% endblock %}
