@@ -140,7 +140,7 @@
                     <div class="col-md-6">
                         <div class="card shadow-sm">
                             <div class="card-body">
-                                <h5 class="card-title">Participação por Produto</h5>
+                                <h5 class="card-title">Vendas por produto (un.)</h5>
                                 <canvas id="graficoProdutos" data-labels='{{ geral.grafico_produtos.labels | tojson }}'
                                     data-valores='{{ geral.grafico_produtos.valores | tojson }}'></canvas>
                             </div>
@@ -265,10 +265,11 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-6">
                         <div class="card shadow-sm">
                             <div class="card-body">
-                                <h5 class="mb-0">Vendas do Produto Selecionado</h5>
+                                <h5 class="mb-0">Vendas do Produto Selecionado (R$)</h5>
                                 <canvas id="graficoVendasProduto" height="300px"></canvas>
                             </div>
                         </div>
@@ -284,7 +285,7 @@
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h6 class="text-muted">Total de Clientes</h6>
-                                <h4 class="fw-bold">1.245</h4>
+                                <h4 class="fw-bold">{{ clientes.kpis.total_clientes }}</h4>
                             </div>
                         </div>
                     </div>
@@ -292,7 +293,7 @@
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h6 class="text-muted">Novos no Período</h6>
-                                <h4 class="fw-bold text-success">+85</h4>
+                                <h4 class="fw-bold text-success">{{ clientes.kpis.novos_clientes }}</h4>
                             </div>
                         </div>
                     </div>
@@ -300,7 +301,7 @@
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h6 class="text-muted">Clientes Ativos</h6>
-                                <h4 class="fw-bold">980</h4>
+                                <h4 class="fw-bold">to do</h4>
                             </div>
                         </div>
                     </div>
@@ -308,7 +309,7 @@
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h6 class="text-muted">Clientes Inativos</h6>
-                                <h4 class="fw-bold text-danger">265</h4>
+                                <h4 class="fw-bold text-danger">to do</h4>
                             </div>
                         </div>
                     </div>
@@ -320,7 +321,10 @@
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title">Crescimento de Clientes</h5>
-                                <canvas id="graficoCrescimentoClientes" height="120"></canvas>
+                                <canvas id="graficoCrescimentoClientes" height="120"
+                                    data-labels='{{ clientes.grafico.labels | tojson }}'
+                                    data-valores='{{ clientes.grafico.valores | tojson }}'>
+                                </canvas>
                             </div>
                         </div>
                     </div>
@@ -333,34 +337,26 @@
                             <div class="card-body">
                                 <h5 class="card-title">Top Clientes (por faturamento)</h5>
                                 <div class="table-responsive">
-                                    <table class="table table-striped align-middle">
+                                    <table class="table table-striped">
                                         <thead>
                                             <tr>
-                                                <th>Cliente</th>
+                                                <th>Nome</th>
+                                                <th>Código ETEC</th>
                                                 <th>Email</th>
-                                                <th>Pedidos</th>
-                                                <th>Faturamento</th>
+                                                <th>Total de Pedidos</th>
+                                                <th>Faturamento Total (R$)</th>
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            {% for cliente in clientes.top_clientes %}
                                             <tr>
-                                                <td>Maria Silva</td>
-                                                <td>maria@email.com</td>
-                                                <td>15</td>
-                                                <td>R$ 1.250,00</td>
+                                                <td>{{ cliente.nome }}</td>
+                                                <td>{{ cliente.codigo_etec }}</td>
+                                                <td>{{ cliente.email }}</td>
+                                                <td>{{ cliente.total_pedidos }}</td>
+                                                <td>R$ {{ "{:,.2f}".format(cliente.faturamento_total) }}</td>
                                             </tr>
-                                            <tr>
-                                                <td>João Pereira</td>
-                                                <td>joao@email.com</td>
-                                                <td>12</td>
-                                                <td>R$ 980,00</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Ana Souza</td>
-                                                <td>ana@email.com</td>
-                                                <td>10</td>
-                                                <td>R$ 890,00</td>
-                                            </tr>
+                                            {% endfor %}
                                         </tbody>
                                     </table>
                                 </div>

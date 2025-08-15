@@ -55,9 +55,43 @@ document.getElementById('btnBuscarProduto').addEventListener('click', function (
                         backgroundColor: 'rgba(13, 110, 253, 0.2)',
                         fill: true
                     }]
+                },
+                options: {
+                    plugins: {
+                        legend: { position: '' },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    let valor = context.raw || 0
+                                    return 'R$ ' + valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                                }
+                            }
+                        }
+                    },
                 }
             });
         });
+});
+
+document.getElementById('btnLimparBusca').addEventListener('click', function () {
+    // Limpar campos de input
+    document.getElementById('produtoBusca').value = '';
+
+    // Resetar informações do produto
+    document.getElementById('descricaoProduto').textContent = '--';
+    document.getElementById('categoriaProduto').textContent = '--';
+    document.getElementById('faturamentoProduto').textContent = 'R$ 0';
+    document.getElementById('vendasProduto').textContent = '0';
+    document.getElementById('estoqueProduto').textContent = '0 unidades';
+    document.getElementById('presenteEm').textContent = '0% dos pedidos';
+    document.getElementById('participacaoTotal').textContent = '0%';
+
+    // Resetar gráfico de vendas
+    const canvas = document.getElementById('graficoVendasProduto');
+    if (window.graficoProduto) {
+        window.graficoProduto.destroy(); // destrói gráfico anterior
+        window.graficoProduto = null;
+    }
 });
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -94,7 +128,15 @@ document.addEventListener("DOMContentLoaded", function () {
         options: {
             responsive: true,
             plugins: {
-                legend: { position: '' }
+                legend: { position: '' },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            let valor = context.raw || 0
+                            return 'R$ ' + valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                        }
+                    }
+                }
             },
             scales: {
                 y: { beginAtZero: true }
@@ -227,4 +269,43 @@ document.addEventListener("DOMContentLoaded", function () {
             plugins: [ChartDataLabels]
         });
     }
+
+
+    const graficoEl = document.getElementById('graficoCrescimentoClientes');
+    const labels = JSON.parse(graficoEl.dataset.labels);
+    const valores = JSON.parse(graficoEl.dataset.valores).map(Number);
+    const valorMaximo = Math.max(5, Math.max(...valores));
+    new Chart(graficoEl, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Novos Clientes',
+                data: valores,
+                borderColor: '#4e73df',
+                backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    min: 0,
+                    max: valorMaximo,
+                    ticks: {
+                        callback: function (value) {
+                            return Number.isInteger(value) ? value : '';
+                        }
+                    },
+                    title: { display: true, text: 'Clientes' }
+                },
+                x: {
+                    title: { display: true, text: 'Dia' }
+                }
+            }
+        }
+    });
 });

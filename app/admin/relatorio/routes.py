@@ -43,6 +43,7 @@ def relatorio():
     
     dados_geral = gerar_relatorio_geral(data_inicio, data_fim)
     dados_produtos = gerar_relatorio_produtos()
+    dados_clientes = gerar_relatorio_clientes(data_inicio, data_fim)
 
     return render_template('admin/relatorio/relatorio.html', 
                            periodo=periodo,
@@ -51,7 +52,8 @@ def relatorio():
                            data_fim=data_fim.strftime("%Y-%m-%d") if data_fim else "",
 
                            geral=dados_geral,
-                           produto=dados_produtos
+                           produto=dados_produtos,
+                           clientes=dados_clientes
                            )
 
 
@@ -287,4 +289,73 @@ def gerar_relatorio_produtos():
             "labels": labels_vendas_categoria,
             "valores": valores_vendas_categoria
         }
+    }
+
+
+def gerar_relatorio_clientes(data_inicio, data_fim):
+    # --- Total de clientes ---
+    total_clientes = Usuarios.query.count()
+
+    # --- Novos no período ---
+    novos_clientes = Usuarios.query.filter(
+        Usuarios.data_criacao_usuario >= data_inicio,
+        Usuarios.data_criacao_usuario <= data_fim
+    ).count()
+
+    # --- Gráfico de crescimento ---
+    crescimento_por_dia = {}
+    clientes_no_periodo = Usuarios.query.filter(
+        Usuarios.data_criacao_usuario >= data_inicio,
+        Usuarios.data_criacao_usuario <= data_fim
+    ).all()
+    
+    for cliente in clientes_no_periodo:
+        dia = cliente.data_criacao_usuario.strftime("%d/%m")
+        crescimento_por_dia[dia] = crescimento_por_dia.get(dia, 0) + 1
+
+    # --- Top 3 clientes por faturamento ---
+    pedidos = Pedido.query.filter(
+        Pedido.status == "retirado",
+        Pedido.data_hora >= data_inicio,
+        Pedido.data_hora <= data_fim
+    ).all()
+
+    faturamento_por_cliente = {}
+    pedidos_por_cliente = {}
+
+    for p in pedidos:
+        if p.id_usuario:
+            # Soma faturamento
+            faturamento_por_cliente[p.id_usuario] = faturamento_por_cliente.get(p.id_usuario, 0) + sum(
+                item.quantidade * item.preco_unitario for item in p.itens
+            )
+            # Conta pedidos
+            pedidos_por_cliente[p.id_usuario] = pedidos_por_cliente.get(p.id_usuario, 0) + 1
+
+    # Pega os 3 maiores por faturamento
+    top_clientes_ids = sorted(faturamento_por_cliente, key=faturamento_por_cliente.get, reverse=True)[:3]
+
+    top_clientes = []
+    for cid in top_clientes_ids:
+        cliente = Usuarios.query.get(cid)
+        top_clientes.append({
+            "nome": cliente.nome_usuario,
+            "codigo_etec": cliente.codigo_etec_usuario,
+            "email": cliente.email_usuario,
+            "total_pedidos": pedidos_por_cliente.get(cid, 0),
+            "faturamento_total": faturamento_por_cliente[cid]
+        })
+
+    kpis_clientes = {
+        "total_clientes": total_clientes,
+        "novos_clientes": novos_clientes
+    }
+
+    return {
+        "kpis": kpis_clientes,
+        "grafico": {
+            "labels": list(crescimento_por_dia.keys()),
+            "valores": list(crescimento_por_dia.values())
+        },
+        "top_clientes": top_clientes
     }
