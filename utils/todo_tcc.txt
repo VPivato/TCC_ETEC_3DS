@@ -1,8 +1,6 @@
-Relatório clientes
-Relatório pedidos
+Refinar os relatórios
 
 Devolver estoque ao cancelar pedido
-Arrumar página deslocando ao finalizar compra
 
 Mudança modelo usuário (nível da conta, conta ativa)
 Simulação tabela NSA
@@ -11,4 +9,4 @@ Remover seção crédito/pagamentos do perfil
 Simplificar animação hover perfil
 
 Banner e fotos da equipe página sobre
-Trocar alerts por SweetAlerts (quando adiciona mais do que o estoque permite no carrinho, filtro inválido no relatório de produtos)
+Trocar alerts por SweetAlerts

@@ -261,3 +261,12 @@ marquees.forEach(container => {
 if (localStorage.getItem('modo-escuro') === 'true') {
     document.body.classList.add('modo-escuro')
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const modalComprovante = document.getElementById("modalComprovante");
+
+    modalComprovante.addEventListener("hidden.bs.modal", () => {
+        // Recarrega a página ao fechar o modal
+        window.location.reload();
+    });
+});
