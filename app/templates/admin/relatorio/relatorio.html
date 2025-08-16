@@ -21,6 +21,7 @@
                     <div class="col">
                         <label for="periodo" class="form-label">Período</label>
                         <select class="form-select" id="periodo" name="periodo">
+                            <option value="hoje" {% if periodo=='hoje' %}selected{% endif %}>Hoje</option>
                             <option value="ultima_semana" {% if periodo=='ultima_semana' %}selected{% endif %}>Última
                                 Semana</option>
                             <option value="ultimo_mes" {% if periodo=='ultimo_mes' %}selected{% endif %}>Último Mês
