@@ -308,4 +308,47 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
     });
+
+
+    const ctxDonutPedidos = document.getElementById('graficoStatusPedidos');
+    if (ctxDonutPedidos) {
+        const labels = JSON.parse(ctxDonutPedidos.dataset.labels);
+        const valores = JSON.parse(ctxDonutPedidos.dataset.valores).map(Number);
+        const colors = ['#4e73df', '#1cc88a', '#e74a3b']; // azul, verde, vermelho
+
+        new Chart(ctxDonutPedidos.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: valores,
+                    backgroundColor: colors,
+                    hoverOffset: 15
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'right' },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                let valor = context.raw || 0;
+                                return `${valor} pedidos`;
+                            }
+                        }
+                    },
+                    datalabels: {
+                        color: '#fff',
+                        font: { weight: 'bold', size: 14 },
+                        formatter: (value, context) => {
+                            const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                            return ((value / total) * 100).toFixed(1) + '%';
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+    }
 });

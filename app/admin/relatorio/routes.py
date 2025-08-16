@@ -44,6 +44,7 @@ def relatorio():
     dados_geral = gerar_relatorio_geral(data_inicio, data_fim)
     dados_produtos = gerar_relatorio_produtos()
     dados_clientes = gerar_relatorio_clientes(data_inicio, data_fim)
+    dados_pedidos = gerar_relatorio_pedidos(data_inicio, data_fim)
 
     return render_template('admin/relatorio/relatorio.html', 
                            periodo=periodo,
@@ -53,7 +54,8 @@ def relatorio():
 
                            geral=dados_geral,
                            produto=dados_produtos,
-                           clientes=dados_clientes
+                           clientes=dados_clientes,
+                           pedidos=dados_pedidos
                            )
 
 
@@ -358,4 +360,126 @@ def gerar_relatorio_clientes(data_inicio, data_fim):
             "valores": list(crescimento_por_dia.values())
         },
         "top_clientes": top_clientes
+    }
+
+
+def gerar_relatorio_pedidos(data_inicio, data_fim):
+    # --- Período anterior ---
+    delta = data_fim - data_inicio
+    periodo_anterior_inicio = data_inicio - delta - timedelta(days=1)
+    periodo_anterior_fim = data_inicio - timedelta(days=1)
+
+    # --- Pedidos do período atual ---
+    pedidos = Pedido.query.filter(
+        Pedido.data_hora >= data_inicio,
+        Pedido.data_hora <= data_fim,
+    ).all()
+
+    # --- Pedidos do período anterior ---
+    pedidos_anteriores = Pedido.query.filter(
+        Pedido.data_hora >= periodo_anterior_inicio,
+        Pedido.data_hora <= periodo_anterior_fim
+    ).all()
+
+    # --- KPIs ---
+    def calcular_kpis(pedidos_periodo, pedidos_periodo_ant):
+        faturamento = sum(sum(item.quantidade * item.preco_unitario for item in p.itens) for p in pedidos_periodo if p.status == "retirado")
+        total_pedidos = len([p for p in pedidos_periodo if p.status == 'retirado'])
+        cancelados = len([p for p in pedidos_periodo if p.status == "cancelado"])
+        taxa_cancelamento = round((cancelados / total_pedidos) * 100, 1) if total_pedidos else 0
+        valor_medio = round(faturamento / total_pedidos, 2) if total_pedidos else 0
+
+        # Período anterior
+        faturamento_ant = sum(sum(item.quantidade * item.preco_unitario for item in p.itens) for p in pedidos_periodo_ant)
+        total_pedidos_ant = len(pedidos_periodo_ant)
+        cancelados_ant = len([p for p in pedidos_periodo_ant if p.status == "cancelado"])
+        taxa_cancelamento_ant = round((cancelados_ant / total_pedidos_ant) * 100, 1) if total_pedidos_ant else 0
+        valor_medio_ant = round(faturamento_ant / total_pedidos_ant, 2) if total_pedidos_ant else 0
+
+        # Variações
+        def calcular_variacao(atual, anterior):
+            if anterior == 0:
+                return 0
+            return round(((atual - anterior) / anterior) * 100, 1)
+
+        return {
+            "faturamento": faturamento,
+            "variacao_faturamento": calcular_variacao(faturamento, faturamento_ant),
+            "total_pedidos": total_pedidos,
+            "variacao_pedidos": calcular_variacao(total_pedidos, total_pedidos_ant),
+            "taxa_cancelamento": taxa_cancelamento,
+            "variacao_cancelamento": calcular_variacao(taxa_cancelamento, taxa_cancelamento_ant),
+            "valor_medio_pedido": valor_medio,
+            "variacao_valor_medio": calcular_variacao(valor_medio, valor_medio_ant)
+        }
+
+    kpis = calcular_kpis(pedidos, pedidos_anteriores)
+
+    # --- Gráfico de donut por status ---
+    status_contagem = {"pendente": 0, "retirado": 0, "cancelado": 0}
+    for p in pedidos:
+        if p.status in status_contagem:
+            status_contagem[p.status] += 1
+
+    # --- Frases destacadas ---
+    # Pico e menor volume de pedidos
+    pedidos_por_dia = {}
+    for p in pedidos:
+        dia = p.data_hora.strftime("%d/%m")
+        pedidos_por_dia[dia] = pedidos_por_dia.get(dia, 0) + 1
+
+    if pedidos_por_dia:
+        dia_pico = max(pedidos_por_dia, key=pedidos_por_dia.get)
+        pico_valor = pedidos_por_dia[dia_pico]
+        dia_menor = min(pedidos_por_dia, key=pedidos_por_dia.get)
+        menor_valor = pedidos_por_dia[dia_menor]
+    else:
+        dia_pico = dia_menor = "--"
+        pico_valor = menor_valor = 0
+
+    # Produto mais vendido e que mais contribui para faturamento
+    vendas_produtos = {}
+    faturamento_produtos = {}
+    for p in pedidos:
+        if p.status != "retirado":
+            continue  # ignora pedidos pendentes ou cancelados
+        for item in p.itens:
+            vendas_produtos[item.produto.descricao_produto] = vendas_produtos.get(item.produto.descricao_produto, 0) + item.quantidade
+            faturamento_produtos[item.produto.descricao_produto] = faturamento_produtos.get(item.produto.descricao_produto, 0) + item.quantidade * item.preco_unitario
+
+    if vendas_produtos:
+        # Mais vendidos e mais lucrativos
+        produto_mais_vendido = max(vendas_produtos, key=vendas_produtos.get)
+        percentual_vendas = round((vendas_produtos[produto_mais_vendido] / sum(vendas_produtos.values())) * 100, 1)
+        produto_mais_lucro = max(faturamento_produtos, key=faturamento_produtos.get)
+        percentual_lucro = round((faturamento_produtos[produto_mais_lucro] / sum(faturamento_produtos.values())) * 100, 1)
+
+        # Menos vendidos e menos lucrativos
+        produto_menos_vendido = min(vendas_produtos, key=vendas_produtos.get)
+        percentual_vendas_min = round((vendas_produtos[produto_menos_vendido] / sum(vendas_produtos.values())) * 100, 1)
+        produto_menos_lucro = min(faturamento_produtos, key=faturamento_produtos.get)
+        percentual_lucro_min = round((faturamento_produtos[produto_menos_lucro] / sum(faturamento_produtos.values())) * 100, 1)
+    else:
+        produto_mais_vendido = produto_mais_lucro = "--"
+        produto_menos_vendido = produto_menos_lucro = "--"
+        percentual_vendas = percentual_lucro = 0
+        percentual_vendas_min = percentual_lucro_min = 0
+
+    frases = [
+        f'<i class="bi bi-graph-up-arrow text-success"></i> O pico de pedidos ocorreu no dia <strong>{dia_pico}</strong> com <strong>{pico_valor}</strong> pedidos realizados.',
+        f'<i class="bi bi-graph-down-arrow text-danger"></i> O menor volume foi no dia <strong>{dia_menor}</strong> com apenas <strong>{menor_valor}</strong> pedidos.',
+        f'<i class="bi bi-cash-coin text-success"></i> O produto que mais contribui para o lucro é <strong>{produto_mais_lucro}</strong>, representando <strong>{percentual_lucro}%</strong> do faturamento total.',
+        f'<i class="bi bi-box-seam text-primary"></i> O produto com a maior quantidade vendida é <strong>{produto_mais_vendido}</strong>, representando <strong>{percentual_vendas}%</strong> do total de itens vendidos.',
+        f'<i class="bi bi-cash-stack text-warning"></i> O produto que menos contribui para o lucro é <strong>{produto_menos_lucro}</strong>, representando apenas <strong>{percentual_lucro_min}%</strong> do faturamento total.',
+        f'<i class="bi bi-box text-secondary"></i> O produto com a menor quantidade de vendas é <strong>{produto_menos_vendido}</strong>, representando apenas <strong>{percentual_vendas_min}%</strong> do total de itens vendidos.'
+    ]
+
+
+    return {
+        "kpis": kpis,
+        "grafico": {
+            "labels": list(status_contagem.keys()),
+            "valores": list(status_contagem.values())
+        },
+        "frases": frases
     }

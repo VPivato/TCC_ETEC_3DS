@@ -374,8 +374,8 @@
                         <div class="card text-center shadow-sm">
                             <div class="card-body">
                                 <h6 class="text-muted">Faturamento</h6>
-                                <h4 class="mb-0">R$ 45.230,00</h4>
-                                <small class="text-success">+12% este mês</small>
+                                <h4 class="mb-0">R$ {{ "%.2f" | format(pedidos.kpis.faturamento) }}</h4>
+                                <small class="text-success">{{ pedidos.kpis.variacao_faturamento}}</small>
                             </div>
                         </div>
                     </div>
@@ -383,8 +383,8 @@
                         <div class="card text-center shadow-sm">
                             <div class="card-body">
                                 <h6 class="text-muted">Total de Pedidos</h6>
-                                <h4 class="mb-0">1.245</h4>
-                                <small class="text-primary">+5% em relação ao mês passado</small>
+                                <h4 class="mb-0">{{ pedidos.kpis.total_pedidos }}</h4>
+                                <small class="text-primary">{{ pedidos.kpis.variacao_pedidos}}</small>
                             </div>
                         </div>
                     </div>
@@ -392,8 +392,8 @@
                         <div class="card text-center shadow-sm">
                             <div class="card-body">
                                 <h6 class="text-muted">Taxa de Cancelamento</h6>
-                                <h4 class="mb-0">3,2%</h4>
-                                <small class="text-danger">+0,4% este mês</small>
+                                <h4 class="mb-0">{{ pedidos.kpis.taxa_cancelamento }}%</h4>
+                                <small class="text-danger">{{ pedidos.kpis.variacao_cancelamento }}</small>
                             </div>
                         </div>
                     </div>
@@ -401,8 +401,8 @@
                         <div class="card text-center shadow-sm">
                             <div class="card-body">
                                 <h6 class="text-muted">Venda Média</h6>
-                                <h4 class="mb-0">R$ 36,30</h4>
-                                <small class="text-muted">+2% este mês</small>
+                                <h4 class="mb-0">R$ {{ "%.2f" | format(pedidos.kpis.valor_medio_pedido) }}</h4>
+                                <small class="text-muted">{{ pedidos.kpis.variacao_valor_medio }}</small>
                             </div>
                         </div>
                     </div>
@@ -417,7 +417,8 @@
                                 <h6 class="mb-0">Status dos Pedidos</h6>
                             </div>
                             <div class="card-body">
-                                <canvas id="graficoDonutPedidos" height="200"></canvas>
+                                <canvas id="graficoStatusPedidos" data-labels='{{ pedidos.grafico.labels | tojson }}'
+                                    data-valores='{{ pedidos.grafico.valores | tojson }}'></canvas>
                             </div>
                         </div>
                     </div>
@@ -429,7 +430,7 @@
                                 <h6 class="mb-0">Faturamento Diário</h6>
                             </div>
                             <div class="card-body">
-                                <canvas id="graficoFaturamentoDiario" height="200"></canvas>
+                                <canvas id="graficoFaturamentoDiario"></canvas>
                             </div>
                         </div>
                     </div>
@@ -441,13 +442,9 @@
                         <h6 class="mb-0">Resumo de Destaques</h6>
                     </div>
                     <div class="card-body">
-                        <p>📈 O pico de pedidos ocorreu no dia <strong>15/08</strong> com <strong>85 pedidos</strong>
-                            realizados.</p>
-                        <p>📉 O menor volume foi no dia <strong>03/08</strong> com apenas <strong>20 pedidos</strong>.
-                        </p>
-                        <p>🔍 O produto mais vendido no período foi <strong>Pizza Calabresa</strong>, representando
-                            <strong>18%</strong> de todos os pedidos.
-                        </p>
+                        {% for f in pedidos.frases %}
+                        <p>{{f|safe}}</p>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
