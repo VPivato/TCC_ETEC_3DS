@@ -75,6 +75,13 @@ def excluir_registro(modelo, id):
         if not registro:
             return jsonify({'erro': 'Registro não encontrado'}), 404
 
+        # 🔹 Caso especial: se for um Pedido, devolver o estoque
+        if modelo_classe.__tablename__ == "pedido":
+            for item in registro.itens:
+                produto = Produtos.query.get(item.produto_id)
+                if produto:
+                    produto.estoque_produto += item.quantidade
+
         # Busca e exclui imagem, se houver
         for attr_name in dir(registro):
             if 'imagem' in attr_name.lower():
@@ -84,7 +91,7 @@ def excluir_registro(modelo, id):
                     if os.path.exists(caminho_imagem) and os.path.normpath(imagem_path) != os.path.normpath('uploads/pfp/default.jpg'):
                         os.remove(caminho_imagem)
                 break  # remove apenas a primeira imagem
-        
+
         db.session.delete(registro)
         db.session.commit()
         return jsonify({'sucesso': True})
@@ -173,7 +180,15 @@ def excluir_varios():
     try:
         registros = db.session.query(modelo).filter(modelo.id.in_(ids)).all()
         for registro in registros:
-            for attr_name in dir(registro): # Busca e exclui imagem, se houver
+            # 🔹 Caso especial: devolução de estoque se for Pedido
+            if modelo.__tablename__ == "pedido":
+                for item in registro.itens:
+                    produto = Produtos.query.get(item.produto_id)
+                    if produto:
+                        produto.estoque_produto += item.quantidade
+
+            # Busca e exclui imagem, se houver
+            for attr_name in dir(registro):
                 if 'imagem' in attr_name.lower():
                     imagem_path = getattr(registro, attr_name, None)
                     if isinstance(imagem_path, str) and imagem_path.strip():
@@ -181,7 +196,9 @@ def excluir_varios():
                         if os.path.exists(caminho_imagem) and os.path.normpath(imagem_path) != os.path.normpath('uploads/pfp/default.jpg'):
                             os.remove(caminho_imagem)
                     break  # remove apenas a primeira imagem
+
             db.session.delete(registro)
+
         db.session.commit()
         return jsonify({'sucesso': True, 'mensagem': f'{len(registros)} registros excluídos.'})
     except Exception as e:

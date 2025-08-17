@@ -2,6 +2,8 @@ from datetime import datetime
 from ..extensions import db
 
 class Pedido(db.Model):
+    __tablename__ = "pedido"
+
     id = db.Column(db.Integer, primary_key=True)
     id_usuario = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
     data_hora = db.Column(db.DateTime, default=datetime.now)

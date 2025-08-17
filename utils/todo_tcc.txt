@@ -1,12 +1,9 @@
+Página controle de estoque
 Refinar os relatórios
-
-Devolver estoque ao cancelar pedido
 
 Mudança modelo usuário (nível da conta, conta ativa)
 Simulação tabela NSA
-Estatísticas perfil usuário
-Remover seção crédito/pagamentos do perfil
-Simplificar animação hover perfil
+CSS perfil / loja
 
 Banner e fotos da equipe página sobre
 Trocar alerts por SweetAlerts

@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, redirect, url_for, request
 from datetime import datetime
+from ...models.produto import Produtos
 from ...models.pedido import Pedido
 from ...models.usuario import Usuarios
 from ...extensions import db
@@ -66,14 +67,27 @@ def finalizar_pedido(pedido_id):
 @pedido_bp.route('/cancelar/<int:pedido_id>', methods=['POST', 'GET'])
 def cancelar_pedido(pedido_id):
     pedido = Pedido.query.get_or_404(pedido_id)
+
+    # só permite cancelar pedidos pendentes
     if pedido.status != 'pendente':
         return redirect(url_for('pedido.visualizar_pedidos'))
-    
+
     try:
+        # devolve o estoque de cada produto comprado
+        for item in pedido.itens:
+            produto = Produtos.query.get(item.produto_id)
+            if produto:  # só por segurança
+                produto.estoque_produto += item.quantidade
+
+        # atualiza status do pedido
         pedido.status = 'cancelado'
         pedido.data_cancelamento = datetime.now()
+
         db.session.commit()
-        return redirect(url_for('pedido.visualizar_pedidos', toast=f'Pedido #{pedido.id} foi cancelado com sucesso!'))
+        return redirect(url_for(
+            'pedido.visualizar_pedidos',
+            toast=f'Pedido #{pedido.id} foi cancelado com sucesso!'
+        ))
     except Exception as e:
         db.session.rollback()
         return f"ERROR:: {e}"
