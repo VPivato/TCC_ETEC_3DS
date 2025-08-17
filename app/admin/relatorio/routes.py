@@ -41,7 +41,7 @@ def relatorio():
                 data_inicio = datetime.strptime(data_inicio_str, "%Y-%m-%d").replace(hour=0, minute=0, second=0)
             if data_fim_str:
                 data_fim = datetime.strptime(data_fim_str, "%Y-%m-%d").replace(hour=23, minute=59, second=59)
-            periodo_formatado = f'Período personalizado ({data_inicio_str} até {data_fim_str})'
+            periodo_formatado = f'Nos últimos {(data_fim-data_inicio).days} dias'
         except ValueError:
             pass
     

@@ -23,16 +23,10 @@
                 <a href="#" id="geral-p" class="aside-a">Geral</a>
             </div>
 
-            <div id="saldo-pagamentos-wrapper" class="aside-wrapper">
-                <img src="{{ url_for('static', filename='images/perfil/cartao.png') }}" alt=""
-                    id="saldo-pagamentos-icon-perfil" class="aside-icon-perfil icon-perfil">
-                <a href="#" id="saldo-pagamentos-p" class="aside-a">Saldo / Pagamentos</a>
-            </div>
-
             <div id="comprovantes-wrapper" class="aside-wrapper">
                 <img src="{{ url_for('static', filename='images/perfil/comprovante.png') }}" alt=""
                     id="comprovantes-icon-perfil" class="aside-icon-perfil icon-perfil">
-                <a href="#" id="comprovantes-p" class="aside-a">Comprovantes</a>
+                <a href="#" id="comprovantes-p" class="aside-a">Histórico</a>
             </div>
 
             <div id="stats-wrapper" class="aside-wrapper">
@@ -55,7 +49,6 @@
 
             <div id="contato">
                 <p>Contate-nos: foodpaycontato@gmail.com</p>
-
             </div>
         </section>
     </aside>
@@ -83,11 +76,12 @@
                         placeholder="Fulano da Silva" disabled>
 
                     <label for="rm-perfil" class="label-opcao">RM</label>
-                    <input type="text" id="rm-perfil" name="rm-perfil" class="perfil-inpt" placeholder="07282" disabled>
+                    <input type="text" id="rm-perfil" name="rm-perfil" class="perfil-inpt"
+                        placeholder="{{ user_logado.nome_usuario }}" disabled>
 
                     <label for="cod-etec-perfil" class="label-opcao">Código ETEC</label>
-                    <input type="text" id="cod-etec-perfil" name="cod-etec-perfil" class="perfil-inpt" placeholder="055"
-                        disabled>
+                    <input type="text" id="cod-etec-perfil" name="cod-etec-perfil" class="perfil-inpt"
+                        placeholder="{{ user_logado.codigo_etec_usuario }}" disabled>
 
                     <label for="instituicao-perfil" class="label-opcao">Instituição</label>
                     <input type="text" id="instituicao-perfil" name="instituicao-perfil" class="perfil-inpt"
@@ -96,15 +90,9 @@
             </div>
         </div>
 
-        <div id="conteudo-saldo-pagamentos" class="conteudo-pagina">
-            <div class="main-content">
-                <h1 id="titulo-saldo-pagamentos" class="titulo-conteudo">Saldo / Pagamentos</h1>
-            </div>
-        </div>
-
         <div id="conteudo-comprovantes" class="conteudo-pagina">
             <div class="main-content">
-                <h1 id="titulo-comprovantes" class="titulo-conteudo">Comprovantes</h1>
+                <h1 id="titulo-comprovantes" class="titulo-conteudo">Histórico</h1>
 
                 {% if pedidos %}
                 <div class="row row-cols-1 row-cols-md-1 g-4">
@@ -144,7 +132,73 @@
 
         <div id="conteudo-stats" class="conteudo-pagina">
             <div class="main-content">
-                <h1 id="titulo-stats" class="titulo-conteudo">Estatísticas</h1>
+                <h1 id="titulo-stats" class="titulo-conteudo mb-4">Estatísticas</h1>
+
+                <!-- Filtro por período -->
+                <div class="mb-4">
+                    <label for="filtro-periodo" class="form-label fw-bold">Filtrar por período:</label>
+                    <select id="filtro-periodo" class="form-select w-auto" onchange="atualizarEstatisticas()">
+                        <option value="semana">Últimos 7 dias</option>
+                        <option value="mes">Últimos 30 dias</option>
+                        <option value="ano">Começo do ano</option>
+                    </select>
+                </div>
+
+                <!-- Cards de KPIs -->
+                <div class="row g-3 mb-4 text-center">
+                    <div class="col-12 col-md">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <i class="bi bi-bag-fill fs-2 mb-2 text-primary"></i>
+                                <h5 class="card-title">Total de pedidos</h5>
+                                <p class="card-text fs-5 fw-bold" id="total-pedidos">0</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <i class="bi bi-currency-dollar fs-2 mb-2 text-success"></i>
+                                <h5 class="card-title">Total gasto</h5>
+                                <p class="card-text fs-5 fw-bold" id="total-gasto">R$ 0,00</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-body">
+                                <i class="bi bi-graph-up fs-2 mb-2 text-warning"></i>
+                                <h5 class="card-title">Média por pedido</h5>
+                                <p class="card-text fs-5 fw-bold" id="media-pedido">R$ 0,00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Top 3 produtos mais comprados -->
+                <div class="mb-4">
+                    <h4 class="fw-bold mb-3"><i class="bi bi-star-fill text-warning"></i> Top 3 produtos</h4>
+                    <ul class="list-group" id="top-produtos">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Produto 1 <span class="badge bg-primary rounded-pill">0 unidades</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Produto 2 <span class="badge bg-primary rounded-pill">0 unidades</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Produto 3 <span class="badge bg-primary rounded-pill">0 unidades</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Gráfico de pizza: gasto por categoria -->
+                <div class="mb-4 card shadow-sm p-3">
+                    <h4 class="fw-bold mb-3">
+                        <i class="bi bi-pie-chart-fill text-info"></i> Gasto por categoria
+                    </h4>
+                    <canvas id="grafico-categoria"></canvas>
+                </div>
             </div>
         </div>
 
@@ -175,13 +229,11 @@
                 </form>
             </div>
         </div>
-
-        <div id="conteudo-sair" class="conteudo-pagina">
-        </div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
 <script src="{{ url_for('static', filename='js/perfil/perfil-script.js')}}"></script>
 {% endblock %}

@@ -156,3 +156,79 @@ document.getElementById('form-excluir-conta').addEventListener('submit', functio
         }
     })
 })
+
+
+const ctxCategoria = document.getElementById('grafico-categoria').getContext('2d');
+let graficoCategoria = new Chart(ctxCategoria, {
+    type: 'pie',
+    data: {
+        labels: [], // categorias
+        datasets: [{
+            label: 'Gasto por categoria',
+            data: [], // valores por categoria
+            backgroundColor: ['#0d6efd', '#198754', '#ffc107', '#dc3545', '#6f42c1'],
+            hoverOffset: 15
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+            },
+            tooltip: {
+                callbacks: {
+                    label: function (context) {
+                        const valor = context.raw;
+                        return `R$ ${valor.toFixed(2)}`;
+                    }
+                }
+            },
+            datalabels: {
+                color: '#fff',
+                formatter: (value, context) => {
+                    const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                    const perc = (value / total * 100).toFixed(1);
+                    return `${perc}%`;
+                },
+                font: {
+                    weight: 'bold',
+                    size: 14
+                }
+            }
+        }
+    },
+    plugins: [ChartDataLabels]  // ativa o plugin
+});
+
+
+// Função para atualizar estatísticas (AJAX)
+function atualizarEstatisticas() {
+    const periodo = document.getElementById('filtro-periodo').value;
+    fetch('/perfil/estatisticas-usuario', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: '{{ session["user_id"] }}', periodo })
+    })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('total-pedidos').textContent = data.total_pedidos;
+            document.getElementById('total-gasto').textContent = `R$ ${data.total_gasto.toFixed(2)}`;
+            document.getElementById('media-pedido').textContent = `R$ ${data.media_pedido.toFixed(2)}`;
+
+            const topProdutos = document.getElementById('top-produtos');
+            topProdutos.innerHTML = '';
+            data.top_produtos.forEach(prod => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                li.innerHTML = `${prod.nome} <span class="badge bg-primary rounded-pill">${prod.quantidade} unidades</span>`;
+                topProdutos.appendChild(li);
+            });
+
+            graficoCategoria.data.labels = data.gasto_por_categoria.labels;
+            graficoCategoria.data.datasets[0].data = data.gasto_por_categoria.valores;
+            graficoCategoria.update();
+        });
+}
+
+document.addEventListener('DOMContentLoaded', atualizarEstatisticas);

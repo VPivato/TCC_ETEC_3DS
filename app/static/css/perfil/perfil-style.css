@@ -73,30 +73,12 @@ body {
 }
 
 .aside-wrapper:not(.active):hover {
-    transition: 0.3s ease-out;
-    box-shadow: 0px 0px 10px 3px #001f057e;
     background-color: #278d2e;
     cursor: pointer;
-    letter-spacing: 2px;
 }
 
 .aside-wrapper:not(.active):hover .aside-icon-perfil {
     filter: invert(100%) opacity(100%);
-}
-
-.aside-wrapper::before {
-    content: "";
-    position: absolute;
-    bottom: 0px;
-    left: 0;
-    width: 0%;
-    height: 3px;
-    background-color: #58ff36e1;
-    transition: all .6s;
-}
-
-.aside-wrapper:not(.active):hover::before {
-    width: 100%;
 }
 
 .icon-perfil {
@@ -134,7 +116,6 @@ body {
     padding: 20px;
     border-radius: 10px;
     background: #EEE;
-    background: linear-gradient(315deg, #eaeaea 40%, #e0e0e0 100%);
     box-shadow: 2px 2px 10px 2px #00042531;
     margin: 40px auto;
 }
@@ -315,6 +296,11 @@ input:checked+.slider:before {
     transition: 0.4s ease-out;
     letter-spacing: 2px;
 
+}
+
+canvas {
+    min-height: 350px;
+    max-height: 350px;
 }
 
 @media (max-width: 1024px) {

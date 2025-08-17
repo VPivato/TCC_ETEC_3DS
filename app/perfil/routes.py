@@ -1,7 +1,7 @@
 import os
-from flask import Blueprint, render_template, session, redirect, url_for, request, current_app, send_file, abort
+from flask import Blueprint, render_template, session, redirect, url_for, request, current_app, send_file, abort, jsonify
 from werkzeug.utils import secure_filename
-from datetime import datetime
+from datetime import datetime, timedelta
 from ..models.usuario import Usuarios
 from ..models.notificacao import Notificacoes
 from ..models.pedido import Pedido
@@ -179,6 +179,70 @@ def baixar_comprovante(pedido_id):
         mimetype='application/pdf'
     )
 
+
+@perfil_bp.route("/estatisticas-usuario", methods=["POST"])
+def estatisticas_usuario():
+    dados = request.get_json()
+    user_id = session.get('user_id')  # id do usuário logado
+    periodo = dados.get('periodo', 'este_mes')
+
+    if not user_id:
+        return jsonify({"erro": "Usuário não autenticado."}), 401
+
+    # --- Ajuste do período ---
+    now = datetime.now()
+    if periodo == 'esta_semana':
+        data_inicio = now - timedelta(days=now.weekday())  # segunda-feira
+    elif periodo == 'este_mes':
+        data_inicio = datetime(now.year, now.month, 1)
+    elif periodo == 'comeco_ano':
+        data_inicio = datetime(now.year, 1, 1)
+    else:
+        data_inicio = datetime(now.year, 1, 1)  # fallback
+    data_inicio = data_inicio.replace(hour=0, minute=0, second=0)
+    data_fim = now.replace(hour=23, minute=59, second=59)
+
+    # --- Pedidos do usuário no período ---
+    pedidos = Pedido.query.filter(
+        Pedido.id_usuario == user_id,
+        Pedido.status == 'retirado',
+        Pedido.data_hora >= data_inicio,
+        Pedido.data_hora <= data_fim
+    ).all()
+
+    total_pedidos = len(pedidos)
+    total_gasto = sum(p.total for p in pedidos)
+    media_pedido = total_gasto / total_pedidos if total_pedidos > 0 else 0
+
+    # --- Top 3 produtos mais comprados ---
+    produtos_count = {}
+    for p in pedidos:
+        for item in p.itens:
+            if item.produto.descricao_produto in produtos_count:
+                produtos_count[item.produto.descricao_produto] += item.quantidade
+            else:
+                produtos_count[item.produto.descricao_produto] = item.quantidade
+    top_produtos_list = sorted(produtos_count.items(), key=lambda x: x[1], reverse=True)[:3]
+    top_produtos = [{"nome": nome, "quantidade": quantidade} for nome, quantidade in top_produtos_list]
+
+    # --- Gasto por categoria ---
+    gasto_categoria = {}
+    for p in pedidos:
+        for item in p.itens:
+            cat = item.produto.categoria_produto
+            gasto_categoria[cat] = gasto_categoria.get(cat, 0) + (item.quantidade * item.preco_unitario)
+    gasto_por_categoria = {
+        "labels": list(gasto_categoria.keys()),
+        "valores": list(gasto_categoria.values())
+    }
+
+    return jsonify({
+        "total_pedidos": total_pedidos,
+        "total_gasto": total_gasto,
+        "media_pedido": media_pedido,
+        "top_produtos": top_produtos,
+        "gasto_por_categoria": gasto_por_categoria
+    })
 
 
 @perfil_bp.route('/sair')
