@@ -95,19 +95,42 @@ function carregarTabela(modelo, checkboxVisiveis = false) {
                 btnExcluir.textContent = 'Excluir'
                 btnExcluir.classList.add('btn-excluir')
                 btnExcluir.onclick = () => {
-                    if (confirm(`Excluir o registro #${registro.id}?`)) {
-                        fetch(`/database/excluir/${modelo}/${registro.id}`, {
-                            method: 'POST'
-                        })
-                            .then(res => res.json())
-                            .then(response => {
-                                if (response.sucesso) {
-                                    carregarTabela(modelo, checkboxVisiveis) // Recarrega a tabela
-                                } else {
-                                    alert(response.erro)
-                                }
+                    Swal.fire({
+                        title: `Excluir registro #${registro.id}?`,
+                        text: "Essa ação não poderá ser desfeita!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#d33",
+                        cancelButtonColor: "#3085d6",
+                        confirmButtonText: "Sim, excluir",
+                        cancelButtonText: "Cancelar"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(`/database/excluir/${modelo}/${registro.id}`, {
+                                method: "POST"
                             })
-                    }
+                                .then(res => res.json())
+                                .then(response => {
+                                    if (response.sucesso) {
+                                        Swal.fire({
+                                            title: "Excluído!",
+                                            text: `O registro #${registro.id} foi removido com sucesso.`,
+                                            icon: "success",
+                                            timer: 2000,
+                                            showConfirmButton: false
+                                        })
+                                        carregarTabela(modelo, checkboxVisiveis) // Recarrega a tabela
+                                    } else {
+                                        Swal.fire({
+                                            title: "Erro!",
+                                            text: response.erro || "Não foi possível excluir o registro.",
+                                            icon: "error",
+                                            confirmButtonText: "OK"
+                                        })
+                                    }
+                                })
+                        }
+                    })
                 }
                 tdAcao.appendChild(btnExcluir)
                 row.appendChild(tdAcao)

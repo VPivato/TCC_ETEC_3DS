@@ -1,9 +1,10 @@
+Relatório feedbacks
 Página controle de estoque
 Refinar os relatórios
 
-Mudança modelo usuário (nível da conta, conta ativa)
-Simulação tabela NSA
 CSS perfil / loja
-
 Banner e fotos da equipe página sobre
-Trocar alerts por SweetAlerts
+
+Mudança modelo usuário (nível da conta, conta ativa)
+Cadastro admin
+Simulação tabela NSA

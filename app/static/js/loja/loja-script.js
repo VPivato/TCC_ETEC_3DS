@@ -241,10 +241,33 @@ async function finalizarCompra() {
 }
 
 function cancelarCompra() {
-    if (confirm('Tem certeza que deseja cancelar a compra?')) {
-        carrinho = {};
-        atualizarCarrinho();
+    if (!carrinho || Object.keys(carrinho).length === 0) {
+        return;
     }
+
+    Swal.fire({
+        title: 'Cancelar compra?',
+        text: 'Tem certeza que deseja cancelar sua compra? Todos os itens do carrinho serão removidos.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sim, cancelar',
+        cancelButtonText: 'Não, voltar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            carrinho = {};
+            atualizarCarrinho();
+
+            Swal.fire({
+                title: 'Compra cancelada!',
+                text: 'Todos os itens foram removidos do seu carrinho.',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+    });
 }
 
 const marquees = document.querySelectorAll('.marquee-container');

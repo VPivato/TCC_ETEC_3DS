@@ -128,7 +128,7 @@ document.querySelector('#sair-wrapper').addEventListener("click", () => {
         cancelButtonText: 'Cancelar'
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = "sair"
+            window.location.href = "/perfil/sair"
         }
         else {
             window.location.href = ""

@@ -14,7 +14,7 @@
         <div id="form-container">
             <h1>Cadastro de Produtos</h1>
             <form enctype="multipart/form-data" action="{{ url_for('produto.cadastrar') }}" method="POST"
-                id="form-cadastro-produto" onsubmit="return confirm('Confirmar o cadastro do produto?')">
+                id="form-cadastro-produto">
 
                 <label for="descricao">Descrição do produto</label>
                 <input type="text" name="descricao" id="descricao" required maxlength="40"
@@ -41,8 +41,6 @@
                     <button type="submit" id="enviar">Enviar</button>
                     <button type="reset" id="cancelar">Cancelar</button>
                 </div>
-
-
             </form>
         </div>
 
@@ -65,8 +63,7 @@
                         <td>
                             <form action="{{ url_for('produto.excluir_produto', id=registro.id) }}" method="POST"
                                 class="form-excluir">
-                                <button type="submit"
-                                    onclick="return confirm(`Confirmar exclusão do registro?`)">Excluir</button>
+                                <button type="submit">Excluir</button>
                             </form>
                             <button type="button" class="btn-editar" data-id="{{ registro.id }}"
                                 data-descricao="{{ registro.descricao_produto }}"
@@ -121,7 +118,8 @@
                         </div>
                         <div class="mb-3">
                             <label>Imagem</label>
-                            <input type="file" class="form-control" id="editar-imagem" name="imagem" style="margin-bottom: 10px;">
+                            <input type="file" class="form-control" id="editar-imagem" name="imagem"
+                                style="margin-bottom: 10px;">
                             <img src="" id="preview-modal">
                         </div>
                     </div>
