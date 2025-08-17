@@ -1,8 +1,9 @@
-Relatório feedbacks
 Página controle de estoque
+Arrumar as métricas de comparação do relatório de pedidos
+Adicionar clientes ativos e inativos no relatório de clientes
 Refinar os relatórios
 
-CSS perfil / loja
+Melhorias no CSS perfil
 Banner e fotos da equipe página sobre
 
 Mudança modelo usuário (nível da conta, conta ativa)

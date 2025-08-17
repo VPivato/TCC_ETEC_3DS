@@ -122,7 +122,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 data: valoresVendas,
                 borderColor: '#0d6efd',
                 backgroundColor: '#0d6efd33',
-                fill: true
+                fill: true,
+                tension: 0.3,
+                pointRadius: 4,
+                pointHoverRadius: 6
             }]
         },
         options: {
@@ -285,7 +288,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 borderColor: '#4e73df',
                 backgroundColor: 'rgba(78, 115, 223, 0.1)',
                 fill: true,
-                tension: 0.3
+                tension: 0.3,
+                pointRadius: 4,
+                pointHoverRadius: 6
             }]
         },
         options: {
@@ -351,4 +356,99 @@ document.addEventListener("DOMContentLoaded", function () {
             plugins: [ChartDataLabels]
         });
     }
+
+
+    // --- Gráfico de Distribuição por Tipo (Pizza) ---
+    const tipoCanvas = document.getElementById('grafico-feedback-tipo');
+    const tipoLabels = JSON.parse(tipoCanvas.dataset.labels.replace(/'/g, '"'));
+    const tipoValores = JSON.parse(tipoCanvas.dataset.valores.replace(/'/g, '"'));
+
+    new Chart(tipoCanvas, {
+        type: 'pie',
+        data: {
+            labels: tipoLabels,
+            datasets: [{
+                data: tipoValores,
+                backgroundColor: ['#0dcaf0', '#dc3545', '#198754', '#ffc107'],
+                hoverOffset: 15
+            }]
+        },
+        options: {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            const valor = context.raw;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const perc = ((valor / total) * 100).toFixed(1);
+                            return `${valor} (${perc}%)`;
+                        }
+                    }
+                },
+                legend: {
+                    position: 'right',
+                    labels: {
+                        boxWidth: 20,
+                        padding: 15
+                    }
+                },
+                datalabels: {
+                    color: '#fff',
+                    formatter: (value, ctx) => {
+                        const data = ctx.chart.data.datasets[0].data;
+                        const total = data.reduce((a, b) => a + b, 0);
+                        const perc = ((value / total) * 100).toFixed(1);
+                        return `${perc}%`;
+                    },
+                    font: {
+                        weight: 'bold',
+                        size: 14
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+
+    // --- Gráfico de Evolução ao Longo do Tempo (Linha) ---
+    const tempoCanvas = document.getElementById('grafico-feedback-tempo');
+    const tempoLabels = JSON.parse(tempoCanvas.dataset.labels.replace(/'/g, '"'));
+    const tempoValores = JSON.parse(tempoCanvas.dataset.valores.replace(/'/g, '"'));
+
+    new Chart(tempoCanvas, {
+        type: 'line',
+        data: {
+            labels: tempoLabels,
+            datasets: [{
+                label: 'Feedbacks por Dia',
+                data: tempoValores,
+                borderColor: '#0d6efd',
+                backgroundColor: 'rgba(13,110,253,0.2)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            return `${context.raw} feedback(s)`;
+                        }
+                    }
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: { title: { display: true, text: 'Data' } },
+                y: { title: { display: true, text: 'Quantidade' }, beginAtZero: true, precision: 0 }
+            },
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
 });

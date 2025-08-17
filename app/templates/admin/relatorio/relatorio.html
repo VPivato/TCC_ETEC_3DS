@@ -77,6 +77,10 @@
                 <button class="nav-link" id="pedidos-tab" data-bs-toggle="tab" data-bs-target="#pedidos" type="button"
                     role="tab">Pedidos</button>
             </li>
+            <li class="nav-item">
+                <button class="nav-link" id="pedidos-tab" data-bs-toggle="tab" data-bs-target="#feedbacks" type="button"
+                    role="tab">Feedbacks</button>
+            </li>
         </ul>
 
         <!-- Conteúdo das abas -->
@@ -446,6 +450,68 @@
                         {% for f in pedidos.frases %}
                         <p>{{f|safe}}</p>
                         {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Relatório de Feedbacks -->
+            <div class="tab-pane fade" id="feedbacks" role="tabpanel">
+                <!-- KPIs -->
+                <div class="row mb-4">
+                    <div class="col">
+                        <div class="card shadow-sm rounded-3 p-3 text-center">
+                            <h6>Total de Feedbacks</h6>
+                            <h2 id="kpi-total-feedbacks" class="fw-bold text-primary">{{ feedbacks.kpis.total_feedbacks
+                                }}</h2>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="card shadow-sm rounded-3 p-3 text-center">
+                            <h6>Dúvidas</h6>
+                            <h2 id="kpi-duvidas" class="fw-bold text-info">{{ feedbacks.kpis.duvidas }}</h2>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="card shadow-sm rounded-3 p-3 text-center">
+                            <h6>Reclamações</h6>
+                            <h2 id="kpi-reclamacoes" class="fw-bold text-danger">{{ feedbacks.kpis.reclamacoes }}</h2>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="card shadow-sm rounded-3 p-3 text-center">
+                            <h6>Sugestões</h6>
+                            <h2 id="kpi-sugestoes" class="fw-bold text-warning">{{ feedbacks.kpis.sugestoes }}</h2>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="card shadow-sm rounded-3 p-3 text-center">
+                            <h6>Elogios</h6>
+                            <h2 id="kpi-elogios" class="fw-bold text-success">{{ feedbacks.kpis.elogios }}</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficos -->
+                <div class="row">
+                    <!-- Gráfico de pizza: proporção por tipo -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card shadow-sm rounded-3 p-3 h-100">
+                            <h5 class="fw-bold mb-3">Distribuição por Tipo</h5>
+                            <canvas id="grafico-feedback-tipo" data-labels='{{ feedbacks.grafico_tipo.labels }}'
+                                data-valores='{{ feedbacks.grafico_tipo.valores }}'></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico de linha: evolução ao longo do tempo -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card shadow-sm rounded-3 p-3 h-100">
+                            <h5 class="fw-bold mb-3">Evolução dos Feedbacks</h5>
+                            <canvas id="grafico-feedback-tempo" data-labels='{{ feedbacks.grafico_tempo.labels }}' data-valores='{{ feedbacks.grafico_tempo.valores }}'></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
