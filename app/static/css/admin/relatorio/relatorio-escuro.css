@@ -1,0 +1,38 @@
+body.modo-escuro {
+    background: #17041f;
+    background: linear-gradient(135deg, #17041f 0%, #08031f 100%);
+    color: #d0d0d0;
+}
+
+body.modo-escuro .card {
+    background: #211726;
+    background: linear-gradient(135deg, #211726 0%, #1d183d 100%);
+}
+
+body.modo-escuro .nav-link.active {
+    background: #211726;
+    background: linear-gradient(135deg, #211726 0%, #1d183d 100%);
+    color: #d0d0d0;
+    border: none;
+}
+
+body.modo-escuro .tab-pane *,
+body.modo-escuro .form-label {
+    color: #d0d0d0;
+}
+
+body.modo-escuro .tab-pane h6 {
+    color: #d0d0d0 !important;
+}
+
+body.modo-escuro .li-prod {
+    background-color: transparent;
+}
+
+body.modo-escuro #produtoBusca {
+    color: #111;
+}
+
+body.modo-escuro #table-topCli *{
+    background-color: transparent !important;
+}

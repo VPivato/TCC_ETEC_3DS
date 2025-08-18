@@ -5,7 +5,13 @@ document.getElementById('btnBuscarProduto').addEventListener('click', function (
     const dataFim = document.getElementById('dataFim').value;
 
     if (!produtoBusca) {
-        alert("Digite um nome ou ID de produto.");
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campo vazio',
+            text: 'Digite um nome ou ID de produto.',
+            confirmButtonText: 'Ok',
+            confirmButtonColor: '#0d6efd'
+        });
         return;
     }
 
@@ -25,20 +31,25 @@ document.getElementById('btnBuscarProduto').addEventListener('click', function (
         .then(res => res.json())
         .then(data => {
             if (data.erro) {
-                alert(data.erro);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Erro',
+                    text: data.erro,
+                    confirmButtonText: 'Ok',
+                    confirmButtonColor: '#dc3545'
+                });
                 return;
             }
 
             // Atualiza painel
-            document.getElementById('descricaoProduto').innerHTML = `${data.descricao} #${data.id_prod}`
-            document.getElementById('categoriaProduto').innerHTML = data.categ
+            document.getElementById('descricaoProduto').innerHTML = `${data.descricao} #${data.id_prod}`;
+            document.getElementById('categoriaProduto').innerHTML = data.categ;
             document.getElementById('faturamentoProduto').innerHTML =
                 `R$ ${data.faturamento.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} <small class="text-success">(${data.variacaoFaturamento}%)</small>`;
             document.getElementById('vendasProduto').textContent = data.vendas;
             document.getElementById('estoqueProduto').textContent = `${data.estoque} unidades`;
             document.getElementById('presenteEm').textContent = `${data.percentualPedidos}% dos pedidos`;
             document.getElementById('participacaoTotal').textContent = `${data.percentualParticipacao}%`;
-
             // Atualiza gráfico
             if (window.graficoProduto) {
                 window.graficoProduto.destroy();
@@ -53,21 +64,27 @@ document.getElementById('btnBuscarProduto').addEventListener('click', function (
                         data: data.grafico.valores,
                         borderColor: '#0d6efd',
                         backgroundColor: 'rgba(13, 110, 253, 0.2)',
-                        fill: true
+                        fill: true,
+                        tension: 0.2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
                     }]
                 },
                 options: {
                     plugins: {
-                        legend: { position: '' },
+                        legend: { display: false },
                         tooltip: {
                             callbacks: {
                                 label: function (context) {
-                                    let valor = context.raw || 0
+                                    let valor = context.raw || 0;
                                     return 'R$ ' + valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
                                 }
                             }
                         }
                     },
+                    scales: {
+                        y: { beginAtZero: true }
+                    }
                 }
             });
         });
@@ -233,7 +250,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const labels = JSON.parse(ctxDonut.dataset.labels);
         const valores = JSON.parse(ctxDonut.dataset.valores).map(Number); // garante que são números
         const colors = ['#36A2EB', '#FFCE56', '#FF6384'];
-
         new Chart(ctxDonut.getContext('2d'), {
             type: 'doughnut',
             data: {
@@ -272,7 +288,6 @@ document.addEventListener("DOMContentLoaded", function () {
             plugins: [ChartDataLabels]
         });
     }
-
 
     const graficoEl = document.getElementById('graficoCrescimentoClientes');
     const labels = JSON.parse(graficoEl.dataset.labels);
@@ -314,13 +329,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-
     const ctxDonutPedidos = document.getElementById('graficoStatusPedidos');
     if (ctxDonutPedidos) {
         const labels = JSON.parse(ctxDonutPedidos.dataset.labels);
         const valores = JSON.parse(ctxDonutPedidos.dataset.valores).map(Number);
         const colors = ['#4e73df', '#1cc88a', '#e74a3b']; // azul, verde, vermelho
-
         new Chart(ctxDonutPedidos.getContext('2d'), {
             type: 'doughnut',
             data: {
@@ -357,12 +370,10 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-
     // --- Gráfico de Distribuição por Tipo (Pizza) ---
     const tipoCanvas = document.getElementById('grafico-feedback-tipo');
     const tipoLabels = JSON.parse(tipoCanvas.dataset.labels.replace(/'/g, '"'));
     const tipoValores = JSON.parse(tipoCanvas.dataset.valores.replace(/'/g, '"'));
-
     new Chart(tipoCanvas, {
         type: 'pie',
         data: {
@@ -414,7 +425,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const tempoCanvas = document.getElementById('grafico-feedback-tempo');
     const tempoLabels = JSON.parse(tempoCanvas.dataset.labels.replace(/'/g, '"'));
     const tempoValores = JSON.parse(tempoCanvas.dataset.valores.replace(/'/g, '"'));
-
     new Chart(tempoCanvas, {
         type: 'line',
         data: {
@@ -452,3 +462,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+if (localStorage.getItem('modo-escuro') === 'true') {
+    document.body.classList.add('modo-escuro')
+}

@@ -159,27 +159,27 @@
                 <!-- KPIs Produtos -->
                 <div class="row g-3 mb-4 text-center">
                     <div class="col-md-3 col-6">
-                        <div class="p-3 bg-light rounded shadow-sm">
+                        <div class="p-3 bg-light rounded shadow-sm card">
                             <h6 class="text-muted">Total de Produtos</h6>
                             <h4 class="fw-bold" id="kpi-total-produtos">{{ produto.kpis.total_produtos }}</h4>
                         </div>
                     </div>
                     <div class="col-md-3 col-6">
-                        <div class="p-3 bg-light rounded shadow-sm">
+                        <div class="p-3 bg-light rounded shadow-sm card">
                             <h6 class="text-muted">Produtos Esgotados</h6>
                             <h4 class="fw-bold text-danger" id="kpi-produtos-esgotados">{{
                                 produto.kpis.produtos_esgotados }}</h4>
                         </div>
                     </div>
                     <div class="col-md-3 col-6">
-                        <div class="p-3 bg-light rounded shadow-sm">
+                        <div class="p-3 bg-light rounded shadow-sm card">
                             <h6 class="text-muted">Estoque Baixo (&le; 5)</h6>
                             <h4 class="fw-bold text-warning" id="kpi-produtos-estoque-baixo">{{
                                 produto.kpis.produtos_estoque_baixo }}</h4>
                         </div>
                     </div>
                     <div class="col-md-3 col-6">
-                        <div class="p-3 bg-light rounded shadow-sm">
+                        <div class="p-3 bg-light rounded shadow-sm card">
                             <h6 class="text-muted">Estoque total</h6>
                             <h4 class="fw-bold" id="kpi-preco-medio">{{ produto.kpis.estoque_total }}</h4>
                         </div>
@@ -238,31 +238,31 @@
                             <div class="card-body">
                                 <h5 class="mb-2">Informações do Produto Selecionado</h5>
                                 <ul class="list-group list-group-flush fs-6">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Descrição</span>
                                         <span class="fw-bold" id="descricaoProduto">--</span>
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Categoria</span>
                                         <span class="fw-bold" id="categoriaProduto">--</span>
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Faturamento</span>
                                         <span class="fw-bold text-success" id="faturamentoProduto">R$ 0</span>
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Vendas</span>
                                         <span class="fw-bold" id="vendasProduto">0</span>
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Estoque Atual</span>
                                         <span class="fw-bold" id="estoqueProduto">0 unidades</span>
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Presente em</span>
                                         <span class="fw-bold" id="presenteEm">0% dos pedidos</span>
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Participação no faturamento total</span>
                                         <span class="fw-bold" id="participacaoTotal">0%</span>
                                     </li>
@@ -342,7 +342,7 @@
                             <div class="card-body">
                                 <h5 class="card-title">Top Clientes (por faturamento)</h5>
                                 <div class="table-responsive">
-                                    <table class="table table-striped">
+                                    <table class="table table-hover" id="table-topCli">
                                         <thead>
                                             <tr>
                                                 <th>Nome</th>
