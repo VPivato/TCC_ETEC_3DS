@@ -1,7 +1,7 @@
 Página controle de estoque
 Arrumar as métricas de comparação do relatório de pedidos
 Adicionar clientes ativos e inativos no relatório de clientes
-Exportar relatórios pdf / excel
+Exportar relatórios pdf
 Refinar os relatórios
 
 Melhorias no CSS perfil

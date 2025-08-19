@@ -86,7 +86,7 @@
         <!-- Conteúdo das abas -->
         <div class="tab-content mt-3">
             <!-- Relatório Geral -->
-            <div class="tab-pane fade show active" id="geral" role="tabpanel">
+            <div class="tab-pane fade show active" id="geral" role="tabpanel" data-relatorio="geral">
                 <!-- KPIs -->
                 <div class="row mb-4">
                     <div class="col-md-3">
@@ -155,7 +155,7 @@
             </div>
 
             <!-- Relatório de Produtos -->
-            <div class="tab-pane fade" id="produtos" role="tabpanel">
+            <div class="tab-pane fade" id="produtos" role="tabpanel" data-relatorio="produtos">
                 <!-- KPIs Produtos -->
                 <div class="row g-3 mb-4 text-center">
                     <div class="col-md-3 col-6">
@@ -238,31 +238,38 @@
                             <div class="card-body">
                                 <h5 class="mb-2">Informações do Produto Selecionado</h5>
                                 <ul class="list-group list-group-flush fs-6">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center li-prod">
+                                    <li
+                                        class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Descrição</span>
                                         <span class="fw-bold" id="descricaoProduto">--</span>
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center li-prod">
+                                    <li
+                                        class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Categoria</span>
                                         <span class="fw-bold" id="categoriaProduto">--</span>
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center li-prod">
+                                    <li
+                                        class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Faturamento</span>
                                         <span class="fw-bold text-success" id="faturamentoProduto">R$ 0</span>
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center li-prod">
+                                    <li
+                                        class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Vendas</span>
                                         <span class="fw-bold" id="vendasProduto">0</span>
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center li-prod">
+                                    <li
+                                        class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Estoque Atual</span>
                                         <span class="fw-bold" id="estoqueProduto">0 unidades</span>
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center li-prod">
+                                    <li
+                                        class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Presente em</span>
                                         <span class="fw-bold" id="presenteEm">0% dos pedidos</span>
                                     </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center li-prod">
+                                    <li
+                                        class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Participação no faturamento total</span>
                                         <span class="fw-bold" id="participacaoTotal">0%</span>
                                     </li>
@@ -283,7 +290,7 @@
             </div>
 
             <!-- Relatório de Clientes -->
-            <div class="tab-pane fade" id="clientes" role="tabpanel">
+            <div class="tab-pane fade" id="clientes" role="tabpanel" data-relatorio="clientes">
                 <!-- KPIs de Clientes -->
                 <div class="row text-center mb-4">
                     <div class="col-md-3">
@@ -306,7 +313,7 @@
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h6 class="text-muted">Clientes Ativos</h6>
-                                <h4 class="fw-bold">to do</h4>
+                                <h4 class="fw-bold">{{ clientes.kpis.clientes_ativos }}</h4>
                             </div>
                         </div>
                     </div>
@@ -314,7 +321,7 @@
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h6 class="text-muted">Clientes Inativos</h6>
-                                <h4 class="fw-bold text-danger">to do</h4>
+                                <h4 class="fw-bold text-danger">{{ clientes.kpis.clientes_inativos }}</h4>
                             </div>
                         </div>
                     </div>
@@ -372,7 +379,7 @@
             </div>
 
             <!-- Relatório de Pedidos -->
-            <div class="tab-pane fade" id="pedidos" role="tabpanel">
+            <div class="tab-pane fade" id="pedidos" role="tabpanel" data-relatorio="pedidos">
                 <!-- KPIs -->
                 <div class="row mb-4">
                     <div class="col-md-3">
@@ -455,7 +462,7 @@
             </div>
 
             <!-- Relatório de Feedbacks -->
-            <div class="tab-pane fade" id="feedbacks" role="tabpanel">
+            <div class="tab-pane fade" id="feedbacks" role="tabpanel" data-relatorio="feedbacks">
                 <!-- KPIs -->
                 <div class="row mb-4">
                     <div class="col">
@@ -510,10 +517,34 @@
                     <div class="col-md-6 mb-4">
                         <div class="card shadow-sm rounded-3 p-3 h-100">
                             <h5 class="fw-bold mb-3">Evolução dos Feedbacks</h5>
-                            <canvas id="grafico-feedback-tempo" data-labels='{{ feedbacks.grafico_tempo.labels }}' data-valores='{{ feedbacks.grafico_tempo.valores }}'></canvas>
+                            <canvas id="grafico-feedback-tempo" data-labels='{{ feedbacks.grafico_tempo.labels }}'
+                                data-valores='{{ feedbacks.grafico_tempo.valores }}'></canvas>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Botôes de exportação -->
+        <div class="d-flex justify-content-end mb-4">
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="bi bi-file-earmark-text me-1"></i> Exportar
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href="#" id="btnExportPdf" data-url="#">
+                            <i class="bi bi-file-earmark-pdf-fill me-1"></i> PDF
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#" id="btnExportExcel"
+                            data-url="{{ url_for('relatorio.exportar_relatorio_excel') }}">
+                            <i class="bi bi-file-earmark-spreadsheet-fill me-1"></i> Excel
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

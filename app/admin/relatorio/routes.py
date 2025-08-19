@@ -1,6 +1,9 @@
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, send_file, session
 from datetime import datetime, timedelta
 from collections import defaultdict
+import pandas as pd
+from io import BytesIO
+import re
 
 from ...models.pedido import Pedido
 from ...models.produto import Produtos
@@ -13,6 +16,7 @@ relatorio_bp = Blueprint("relatorio", __name__, url_prefix="/relatorio")
 
 @relatorio_bp.route('/')
 def relatorio():
+    session.clear()
     periodo = request.args.get("periodo", "ultima_semana")  # valor padrão
     periodo_formatado = ''
     data_inicio = None
@@ -44,6 +48,8 @@ def relatorio():
             periodo_formatado = f'Nos últimos {(data_fim-data_inicio).days} dias'
         except ValueError:
             pass
+    session['data_inicio'] = data_inicio
+    session['data_fim'] = data_fim
     
     dados_geral = gerar_relatorio_geral(data_inicio, data_fim)
     dados_produtos = gerar_relatorio_produtos(data_inicio, data_fim)
@@ -120,7 +126,6 @@ def gerar_relatorio_geral(data_inicio, data_fim):
         }
     }
 
-
 def gerar_relatorio_produtos(data_inicio, data_fim):
     todos_produtos = db.session.query(Produtos).all()
 
@@ -174,7 +179,6 @@ def gerar_relatorio_produtos(data_inicio, data_fim):
             "valores": valores_vendas_categoria
         }
     }
-
 
 @relatorio_bp.route("/produto", methods=["POST"])
 def relatorio_produto():
@@ -278,8 +282,8 @@ def relatorio_produto():
         ) if faturamento_anterior > 0 else 0
     else:
         variacao_faturamento = None  # período personalizado
-
-    return jsonify({
+    
+    resposta = {
         "descricao": produto.descricao_produto,
         "id_prod": int(produto.id),
         "categ": produto.categoria_produto,
@@ -293,8 +297,11 @@ def relatorio_produto():
             "labels": list(vendas_por_dia.keys()),
             "valores": list(vendas_por_dia.values())
         }
-    })
+    }
+    
+    session['produto_especifico'] = resposta
 
+    return jsonify(resposta)
 
 def gerar_relatorio_clientes(data_inicio, data_fim):
     # --- Total de clientes ---
@@ -352,7 +359,9 @@ def gerar_relatorio_clientes(data_inicio, data_fim):
 
     kpis_clientes = {
         "total_clientes": total_clientes,
-        "novos_clientes": novos_clientes
+        "novos_clientes": novos_clientes,
+        "clientes_ativos": "to do",
+        "clientes_inativos": "to do"
     }
 
     return {
@@ -556,3 +565,190 @@ def gerar_relatorio_feedbacks(data_inicio, data_fim):
             "valores": valores_tempo
         }
     }
+
+
+@relatorio_bp.route('/exportar/excel', methods=['POST'])
+def exportar_relatorio_excel():
+    relatorio_ativo = request.form.get('relatorio')
+
+    data_inicio = session.get('data_inicio')
+    data_fim = session.get('data_fim')
+
+    geral = gerar_relatorio_geral(data_inicio, data_fim)
+    produtos = gerar_relatorio_produtos(data_inicio, data_fim)
+    clientes = gerar_relatorio_clientes(data_inicio, data_fim)
+    pedidos = gerar_relatorio_pedidos(data_inicio, data_fim)
+    feedbacks = gerar_relatorio_feedbacks(data_inicio, data_fim)
+
+    print(geral)
+
+    # Inicializa o BytesIO para o Excel
+    output = BytesIO()
+
+    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+        # Relatório Geral
+        if relatorio_ativo == 'geral':
+            # KPIs
+            dados_kpis = [
+                {"KPI": "Vendas Totais", "Valor": geral['kpis']['vendas_totais']},
+                {"KPI": "Pedidos", "Valor": geral['kpis']['total_pedidos']},
+                {"KPI": "Clientes Atendidos", "Valor": geral['kpis']['clientes_atendidos']},
+                {"KPI": "Venda Média", "Valor": geral['kpis']['venda_media']}
+            ]
+            df_kpis = pd.DataFrame(dados_kpis)
+            df_kpis.to_excel(writer, index=False, sheet_name='KPIs Gerais')
+
+            # Gráfico: Vendas por Dia
+            df_vendas_dia = pd.DataFrame({
+                "Data": geral['grafico_vendas_dia']['labels'],
+                "Vendas (R$)": geral['grafico_vendas_dia']['valores']
+            })
+            df_vendas_dia.to_excel(writer, index=False, sheet_name='Vendas por Dia')
+
+            # Gráfico: Vendas por Produto
+            df_vendas_produto = pd.DataFrame({
+                "Produto": geral['grafico_produtos']['labels'],
+                "Vendas (un.)": geral['grafico_produtos']['valores']
+            })
+            df_vendas_produto.to_excel(writer, index=False, sheet_name='Vendas por Produto')
+
+        # Relatório de Produtos
+        elif relatorio_ativo == 'produtos':
+            # KPIs produtos
+            kpis_produtos = [
+                {"KPI": "Total de Produtos", "Valor": produtos['kpis']['total_produtos']},
+                {"KPI": "Produtos Esgotados", "Valor": produtos['kpis']['produtos_esgotados']},
+                {"KPI": "Estoque Baixo", "Valor": produtos['kpis']['produtos_estoque_baixo']},
+                {"KPI": "Estoque Total", "Valor": produtos['kpis']['estoque_total']}
+            ]
+            df_kpis = pd.DataFrame(kpis_produtos)
+            df_kpis.to_excel(writer, index=False, sheet_name='KPIs Produtos')
+
+            # Vendas por categoria
+            df_categoria = pd.DataFrame({
+                "Categoria": produtos['grafico_vendas_categoria']['labels'],
+                "Vendas (R$)": produtos['grafico_vendas_categoria']['valores']
+            })
+            df_categoria.to_excel(writer, index=False, sheet_name='Vendas por Categoria')
+
+            # Estoque baixo
+            df_estoque_baixo = pd.DataFrame({
+                "Produto": produtos['grafico_estoque_baixo']['labels'],
+                "Estoque": produtos['grafico_estoque_baixo']['valores']
+            })
+            df_estoque_baixo.to_excel(writer, index=False, sheet_name='Estoque Baixo')
+
+            # Verificar se existe produto pesquisado
+            produto_especifico = session.get("produto_especifico")  # armazenar após busca no frontend
+            if produto_especifico:
+                # Informações gerais do produto
+                df_info = pd.DataFrame([{
+                    "ID": produto_especifico['id_prod'],
+                    "Descrição": produto_especifico['descricao'],
+                    "Categoria": produto_especifico['categ'],
+                    "Faturamento (R$)": produto_especifico['faturamento'],
+                    "Variação Faturamento (%)": produto_especifico['variacaoFaturamento'],
+                    "Total Vendas": produto_especifico['vendas'],
+                    "Estoque Atual": produto_especifico['estoque'],
+                    "% Pedidos": produto_especifico['percentualPedidos'],
+                    "% Participação": produto_especifico['percentualParticipacao']
+                }])
+                df_info.to_excel(writer, index=False, sheet_name='Produto Selecionado')
+
+                # Gráfico do produto específico
+                df_grafico_prod = pd.DataFrame({
+                    "Dia": produto_especifico['grafico']['labels'],
+                    "Vendas (R$)": produto_especifico['grafico']['valores']
+                })
+                df_grafico_prod.to_excel(writer, index=False, sheet_name='Vendas Produto')
+
+        # Relatório de Clientes
+        elif relatorio_ativo == 'clientes':
+            # KPIs de Clientes (com .get para evitar KeyError)
+            df_kpis = pd.DataFrame([
+                {"KPI": "Total de Clientes", "Valor": clientes['kpis'].get('total_clientes', 0)},
+                {"KPI": "Novos no Período", "Valor": clientes['kpis'].get('novos_clientes', 0)},
+                {"KPI": "Clientes Ativos", "Valor": clientes['kpis'].get('clientes_ativos', 0)},
+                {"KPI": "Clientes Inativos", "Valor": clientes['kpis'].get('clientes_inativos', 0)},
+            ])
+            df_kpis.to_excel(writer, index=False, sheet_name='KPIs Clientes')
+
+            # Gráfico de Crescimento (labels/valores -> linhas no Excel)
+            df_crescimento = pd.DataFrame({
+                "Dia": clientes['grafico']['labels'],
+                "Novos Clientes": clientes['grafico']['valores']
+            })
+            df_crescimento.to_excel(writer, index=False, sheet_name='Crescimento Clientes')
+
+            # Top Clientes (por faturamento)
+            top_clientes = clientes.get('top_clientes', [])
+            df_top = pd.DataFrame([
+                {
+                    "Nome": c.get('nome'),
+                    "Código ETEC": c.get('codigo_etec'),
+                    "Email": c.get('email'),
+                    "Total de Pedidos": c.get('total_pedidos'),
+                    "Faturamento Total (R$)": c.get('faturamento_total')
+                } for c in top_clientes
+            ])
+            df_top.to_excel(writer, index=False, sheet_name='Top Clientes')
+
+        # Relatório de Pedidos
+        elif relatorio_ativo == 'pedidos':
+            def limpar_html(texto):
+                return re.sub(r'<.*?>', '', texto)
+            # KPIs
+            df_kpis = pd.DataFrame([
+                {"KPI": "Faturamento", "Valor": pedidos['kpis']['faturamento']},
+                {"KPI": "Total de Pedidos", "Valor": pedidos['kpis']['total_pedidos']},
+                {"KPI": "Taxa de Cancelamento", "Valor": pedidos['kpis']['taxa_cancelamento']},
+                {"KPI": "Venda Média", "Valor": pedidos['kpis']['valor_medio_pedido']}
+            ])
+            df_kpis.to_excel(writer, index=False, sheet_name='KPIs Pedidos')
+
+            # Gráfico de status dos pedidos
+            df_status = pd.DataFrame({
+                "Status": pedidos['grafico']['labels'],
+                "Quantidade": pedidos['grafico']['valores']
+            })
+            df_status.to_excel(writer, index=False, sheet_name='Status dos Pedidos')
+
+            # Frases de destaques
+            frases_puras = [limpar_html(f) for f in pedidos['frases']]
+            df_frases = pd.DataFrame({"Destaques": frases_puras})
+            df_frases.to_excel(writer, index=False, sheet_name='Insights')
+
+        # Relatório de Feedbacks
+        elif relatorio_ativo == 'feedbacks':
+            # KPIs
+            df_kpis = pd.DataFrame([
+                {"KPI": "Total de Feedbacks", "Valor": feedbacks['kpis']['total_feedbacks']},
+                {"KPI": "Dúvidas", "Valor": feedbacks['kpis']['duvidas']},
+                {"KPI": "Reclamações", "Valor": feedbacks['kpis']['reclamacoes']},
+                {"KPI": "Sugestões", "Valor": feedbacks['kpis']['sugestoes']},
+                {"KPI": "Elogios", "Valor": feedbacks['kpis']['elogios']}
+            ])
+            df_kpis.to_excel(writer, index=False, sheet_name='KPIs Feedbacks')
+
+            # Gráfico de Pizza - Distribuição por Tipo
+            df_tipo = pd.DataFrame({
+                "Tipo": feedbacks["grafico_tipo"]["labels"],
+                "Quantidade": feedbacks["grafico_tipo"]["valores"]
+            })
+            df_tipo.to_excel(writer, index=False, sheet_name='Distribuição por Tipo')
+
+            # Gráfico de Linha - Evolução ao longo do Tempo
+            df_tempo = pd.DataFrame({
+                "Data": feedbacks["grafico_tempo"]["labels"],
+                "Quantidade": feedbacks["grafico_tempo"]["valores"]
+            })
+            df_tempo.to_excel(writer, index=False, sheet_name='Evolução no Tempo')
+
+
+    output.seek(0)
+
+    return send_file(
+        output,
+        download_name=f'relatorio_{relatorio_ativo}.xlsx',
+        as_attachment=True
+    )
