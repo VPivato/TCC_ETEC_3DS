@@ -3,7 +3,6 @@ Adicionar clientes ativos e inativos no relatório de clientes
 Session produto específico
 
 Melhorias no CSS perfil
-Melhorar animação botão adicionar ao carrinho
 Página termos de uso
 Página política de privacidade
 Banner e fotos da equipe página sobre

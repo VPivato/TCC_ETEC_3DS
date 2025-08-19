@@ -26,15 +26,18 @@ new Swiper('.card-wrapper', {
     },
 });
 
-function feedbackVisualBotao(idProduto) {
-    const botao = document.getElementById(`btn-produto-${idProduto}`);
-    if (!botao) return;
+const botoes = document.querySelectorAll('.btn-adicionar-produto');
 
-    botao.classList.add('btn-adicionado');
-    setTimeout(() => {
-        botao.classList.remove('btn-adicionado');
-    }, 600);
-}
+botoes.forEach(btn => {
+    btn.addEventListener('touchstart', () => {
+        btn.style.transform = 'scale(0.9)';
+        btn.style.backgroundColor = '#218838';
+    });
+    btn.addEventListener('touchend', () => {
+        btn.style.transform = 'scale(1)';
+        btn.style.backgroundColor = '#28a745';
+    });
+});
 
 let carrinho = {};
 let total = 0;
@@ -54,7 +57,6 @@ function adicionarProduto(id, nome, preco, estoqueDisponivel) {
         };
     }
     atualizarCarrinho();
-    feedbackVisualBotao(id);
 }
 
 function atualizarCarrinho() {

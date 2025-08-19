@@ -31,13 +31,15 @@ main {
 }
 
 .categoria-produto {
-    padding: 10px 20px;
+    margin: 0 0 20px 0;
 }
 
 .titulo-categoria {
+    margin: 0;
     text-transform: capitalize;
-    padding: 10px 0 0 75px;
+    text-align: center;
     font-size: 2rem;
+    padding: 15px 0 0;
 }
 
 .card-wrapper {
@@ -62,11 +64,6 @@ main {
     color: red;
 }
 
-/* Layout do container swiper */
-.swiper-container {
-    padding: 1rem 0;
-}
-
 /* Cada card de produto */
 .card-produto {
     background-color: #fff;
@@ -81,7 +78,7 @@ main {
     text-align: center;
 }
 
-.produtos-container > li:hover {
+.produtos-container>li:hover {
     transition: transform 0.2s ease;
     transform: translateY(-5px);
 }
@@ -119,8 +116,9 @@ main {
     margin-bottom: 0.75rem;
 }
 
-/* Botão de adicionar */
+
 .btn-adicionar-produto {
+    font-family: Arial, Helvetica, sans-serif;
     background-color: #28a745;
     border: none;
     color: white;
@@ -129,16 +127,25 @@ main {
     height: 36px;
     font-size: 1.2rem;
     font-weight: bold;
-    line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s ease;
-    transition: all 0.1s ease-out;
+    line-height: 1;
+    cursor: pointer;
+    transition: transform 0.1s ease, background-color 0.2s ease;
 }
 
 .btn-adicionar-produto:hover {
-    background-color: #188a4b;
+    background-color: #218838;
+}
+
+.btn-adicionar-produto:active {
+    transform: scale(0.9);
+    background-color: #218838;
+}
+
+.btn-adicionar-produto {
+    -webkit-tap-highlight-color: transparent;
 }
 
 #aside-carrinho {
@@ -187,21 +194,6 @@ main {
     100% {
         transform: translateX(-100%);
     }
-}
-
-.btn-adicionado {
-    width: 25%;
-    border-radius: 20px;
-    background-color: #198754 !important;
-    /* verde */
-    color: white !important;
-    border-color: #198754 !important;
-    transition: all 0.1s ease-out;
-}
-
-.btn-adicionado::after {
-    content: '✔️';
-    margin-left: 5px;
 }
 
 /* Estilo para produtos com estoque 0 */
