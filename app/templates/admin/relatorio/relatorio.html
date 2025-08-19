@@ -129,20 +129,8 @@
 
                 <!-- Gráficos -->
                 <div class="row mb-4">
-                    <!-- Vendas por Dia -->
-                    <div class="col-md-6">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title">Vendas por Dia (R$)</h5>
-                                <canvas id="graficoVendasDia"
-                                    data-labels='{{ geral.grafico_vendas_dia.labels | tojson }}'
-                                    data-valores='{{ geral.grafico_vendas_dia.valores | tojson }}'></canvas>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Participação por Produto -->
-                    <div class="col-md-6">
+                    <div class="col">
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title">Vendas por produto (un.)</h5>
@@ -150,6 +138,18 @@
                                     data-valores='{{ geral.grafico_produtos.valores | tojson }}'></canvas>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Insights adicionais -->
+                <div class="card shadow-sm mt-3 mb-4">
+                    <div class="card-header">
+                        <h6 class="mb-0">Resumo de Destaques</h6>
+                    </div>
+                    <div class="card-body">
+                        {% for f in geral.frases %}
+                        <p>{{f|safe}}</p>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -343,7 +343,7 @@
                 </div>
 
                 <!-- Lista de Top Clientes -->
-                <div class="row">
+                <div class="row mb-4">
                     <div class="col-12">
                         <div class="card shadow-sm">
                             <div class="card-body">
@@ -387,7 +387,6 @@
                             <div class="card-body">
                                 <h6 class="text-muted">Faturamento</h6>
                                 <h4 class="mb-0">R$ {{ "%.2f" | format(pedidos.kpis.faturamento) }}</h4>
-                                <small class="text-success">{{ pedidos.kpis.variacao_faturamento}}</small>
                             </div>
                         </div>
                     </div>
@@ -396,7 +395,6 @@
                             <div class="card-body">
                                 <h6 class="text-muted">Total de Pedidos</h6>
                                 <h4 class="mb-0">{{ pedidos.kpis.total_pedidos }}</h4>
-                                <small class="text-primary">{{ pedidos.kpis.variacao_pedidos}}</small>
                             </div>
                         </div>
                     </div>
@@ -405,7 +403,6 @@
                             <div class="card-body">
                                 <h6 class="text-muted">Taxa de Cancelamento</h6>
                                 <h4 class="mb-0">{{ pedidos.kpis.taxa_cancelamento }}%</h4>
-                                <small class="text-danger">{{ pedidos.kpis.variacao_cancelamento }}</small>
                             </div>
                         </div>
                     </div>
@@ -414,7 +411,6 @@
                             <div class="card-body">
                                 <h6 class="text-muted">Venda Média</h6>
                                 <h4 class="mb-0">R$ {{ "%.2f" | format(pedidos.kpis.valor_medio_pedido) }}</h4>
-                                <small class="text-muted">{{ pedidos.kpis.variacao_valor_medio }}</small>
                             </div>
                         </div>
                     </div>
@@ -429,34 +425,23 @@
                                 <h6 class="mb-0">Status dos Pedidos</h6>
                             </div>
                             <div class="card-body">
-                                <canvas id="graficoStatusPedidos" data-labels='{{ pedidos.grafico.labels | tojson }}'
-                                    data-valores='{{ pedidos.grafico.valores | tojson }}'></canvas>
+                                <canvas id="graficoStatusPedidos"
+                                    data-labels='{{ pedidos.grafico_status.labels | tojson }}'
+                                    data-valores='{{ pedidos.grafico_status.valores | tojson }}'></canvas>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Linha de faturamento -->
-                    <div class="col-md-6 mb-4">
-                        <div class="card shadow-sm h-100">
-                            <div class="card-header">
-                                <h6 class="mb-0">Faturamento Diário</h6>
-                            </div>
+                    <!-- Vendas por Dia -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm">
                             <div class="card-body">
-                                <canvas id="graficoFaturamentoDiario"></canvas>
+                                <h5 class="card-title">Vendas por Dia (R$)</h5>
+                                <canvas id="graficoVendasDia"
+                                    data-labels='{{ pedidos.grafico_vendas_dia.labels | tojson }}'
+                                    data-valores='{{ pedidos.grafico_vendas_dia.valores | tojson }}'></canvas>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Insights adicionais -->
-                <div class="card shadow-sm mt-3">
-                    <div class="card-header">
-                        <h6 class="mb-0">Resumo de Destaques</h6>
-                    </div>
-                    <div class="card-body">
-                        {% for f in pedidos.frases %}
-                        <p>{{f|safe}}</p>
-                        {% endfor %}
                     </div>
                 </div>
             </div>
