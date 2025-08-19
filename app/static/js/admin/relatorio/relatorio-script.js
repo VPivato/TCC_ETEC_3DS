@@ -151,6 +151,47 @@ btnExcel.addEventListener('click', function (e) {
     document.body.removeChild(form);
 });
 
+const btnPDF = document.getElementById('btnExportPDF')
+btnPDF.addEventListener('click', function (e) {
+    e.preventDefault();
+
+    // Detecta aba ativa
+    const abaAtiva = document.querySelector('.tab-pane.active');
+    if (!abaAtiva) {
+        Swal.fire('Erro', 'Nenhum relatório ativo encontrado.', 'error');
+        return;
+    }
+
+    // Pega o id da aba ativa para identificar o relatório
+    const relatorioAtivo = abaAtiva.id;
+
+    // Cria form dinamicamente
+    const form = document.createElement('form');
+    form.method = 'POST';
+    const url = btnPDF.dataset.url;
+    form.action = url;
+    form.target = '_blank';
+
+    // Adiciona CSRF token se necessário
+    const csrf = document.createElement('input');
+    csrf.type = 'hidden';
+    csrf.name = 'csrf_token';
+    csrf.value = '{{ csrf_token() }}';
+    form.appendChild(csrf);
+
+    // Adiciona qual relatório exportar
+    const inputRelatorio = document.createElement('input');
+    inputRelatorio.type = 'hidden';
+    inputRelatorio.name = 'relatorio';
+    inputRelatorio.value = relatorioAtivo;
+    form.appendChild(inputRelatorio);
+
+    document.body.appendChild(form);
+    form.submit();
+    document.body.removeChild(form);
+});
+
+
 document.addEventListener("DOMContentLoaded", function () {
     const selectPeriodo = document.getElementById("periodo");
     const camposData = document.querySelectorAll(".campo-data");

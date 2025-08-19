@@ -1,13 +1,22 @@
 from flask import Blueprint, render_template, request, jsonify, send_file, session
 from datetime import datetime, timedelta
 from collections import defaultdict
-import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use("Agg")  # backend para geração de imagens sem interface gráfica
 from io import BytesIO
+import pandas as pd
 import re
+
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, PageBreak
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_CENTER
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
+from reportlab.lib import colors
 
 from ...models.pedido import Pedido
 from ...models.produto import Produtos
-from ...models.item_pedido import ItemPedido
 from ...models.usuario import Usuarios
 from ...models.feedback import Feedbacks
 from ...extensions import db
@@ -49,6 +58,7 @@ def relatorio():
             pass
     session['data_inicio'] = data_inicio
     session['data_fim'] = data_fim
+    session['periodo_formatado'] = periodo_formatado
     
     dados_geral = gerar_relatorio_geral(data_inicio, data_fim)
     dados_produtos = gerar_relatorio_produtos(data_inicio, data_fim)
@@ -439,7 +449,6 @@ def gerar_relatorio_clientes(data_inicio, data_fim):
         "top_clientes": top_clientes
     }
 
-
 def gerar_relatorio_pedidos(data_inicio, data_fim):
     # --- Pedidos do período atual ---
     pedidos = Pedido.query.filter(
@@ -492,7 +501,6 @@ def gerar_relatorio_pedidos(data_inicio, data_fim):
             "valores": valores_vendas_dia
         }
     }
-
 
 def gerar_relatorio_feedbacks(data_inicio, data_fim):
     # Query base com filtro de datas
@@ -552,20 +560,13 @@ def exportar_relatorio_excel():
     data_inicio = session.get('data_inicio')
     data_fim = session.get('data_fim')
 
-    geral = gerar_relatorio_geral(data_inicio, data_fim)
-    produtos = gerar_relatorio_produtos(data_inicio, data_fim)
-    clientes = gerar_relatorio_clientes(data_inicio, data_fim)
-    pedidos = gerar_relatorio_pedidos(data_inicio, data_fim)
-    feedbacks = gerar_relatorio_feedbacks(data_inicio, data_fim)
-
-    print(geral)
-
     # Inicializa o BytesIO para o Excel
     output = BytesIO()
 
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         # Relatório Geral
         if relatorio_ativo == 'geral':
+            geral = gerar_relatorio_geral(data_inicio, data_fim)
             # KPIs
             dados_kpis = [
                 {"KPI": "Vendas Totais", "Valor": geral['kpis']['vendas_totais']},
@@ -592,6 +593,7 @@ def exportar_relatorio_excel():
 
         # Relatório de Produtos
         elif relatorio_ativo == 'produtos':
+            produtos = gerar_relatorio_produtos(data_inicio, data_fim)
             # KPIs produtos
             kpis_produtos = [
                 {"KPI": "Total de Produtos", "Valor": produtos['kpis']['total_produtos']},
@@ -642,6 +644,7 @@ def exportar_relatorio_excel():
 
         # Relatório de Clientes
         elif relatorio_ativo == 'clientes':
+            clientes = gerar_relatorio_clientes(data_inicio, data_fim)
             # KPIs de Clientes (com .get para evitar KeyError)
             df_kpis = pd.DataFrame([
                 {"KPI": "Total de Clientes", "Valor": clientes['kpis'].get('total_clientes', 0)},
@@ -673,6 +676,7 @@ def exportar_relatorio_excel():
 
         # Relatório de Pedidos
         elif relatorio_ativo == 'pedidos':
+            pedidos = gerar_relatorio_pedidos(data_inicio, data_fim)
             # KPIs
             df_kpis = pd.DataFrame([
                 {"KPI": "Faturamento", "Valor": pedidos['kpis']['faturamento']},
@@ -698,6 +702,7 @@ def exportar_relatorio_excel():
 
         # Relatório de Feedbacks
         elif relatorio_ativo == 'feedbacks':
+            feedbacks = gerar_relatorio_feedbacks(data_inicio, data_fim)
             # KPIs
             df_kpis = pd.DataFrame([
                 {"KPI": "Total de Feedbacks", "Valor": feedbacks['kpis']['total_feedbacks']},
@@ -729,4 +734,527 @@ def exportar_relatorio_excel():
         output,
         download_name=f'relatorio_{relatorio_ativo}.xlsx',
         as_attachment=True
+    )
+
+@relatorio_bp.route("/exportar/pdf", methods=['POST'])
+def exportar_relatorio_pdf():
+    relatorio_ativo = request.form.get('relatorio')
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    elementos = []
+    styles = getSampleStyleSheet()
+    data_inicio = session.get('data_inicio')
+    data_fim = session.get('data_fim')
+
+    # ========= RELATÓRIO GERAL =========
+    if relatorio_ativo == "geral":
+        dados = gerar_relatorio_geral(data_inicio, data_fim)
+
+        # ===== Logotipo centralizado =====
+        try:
+            logo = Image('app/static/images/shared/favicon.png', width=2*cm, height=2*cm)
+            tabela_logo = Table([[logo]], colWidths=[6*cm])  # largura ajustável
+            tabela_logo.setStyle(TableStyle([
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ]))
+            elementos.append(tabela_logo)
+            elementos.append(Spacer(1, 12))
+        except:
+            pass
+
+        # Título
+        elementos.append(Paragraph("FoodPay - Relatório Geral", styles["Title"]))
+        elementos.append(Spacer(1, 1))
+
+        # Subtítulo com data/hora e período
+        agora = datetime.now().strftime("%d/%m/%Y %H:%M")
+        periodo = session.get("periodo_formatado", "Período não informado")
+
+        estilo_info = ParagraphStyle(
+            "info",
+            parent=styles["Normal"],
+            fontSize=8,
+            textColor=colors.grey,
+            alignment=1  # centralizado
+        )
+
+        info_texto = f"Gerado em {agora} • Período: {periodo}"
+        elementos.append(Paragraph(info_texto, estilo_info))
+        elementos.append(Spacer(1, 20))
+
+        # ===== KPIs em tabela =====
+        kpis = dados["kpis"]
+        tabela_kpis = pd.DataFrame([
+            ["Vendas Totais", f"R${kpis['vendas_totais']:.2f}"],
+            ["Total de Pedidos", kpis["total_pedidos"]],
+            ["Clientes Atendidos", kpis["clientes_atendidos"]],
+            ["Venda Média", f"R${kpis['venda_media']:.2f}"]
+        ], columns=["KPI", "Valor"])
+
+        tabela = Table([tabela_kpis.columns.tolist()] + tabela_kpis.values.tolist())
+        tabela.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("GRID", (0, 0), (-1, -1), 1, colors.black),
+        ]))
+        elementos.append(tabela)
+        elementos.append(Spacer(1, 15))
+
+        # ===== Gráfico de pizza dos produtos =====
+        graf_produtos = dados["grafico_produtos"]
+
+        fig, ax = plt.subplots(figsize=(5, 4))
+        ax.pie(
+            graf_produtos["valores"],
+            labels=graf_produtos["labels"],
+            autopct="%1.1f%%",
+            startangle=90,
+            colors=plt.cm.Paired.colors  # paleta de cores agradável
+        )
+
+        img_buffer = BytesIO()
+        plt.tight_layout()
+        plt.savefig(img_buffer, format="png")
+        plt.close(fig)
+        img_buffer.seek(0)
+
+        elementos.append(Image(img_buffer, width=300, height=225))
+        elementos.append(Spacer(1, 15))
+
+        # ===== Frases do relatório =====
+        for frase in dados.get("frases", []):
+            elementos.append(Paragraph(frase, styles["Normal"]))
+            elementos.append(Spacer(1, 10))
+
+    # ========= RELATÓRIO DE PRODUTOS =========
+    if relatorio_ativo == "produtos":
+        dados = gerar_relatorio_produtos(data_inicio, data_fim)
+
+        # ===== Logotipo centralizado =====
+        try:
+            logo = Image('app/static/images/shared/favicon.png', width=2*cm, height=2*cm)
+            tabela_logo = Table([[logo]], colWidths=[6*cm])
+            tabela_logo.setStyle(TableStyle([
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ]))
+            elementos.append(tabela_logo)
+            elementos.append(Spacer(1, 12))
+        except:
+            pass
+
+        # ===== Título =====
+        elementos.append(Paragraph("FoodPay - Relatório de Produtos", styles["Title"]))
+        elementos.append(Spacer(1, 1))
+
+        # ===== Subtítulo com data/hora e período =====
+        agora = datetime.now().strftime("%d/%m/%Y %H:%M")
+        periodo = session.get("periodo_formatado", "Período não informado")
+
+        estilo_info = ParagraphStyle(
+            "info",
+            parent=styles["Normal"],
+            fontSize=8,
+            textColor=colors.grey,
+            alignment=1
+        )
+
+        info_texto = f"Gerado em {agora} • Período: {periodo}"
+        elementos.append(Paragraph(info_texto, estilo_info))
+        elementos.append(Spacer(1, 10))
+
+        # ===== KPIs gerais de estoque =====
+        kpis = dados["kpis"]
+        tabela_kpis = pd.DataFrame([
+            ["Total de Produtos", kpis["total_produtos"]],
+            ["Produtos Esgotados", kpis["produtos_esgotados"]],
+            ["Produtos com Estoque Baixo", kpis["produtos_estoque_baixo"]],
+            ["Estoque Total", kpis["estoque_total"]],
+        ], columns=["Indicador", "Valor"])
+
+        tabela = Table([tabela_kpis.columns.tolist()] + tabela_kpis.values.tolist())
+        tabela.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("GRID", (0, 0), (-1, -1), 1, colors.black),
+        ]))
+        elementos.append(tabela)
+        elementos.append(Spacer(1, 15))
+
+        # ===== Gráfico de estoque baixo =====
+        graf_estoque = dados["grafico_estoque_baixo"]
+        if graf_estoque["labels"]:
+            fig, ax = plt.subplots(figsize=(5, 3))
+            ax.bar(graf_estoque["labels"], graf_estoque["valores"], color="orange")
+            ax.set_title("Produtos com Estoque Baixo")
+            ax.set_xlabel("Produto")
+            ax.set_ylabel("Quantidade em Estoque")
+            plt.xticks(rotation=45)
+
+            img_buffer = BytesIO()
+            plt.tight_layout()
+            plt.savefig(img_buffer, format="png")
+            plt.close(fig)
+            img_buffer.seek(0)
+
+            elementos.append(Image(img_buffer, width=300, height=225))
+            elementos.append(Spacer(1, 5))
+
+        # ===== Gráfico de vendas por categoria =====
+        graf_categoria = dados["grafico_vendas_categoria"]
+        if graf_categoria["labels"]:
+            fig, ax = plt.subplots(figsize=(5, 4))
+            ax.pie(
+                graf_categoria["valores"],
+                labels=graf_categoria["labels"],
+                autopct="%1.1f%%",
+                startangle=90,
+                colors=plt.cm.Pastel1.colors
+            )
+            ax.set_title("Distribuição de Vendas por Categoria")
+
+            img_buffer = BytesIO()
+            plt.tight_layout()
+            plt.savefig(img_buffer, format="png")
+            plt.close(fig)
+            img_buffer.seek(0)
+
+            elementos.append(Image(img_buffer, width=300, height=225))
+            elementos.append(Spacer(1, 15))
+
+        # ===== Caso produto específico tenha sido filtrado =====
+        produto_espec = session.get("produto_especifico")
+        if produto_espec:
+            estilo_heading2_centralizado = ParagraphStyle(
+                "Heading2Centralizado",
+                parent=styles["Heading2"],
+                alignment=TA_CENTER
+            )
+            # Subtítulo do produto
+            elementos.append(Paragraph(
+                f"Produto filtrado: <b>{produto_espec['descricao']}</b> "
+                f"(Categoria: {produto_espec['categ']})", 
+                estilo_heading2_centralizado
+            ))
+            elementos.append(Spacer(1, 10))
+
+            # KPIs do produto específico
+            tabela_kpis = pd.DataFrame([
+                ["Faturamento", f"R${produto_espec['faturamento']:.2f}"],
+                ["Variação do Faturamento", f"{produto_espec['variacaoFaturamento']}%"],
+                ["Vendas", produto_espec["vendas"]],
+                ["Estoque Atual", produto_espec["estoque"]],
+                ["% dos Pedidos", f"{produto_espec['percentualPedidos']}%"],
+                ["% de Participação no Faturamento", f"{produto_espec['percentualParticipacao']}%"],
+            ], columns=["Indicador", "Valor"])
+
+            tabela = Table([tabela_kpis.columns.tolist()] + tabela_kpis.values.tolist())
+            tabela.setStyle(TableStyle([
+                ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("GRID", (0, 0), (-1, -1), 1, colors.black),
+            ]))
+            elementos.append(tabela)
+            elementos.append(Spacer(1, 15))
+
+            # Gráfico de vendas por dia (produto específico)
+            graf = produto_espec["grafico"]
+            fig, ax = plt.subplots(figsize=(5, 3))
+            ax.plot(graf["labels"], graf["valores"], marker="o")
+            ax.set_title("Vendas do Produto por Dia")
+            ax.set_xlabel("Data")
+            ax.set_ylabel("Quantidade Vendida")
+            plt.xticks(rotation=45)
+
+            img_buffer = BytesIO()
+            plt.tight_layout()
+            plt.savefig(img_buffer, format="png")
+            plt.close(fig)
+            img_buffer.seek(0)
+
+            elementos.append(Image(img_buffer, width=400, height=250))
+            elementos.append(Spacer(1, 15))
+
+    # ========= RELATÓRIO DE CLIENTES =========
+    if relatorio_ativo == "clientes":
+        dados = gerar_relatorio_clientes(data_inicio, data_fim)
+
+        # ===== Logotipo centralizado =====
+        try:
+            logo = Image('app/static/images/shared/favicon.png', width=2*cm, height=2*cm)
+            tabela_logo = Table([[logo]], colWidths=[6*cm])
+            tabela_logo.setStyle(TableStyle([
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ]))
+            elementos.append(tabela_logo)
+            elementos.append(Spacer(1, 12))
+        except:
+            pass
+
+        # Título
+        elementos.append(Paragraph("FoodPay - Relatório de Clientes", styles["Title"]))
+        elementos.append(Spacer(1, 1))
+
+        # Subtítulo com data/hora e período
+        agora = datetime.now().strftime("%d/%m/%Y %H:%M")
+        periodo = session.get("periodo_formatado", "Período não informado")
+
+        estilo_info = ParagraphStyle(
+            "info",
+            parent=styles["Normal"],
+            fontSize=8,
+            textColor=colors.grey,
+            alignment=1
+        )
+
+        info_texto = f"Gerado em {agora} • Período: {periodo}"
+        elementos.append(Paragraph(info_texto, estilo_info))
+        elementos.append(Spacer(1, 20))
+
+        # ===== KPIs em tabela =====
+        kpis = dados["kpis"]
+        tabela_kpis = pd.DataFrame([
+            ["Total de Clientes", kpis["total_clientes"]],
+            ["Novos Clientes", kpis["novos_clientes"]],
+            ["Clientes Ativos", kpis.get("clientes_ativos", "To do")],
+            ["Clientes Inativos", kpis.get("clientes_inativos", "To do")]
+        ], columns=["KPI", "Valor"])
+
+        tabela = Table([tabela_kpis.columns.tolist()] + tabela_kpis.values.tolist())
+        tabela.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("GRID", (0, 0), (-1, -1), 1, colors.black),
+        ]))
+        elementos.append(tabela)
+        elementos.append(Spacer(1, 15))
+
+        # ===== Gráfico de crescimento de clientes =====
+        graf = dados["grafico"]
+        fig, ax = plt.subplots(figsize=(5, 3))
+        ax.plot(graf["labels"], graf["valores"], marker='o', linestyle='-', color="skyblue")
+        ax.set_title("Crescimento de Clientes")
+        ax.set_ylabel("Quantidade")
+        plt.xticks(rotation=30, ha="right")
+
+        img_buffer = BytesIO()
+        plt.tight_layout()
+        plt.savefig(img_buffer, format="png")
+        plt.close(fig)
+        img_buffer.seek(0)
+
+        elementos.append(Image(img_buffer, width=400, height=250))
+        elementos.append(Spacer(1, 20))
+
+        # ===== Tabela Top Clientes =====
+        top_clientes = dados.get("top_clientes", [])
+        if top_clientes:
+            estilo_heading2_centralizado = ParagraphStyle(
+                "Heading2Centralizado",
+                parent=styles["Heading2"],
+                alignment=TA_CENTER
+            )
+            elementos.append(Paragraph("Top Clientes", estilo_heading2_centralizado))
+            tabela_top = Table(
+                [["Nome", "Código ETEC", "Email", "Total Pedidos", "Faturamento Total"]] +
+                [[c["nome"], c["codigo_etec"], c["email"], c["total_pedidos"], f"R${c['faturamento_total']:.2f}"]
+                for c in top_clientes]
+            )
+            tabela_top.setStyle(TableStyle([
+                ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("GRID", (0, 0), (-1, -1), 1, colors.black),
+            ]))
+            elementos.append(tabela_top)
+            elementos.append(Spacer(1, 20))
+
+    # ========= RELATÓRIO DE PEDIDOS =========
+    if relatorio_ativo == "pedidos":
+        dados = gerar_relatorio_pedidos(data_inicio, data_fim)
+
+        # ===== Logotipo centralizado =====
+        try:
+            logo = Image('app/static/images/shared/favicon.png', width=2*cm, height=2*cm)
+            tabela_logo = Table([[logo]], colWidths=[6*cm])
+            tabela_logo.setStyle(TableStyle([
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ]))
+            elementos.append(tabela_logo)
+            elementos.append(Spacer(1, 12))
+        except:
+            pass
+
+        # Título
+        elementos.append(Paragraph("FoodPay - Relatório de Pedidos", styles["Title"]))
+        elementos.append(Spacer(1, 1))
+
+        # Subtítulo com data/hora e período
+        agora = datetime.now().strftime("%d/%m/%Y %H:%M")
+        periodo = session.get("periodo_formatado", "Período não informado")
+        estilo_info = ParagraphStyle(
+            "info",
+            parent=styles["Normal"],
+            fontSize=8,
+            textColor=colors.grey,
+            alignment=1  # centralizado
+        )
+        info_texto = f"Gerado em {agora} • Período: {periodo}"
+        elementos.append(Paragraph(info_texto, estilo_info))
+        elementos.append(Spacer(1, 20))
+
+        # ===== KPIs em tabela =====
+        kpis = dados["kpis"]
+        tabela_kpis = pd.DataFrame([
+            ["Faturamento", f"R${kpis['faturamento']:.2f}"],
+            ["Total de Pedidos", kpis["total_pedidos"]],
+            ["Taxa de Cancelamento", f"{kpis['taxa_cancelamento']:.2f}%"],
+            ["Valor Médio por Pedido", f"R${kpis['valor_medio_pedido']:.2f}"]
+        ], columns=["KPI", "Valor"])
+
+        tabela = Table([tabela_kpis.columns.tolist()] + tabela_kpis.values.tolist())
+        tabela.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("GRID", (0, 0), (-1, -1), 1, colors.black),
+        ]))
+        elementos.append(tabela)
+        elementos.append(Spacer(1, 15))
+
+        # ===== Gráfico de status dos pedidos =====
+        graf_status = dados["grafico_status"]
+        fig, ax = plt.subplots(figsize=(5, 4))
+        ax.pie(
+            graf_status["valores"],
+            labels=graf_status["labels"],
+            autopct="%1.1f%%",
+            startangle=90,
+            colors=plt.cm.Paired.colors
+        )
+        img_buffer = BytesIO()
+        plt.tight_layout()
+        plt.savefig(img_buffer, format="png")
+        plt.close(fig)
+        img_buffer.seek(0)
+        elementos.append(Image(img_buffer, width=280, height=210))
+        elementos.append(Spacer(1, 15))
+
+        # ===== Gráfico de vendas por dia =====
+        graf_vendas_dia = dados["grafico_vendas_dia"]
+        fig, ax = plt.subplots(figsize=(5, 3))
+        ax.plot(graf_vendas_dia["labels"], graf_vendas_dia["valores"], marker="o", color="skyblue")
+        ax.set_title("Vendas por Dia")
+        ax.set_ylabel("Quantidade")
+        plt.xticks(rotation=30, ha="right")
+        plt.tight_layout()
+        img_buffer = BytesIO()
+        plt.savefig(img_buffer, format="png")
+        plt.close(fig)
+        img_buffer.seek(0)
+        elementos.append(Image(img_buffer, width=280, height=210))
+
+    # ========= RELATÓRIO DE FEEDBACKS =========
+    if relatorio_ativo == "feedbacks":
+        dados = gerar_relatorio_feedbacks(data_inicio, data_fim)
+
+        # ===== Logotipo centralizado =====
+        try:
+            logo = Image('app/static/images/shared/favicon.png', width=2*cm, height=2*cm)
+            tabela_logo = Table([[logo]], colWidths=[6*cm])
+            tabela_logo.setStyle(TableStyle([
+                ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ]))
+            elementos.append(tabela_logo)
+            elementos.append(Spacer(1, 12))
+        except:
+            pass
+
+        # Título
+        elementos.append(Paragraph("FoodPay - Relatório de Feedbacks", styles["Title"]))
+        elementos.append(Spacer(1, 1))
+
+        # Subtítulo com data/hora e período
+        agora = datetime.now().strftime("%d/%m/%Y %H:%M")
+        periodo = session.get("periodo_formatado", "Período não informado")
+        estilo_info = ParagraphStyle(
+            "info",
+            parent=styles["Normal"],
+            fontSize=8,
+            textColor=colors.grey,
+            alignment=1  # centralizado
+        )
+        info_texto = f"Gerado em {agora} • Período: {periodo}"
+        elementos.append(Paragraph(info_texto, estilo_info))
+        elementos.append(Spacer(1, 20))
+
+        # ===== KPIs em tabela =====
+        kpis = dados["kpis"]
+        tabela_kpis = pd.DataFrame([
+            ["Total de Feedbacks", kpis["total_feedbacks"]],
+            ["Dúvidas", kpis["duvidas"]],
+            ["Reclamações", kpis["reclamacoes"]],
+            ["Sugestões", kpis["sugestoes"]],
+            ["Elogios", kpis["elogios"]],
+        ], columns=["KPI", "Valor"])
+
+        tabela = Table([tabela_kpis.columns.tolist()] + tabela_kpis.values.tolist())
+        tabela.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (-1, 0), colors.grey),
+            ("TEXTCOLOR", (0, 0), (-1, 0), colors.whitesmoke),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("GRID", (0, 0), (-1, -1), 1, colors.black),
+        ]))
+        elementos.append(tabela)
+        elementos.append(Spacer(1, 10))
+
+        # ===== Gráfico por tipo de feedback =====
+        graf_tipo = dados["grafico_tipo"]
+        fig, ax = plt.subplots(figsize=(5, 4))
+        ax.pie(
+            graf_tipo["valores"],
+            labels=graf_tipo["labels"],
+            autopct="%1.1f%%",
+            startangle=90,
+            colors=plt.cm.Pastel1.colors
+        )
+        img_buffer = BytesIO()
+        plt.tight_layout()
+        plt.savefig(img_buffer, format="png")
+        plt.close(fig)
+        img_buffer.seek(0)
+        elementos.append(Image(img_buffer, width=280, height=210))
+        elementos.append(Spacer(1, 10))
+
+        # ===== Gráfico de feedbacks ao longo do tempo =====
+        graf_tempo = dados["grafico_tempo"]
+        fig, ax = plt.subplots(figsize=(5, 3))
+        ax.plot(graf_tempo["labels"], graf_tempo["valores"], marker="o", color="skyblue")
+        ax.set_title("Feedbacks ao Longo do Tempo")
+        ax.set_ylabel("Quantidade")
+        plt.xticks(rotation=30, ha="right")
+        plt.tight_layout()
+        img_buffer = BytesIO()
+        plt.savefig(img_buffer, format="png")
+        plt.close(fig)
+        img_buffer.seek(0)
+        elementos.append(Image(img_buffer, width=280, height=210))
+
+    # Construir PDF
+    doc.build(elementos)
+    buffer.seek(0)
+
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name=f"relatorio_{relatorio_ativo}.pdf",
+        mimetype="application/pdf"
     )

@@ -133,7 +133,7 @@
                     <div class="col">
                         <div class="card shadow-sm">
                             <div class="card-body">
-                                <h5 class="card-title">Vendas por produto (un.)</h5>
+                                <h5 class="card-title">Produtos mais vendidos (un.)</h5>
                                 <canvas id="graficoProdutos" data-labels='{{ geral.grafico_produtos.labels | tojson }}'
                                     data-valores='{{ geral.grafico_produtos.valores | tojson }}'></canvas>
                             </div>
@@ -519,7 +519,7 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                        <a class="dropdown-item" href="#" id="btnExportPdf" data-url="#">
+                        <a class="dropdown-item" href="#" id="btnExportPDF" data-url="{{ url_for('relatorio.exportar_relatorio_pdf') }}">
                             <i class="bi bi-file-earmark-pdf-fill me-1"></i> PDF
                         </a>
                     </li>
