@@ -1,10 +1,13 @@
 Adicionar clientes ativos e inativos no relatório de clientes
-Session produto específico
 
-Home ao entrar, login ao tentar comprar 
+Home ao entrar, login ao tentar comprar
+Mudar o home
 Melhorias no CSS perfil
+Buscar falhas no modo escuro
 Banner e fotos da equipe página sobre
 
 Mudança modelo usuário (nível da conta, conta ativa)
 Cadastro admin
 Simulação tabela NSA
+
+Impedir entrar em paginas admin pela url

@@ -25,6 +25,7 @@ relatorio_bp = Blueprint("relatorio", __name__, url_prefix="/relatorio")
 
 @relatorio_bp.route('/')
 def relatorio():
+    session.pop('produto_especifico', None)
     periodo = request.args.get("periodo", "ultima_semana")  # valor padrão
     periodo_formatado = ''
     data_inicio = None
@@ -79,6 +80,10 @@ def relatorio():
                            feedbacks=dados_feedbacks
                            )
 
+@relatorio_bp.route('/limpar_produto_especifico', methods=["POST"])
+def limpar_produto_especifico():
+    session.pop('produto_especifico', None)
+    return jsonify({"status": "ok"})
 
 def gerar_relatorio_geral(data_inicio, data_fim):
     # Query base com filtro aplicado
@@ -826,7 +831,7 @@ def exportar_relatorio_pdf():
         # ===== Frases do relatório =====
         for frase in dados.get("frases", []):
             elementos.append(Paragraph(frase, styles["Normal"]))
-            elementos.append(Spacer(1, 10))
+            elementos.append(Spacer(1, 6))
 
     # ========= RELATÓRIO DE PRODUTOS =========
     if relatorio_ativo == "produtos":
@@ -924,6 +929,8 @@ def exportar_relatorio_pdf():
 
             elementos.append(Image(img_buffer, width=300, height=225))
             elementos.append(Spacer(1, 15))
+        
+        elementos.append(PageBreak())
 
         # ===== Caso produto específico tenha sido filtrado =====
         produto_espec = session.get("produto_especifico")

@@ -1,4 +1,4 @@
-document.getElementById('btnBuscarProduto').addEventListener('click', function () {
+function buscarProdutoEspecifico() {
     const produtoBusca = document.getElementById('produtoBusca').value.trim();
     const periodo = document.getElementById('periodo').value;
     const dataInicio = document.getElementById('dataInicio').value;
@@ -88,27 +88,51 @@ document.getElementById('btnBuscarProduto').addEventListener('click', function (
                 }
             });
         });
+}
+
+document.getElementById('btnBuscarProduto').addEventListener('click', function () {
+    buscarProdutoEspecifico()
 });
 
-document.getElementById('btnLimparBusca').addEventListener('click', function () {
-    // Limpar campos de input
-    document.getElementById('produtoBusca').value = '';
-
-    // Resetar informações do produto
-    document.getElementById('descricaoProduto').textContent = '--';
-    document.getElementById('categoriaProduto').textContent = '--';
-    document.getElementById('faturamentoProduto').textContent = 'R$ 0';
-    document.getElementById('vendasProduto').textContent = '0';
-    document.getElementById('estoqueProduto').textContent = '0 unidades';
-    document.getElementById('presenteEm').textContent = '0% dos pedidos';
-    document.getElementById('participacaoTotal').textContent = '0%';
-
-    // Resetar gráfico de vendas
-    const canvas = document.getElementById('graficoVendasProduto');
-    if (window.graficoProduto) {
-        window.graficoProduto.destroy(); // destrói gráfico anterior
-        window.graficoProduto = null;
+document.getElementById('produtoBusca').addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        buscarProdutoEspecifico()
     }
+});
+
+document.getElementById("btnLimparBusca").addEventListener("click", function () {
+    fetch("/relatorio/limpar_produto_especifico", {
+        method: "POST",
+        headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "Content-Type": "application/json"
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "ok") {
+                // Limpar campos de input
+                document.getElementById('produtoBusca').value = '';
+
+                // Resetar informações do produto
+                document.getElementById('descricaoProduto').textContent = '--';
+                document.getElementById('categoriaProduto').textContent = '--';
+                document.getElementById('faturamentoProduto').textContent = 'R$ 0';
+                document.getElementById('vendasProduto').textContent = '0';
+                document.getElementById('estoqueProduto').textContent = '0 unidades';
+                document.getElementById('presenteEm').textContent = '0% dos pedidos';
+                document.getElementById('participacaoTotal').textContent = '0%';
+
+                // Resetar gráfico de vendas
+                const canvas = document.getElementById('graficoVendasProduto');
+                if (window.graficoProduto) {
+                    window.graficoProduto.destroy(); // destrói gráfico anterior
+                    window.graficoProduto = null;
+                }
+            }
+        })
+        .catch(error => console.error("Erro ao limpar filtro:", error));
 });
 
 btnExcel = document.getElementById('btnExportExcel')
