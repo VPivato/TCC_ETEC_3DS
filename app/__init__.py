@@ -26,7 +26,7 @@ def create_app():
     from .auth.routes import auth_bp
     from .home.routes import home_bp
     from .loja.routes import loja_bp
-    from .sobre.routes import sobre_bp
+    from .info.routes import info_bp
     from .perfil.routes import perfil_bp
     from .feedback.routes import feedback_bp
     
@@ -40,7 +40,7 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(home_bp)
     app.register_blueprint(loja_bp)
-    app.register_blueprint(sobre_bp)
+    app.register_blueprint(info_bp)
     app.register_blueprint(perfil_bp)
     app.register_blueprint(feedback_bp)
     

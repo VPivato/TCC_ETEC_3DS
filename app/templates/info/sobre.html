@@ -6,8 +6,8 @@
 <link
     href="https://fonts.googleapis.com/css2?family=Noto+Sans+Display:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
     rel="stylesheet">
-<link rel="stylesheet" href="{{ url_for('static', filename='css/sobre/sobre-style.css') }}" />
-<link rel="stylesheet" href="{{ url_for('static', filename='css/sobre/sobre-escuro.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/info/sobre-style.css') }}" />
+<link rel="stylesheet" href="{{ url_for('static', filename='css/info/sobre-escuro.css') }}" />
 {% endblock %}
 
 {% block content %}
@@ -127,20 +127,9 @@
     </div>
 </main>
 
-<!-- Rodapé -->
-<footer id="rodape">
-    <div class="rodape-conteudo">
-        <img src="{{ url_for('static', filename='images/home/Logo.png') }}" alt="Logo FoodPay" class="rodape-logo">
-        <p>&copy; 2025 FoodPay. Todos os direitos reservados.</p>
-        <div class="links-rodape">
-            <a href="#">Política de Privacidade</a>
-            <a href="#">Termos de Uso</a>
-            <a href="{{ url_for('feedback.feedback')}}">Contato</a>
-        </div>
-    </div>
-</footer>
+{% include 'shared/footer.html' %}
 {% endblock %}
 
 {% block extra_js %}
-<script src="{{ url_for('static', filename='js/sobre/sobre-script.js') }}"></script>
+<script src="{{ url_for('static', filename='js/info/info-script.js') }}"></script>
 {% endblock %}
