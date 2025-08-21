@@ -1,0 +1,8 @@
+body {
+    background-color: #eee;
+}
+
+.container-table-esgotados {
+    max-height: 450px;
+    overflow: auto;
+}

@@ -1,7 +1,7 @@
-Página controle de estoque
 Adicionar clientes ativos e inativos no relatório de clientes
 Session produto específico
 
+Home ao entrar, login ao tentar comprar 
 Melhorias no CSS perfil
 Banner e fotos da equipe página sobre
 

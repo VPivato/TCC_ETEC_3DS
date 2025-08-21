@@ -1,0 +1,28 @@
+body.modo-escuro {
+    background: #17041f;
+    background: linear-gradient(135deg, #17041f 0%, #08031f 100%);
+    color: #d0d0d0;
+}
+
+body.modo-escuro .card,
+body.modo-escuro .modal-content {
+    background: #211726;
+    background: linear-gradient(135deg, #211726 0%, #1d183d 100%);
+}
+
+body.modo-escuro .kpis p,
+body.modo-escuro .meio h6,
+body.modo-escuro .produtos h6 {
+    color: #d0d0d0 !important;
+}
+
+body.modo-escuro .meio table *,
+body.modo-escuro .produtos table * {
+    color: #d0d0d0 !important;
+    background-color: transparent;
+}
+
+body.modo-escuro .filtro input,
+body.modo-escuro .modal-content input {
+    background-color: #e1dbebd8 !important;
+}

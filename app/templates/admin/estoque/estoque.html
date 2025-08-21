@@ -1,0 +1,182 @@
+{% extends 'shared/base.html' %}
+
+{% block title %}Controle de estoque{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/estoque/estoque-style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin/estoque/estoque-escuro.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/shared/header_relative.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4 px-3">
+    <!-- KPIs -->
+    <div class="row g-3 mb-4 kpis">
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm text-center border-0 h-100">
+                <div class="card-body">
+                    <h5 class="text-primary" id="total-estoque">{{ info.kpis.total_estoque }}</h5>
+                    <p class="mb-0 text-muted">Total em estoque</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm text-center border-0 h-100">
+                <div class="card-body">
+                    <h5 class="text-danger" id="produtos-esgotados">{{ info.kpis.produtos_esgotados }}</h5>
+                    <p class="mb-0 text-muted">Produtos esgotados</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm text-center border-0 h-100">
+                <div class="card-body">
+                    <h5 class="text-warning" id="estoque-baixo">{{ info.kpis.produtos_baixo_estoque }}</h5>
+                    <p class="mb-0 text-muted">Estoque baixo</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card shadow-sm text-center border-0 h-100">
+                <div class="card-body">
+                    <h5 class="text-success" id="valor-estoque">{{ info.kpis.valor_total_estoque }}</h5>
+                    <p class="mb-0 text-muted">Valor total em estoque</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico + Tabela de esgotados -->
+    <div class="row g-4 mb-4 meio">
+        <!-- Gráfico -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h6 class="text-muted mb-3">Produtos com estoque baixo</h6>
+                    <canvas id="graficoEstoqueBaixo" data-labels='{{ info.grafico.labels }}'
+                        data-valores='{{ info.grafico.valores }}'></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela esgotados -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <h6 class="text-muted mb-3">Produtos esgotados</h6>
+                    <div class="table-responsive container-table-esgotados">
+                        <table class="table table-hover align-middle table-sm">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Produto</th>
+                                    <th>Categoria</th>
+                                    <th>Estoque</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabela-esgotados">
+                                {% for p in info.lista_esgotados %}
+                                <tr>
+                                    <td>{{ p.id }}</td>
+                                    <td>{{ p.descricao_produto }}</td>
+                                    <td>{{ p.categoria_produto }}</td>
+                                    <td><span class="badge bg-danger">0</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-success btn-repor" data-id="{{ p.id }}"
+                                            data-nome="{{ p.descricao_produto }}">
+                                            <i class="bi bi-plus-circle"></i>
+                                            Repor
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filtro produto -->
+    <div class="mb-1 filtro">
+        <input type="text" id="filtro-produtos" class="form-control" placeholder="Pesquisar por nome ou ID">
+    </div>
+    <!-- Lista completa -->
+    <div class="card shadow-sm border-0 produtos">
+        <div class="card-body">
+            <h6 class="text-muted mb-3">Produtos não esgotados</h6>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle table-sm">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Produto</th>
+                            <th>Categoria</th>
+                            <th>Estoque</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-todos-produtos">
+                        {% for p in info.produtos_ordenados %}
+                        <tr>
+                            <td>{{ p.id }}</td>
+                            <td>{{ p.descricao_produto }}</td>
+                            <td>{{ p.categoria_produto }}</td>
+                            <td>
+                                {% if p.estoque_produto > 5 %}
+                                <span class="badge bg-success">{{ p.estoque_produto }}</span>
+                                {% elif p.estoque_produto > 0 %}
+                                <span class="badge bg-warning text-dark">{{ p.estoque_produto }}</span>
+                                {% else %}
+                                <span class="badge bg-danger">0</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-success btn-repor" data-id="{{ p.id }}"
+                                    data-nome="{{ p.descricao_produto }}">
+                                    <i class="bi bi-plus-circle"></i>
+                                    Repor
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Repor Estoque -->
+    <div class="modal fade" id="modalReporEstoque" tabindex="-1" aria-labelledby="modalReporEstoqueLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="form-repor-estoque">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalReporEstoqueLabel">Repor Estoque</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="produto-id" name="produto_id">
+                        <div class="mb-3">
+                            <label for="quantidade-repor" class="form-label">Quantidade a adicionar</label>
+                            <input type="number" class="form-control" id="quantidade-repor" name="quantidade" min="1"
+                                value="1" required>
+                        </div>
+                        <div id="feedback-repor" class="text-success d-none"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Repor</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin/estoque/estoque-script.js') }}"></script>
+{% endblock %}

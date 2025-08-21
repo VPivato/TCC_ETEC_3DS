@@ -36,6 +36,7 @@ def create_app():
     from .admin.produto.routes import produto_bp
     from .admin.pedido.routes import pedido_bp
     from .admin.relatorio.routes import relatorio_bp
+    from .admin.estoque.routes import estoque_bp
     
     app.register_blueprint(auth_bp)
     app.register_blueprint(home_bp)
@@ -50,6 +51,7 @@ def create_app():
     app.register_blueprint(produto_bp)
     app.register_blueprint(pedido_bp)
     app.register_blueprint(relatorio_bp)
+    app.register_blueprint(estoque_bp)
 
     with app.app_context():
         db.create_all()
