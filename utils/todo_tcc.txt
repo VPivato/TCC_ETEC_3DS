@@ -3,8 +3,6 @@ Adicionar clientes ativos e inativos no relatório de clientes
 Session produto específico
 
 Melhorias no CSS perfil
-Página termos de uso
-Página política de privacidade
 Banner e fotos da equipe página sobre
 
 Mudança modelo usuário (nível da conta, conta ativa)

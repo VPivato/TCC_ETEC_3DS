@@ -9,3 +9,7 @@ def sobre():
 @info_bp.route('/politica')
 def politica():
     return render_template('info/politica.html')
+
+@info_bp.route('/termos')
+def termos():
+    return render_template('info/termos.html')

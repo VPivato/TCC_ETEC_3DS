@@ -1,0 +1,186 @@
+/* ========== Reset Global ========== */
+* {
+  padding: 0;
+  margin: 0;
+  scroll-behavior: smooth;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+html,
+body {
+  overflow-x: hidden;
+  font-size: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  height: 100%;
+  width: 100%;
+  background-color: rgb(230, 230, 230);
+  min-height: 100vh;
+}
+
+#main {
+  position: relative;
+  width: 80%;
+  top: -100px;
+  text-align: justify;
+  margin: auto;
+  background-color: #fff;
+  border-radius: 20px;
+  padding: 100px 150px 150px;
+  box-shadow: 2px 2px 3px 2px rgba(0, 1, 41, 0.143);
+}
+
+p {
+  font-size: 25px;
+}
+
+#fp {
+  color: #2e9a60;
+}
+
+.ul-dados2 {
+  font-size: 25px;
+  padding: 20px;
+}
+
+.h2-00 {
+  padding: 20px;
+}
+
+/* Tablet e Telas Médias (de 601px a 1024px) */
+@media (min-width: 601px) and (max-width: 1024px) {
+
+  /* Tamanhos de fonte menores para melhor leitura em telas médias */
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.3rem;
+  }
+
+  p,
+  .ul-dados2,
+  a {
+    font-size: 1rem;
+  }
+
+  /* Ajusta o container principal 'child' */
+  #main {
+    width: 90%;
+    /* Ocupa mais a largura da tela */
+    padding: 50px 75px 75px;
+    /* Reduz o padding */
+    top: -100px;
+    /* Ajusta a posição para não ficar muito alto */
+  }
+
+  /* Ajusta o cabeçalho/navegação */
+  #logo {
+    left: 20px;
+    /* Move o logo um pouco para a esquerda */
+    width: 6rem;
+    /* Reduz o tamanho do logo */
+  }
+
+  #user-icon {
+    right: 15px;
+    /* Move o ícone de usuário um pouco para a direita */
+    width: 42px;
+    /* Reduz o tamanho do ícone */
+    height: 42px;
+  }
+}
+
+/* Smartphone e Telas Pequenas (até 600px) */
+@media (max-width: 600px) {
+
+  /* Tamanhos de fonte menores para telas pequenas */
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  h2 {
+    font-size: 1.25rem;
+  }
+
+  h3 {
+    font-size: 1.1rem;
+  }
+
+  p,
+  .ul-dados2,
+  a {
+    font-size: 0.9rem;
+  }
+
+  /* Ajusta o cabeçalho/navegação */
+  #navegacao {
+    flex-direction: column;
+    /* Coloca os itens do cabeçalho em coluna */
+    height: auto;
+    /* Altura automática para acomodar o conteúdo */
+    padding: 10px;
+  }
+
+  #logo {
+    position: static;
+    /* Remove a posição absoluta para o logo fluir com o layout */
+    margin-bottom: 10px;
+    width: 5rem;
+  }
+
+  #user-icon {
+    position: static;
+    /* Remove a posição absoluta para o ícone fluir com o layout */
+    transform: none;
+    /* Remove a transformação de alinhamento */
+    margin-top: 10px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .button-container {
+    flex-direction: column;
+    /* Coloca os botões em coluna */
+    gap: 10px;
+    align-items: center;
+  }
+
+  /* Ajusta o container principal 'child' */
+  #main {
+    width: 95%;
+    /* Ocupa quase toda a largura da tela */
+    top: -50px;
+    /* Ajusta a posição para não sobrepor muito */
+    padding: 20px;
+    /* Reduz drasticamente o padding para telas pequenas */
+  }
+
+  .ul-dados2,
+  .h2-00 {
+    padding: 10px 0;
+    /* Ajusta o padding para telas pequenas */
+  }
+
+  /* Ajusta o rodapé */
+  .links-rodape a {
+    margin: 0 5px;
+    /* Reduz o espaçamento entre os links */
+    display: block;
+    /* Cada link em sua própria linha */
+  }
+
+  #img-icons {
+    width: 80px;
+    /* Reduz o tamanho do ícone no rodapé */
+    height: 60px;
+  }
+}
