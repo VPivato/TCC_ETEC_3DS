@@ -10,6 +10,16 @@ body.modo-escuro .card-produto {
     box-shadow: 4px 4px 8px #20355a26;
 }
 
+body.modo-escuro .modal-content {
+    background: #211726;
+    background: linear-gradient(135deg, #211726 0%, #1d183d 100%);
+}
+
+body.modo-escuro .modal-content table * {
+    background-color: transparent;
+    color: #d0d0d0;
+}
+
 body.modo-escuro .marquee-text {
     color: #d0d0d0;
 }

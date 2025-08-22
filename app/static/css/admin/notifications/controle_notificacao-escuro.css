@@ -10,8 +10,14 @@ body.modo-escuro #form-container {
     box-shadow: 4px 4px 8px #20355a26;
 }
 
-body.modo-escuro #form-container textarea, body.modo-escuro #form-container #titulo-notificacao {
+body.modo-escuro #form-container textarea,
+body.modo-escuro #form-container #titulo-notificacao {
     background-color: #e1dbebd8 !important;
+}
+
+body.modo-escuro #visualizacao-tabela {
+    background: #211726;
+    background: linear-gradient(135deg, #211726 0%, #1d183d 100%);
 }
 
 body.modo-escuro tr:nth-of-type(odd) {
@@ -44,7 +50,8 @@ body.modo-escuro .modal-content .btn-close {
     filter: invert(100%);
 }
 
-body.modo-escuro .modal-content input, body.modo-escuro .modal-content select {
+body.modo-escuro .modal-content input,
+body.modo-escuro .modal-content select {
     background-color: #e1dbebd8 !important;
 }
 

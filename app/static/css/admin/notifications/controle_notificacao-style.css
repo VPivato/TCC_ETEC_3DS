@@ -169,7 +169,7 @@ tbody tr:hover {
     color: #aa0404;
 }
 
-a,
+#visualizcao-tabela a,
 .form-excluir button,
 .btn-editar {
     font-weight: normal;

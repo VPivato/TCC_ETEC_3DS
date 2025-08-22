@@ -116,6 +116,9 @@ main {
     margin-bottom: 0.75rem;
 }
 
+.modal-header {
+    border: none;
+}
 
 .btn-adicionar-produto {
     font-family: Arial, Helvetica, sans-serif;

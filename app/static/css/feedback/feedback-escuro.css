@@ -9,3 +9,8 @@ body.modo-escuro form input,
 body.modo-escuro form textarea {
     background-color: #e1dbebd8 !important;
 }
+
+body.modo-escuro main {
+    background: #211726;
+    background: linear-gradient(135deg, #211726 0%, #1d183d 100%);
+}

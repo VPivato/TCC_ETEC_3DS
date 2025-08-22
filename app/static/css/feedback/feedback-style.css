@@ -19,6 +19,9 @@ main {
     width: 50%;
     margin: auto;
     padding: 15px;
+    border-radius: 1rem;
+    padding: 20px;
+    margin-top: 1rem;
 }
 
 h1 {
@@ -49,10 +52,6 @@ input {
     letter-spacing: normal;
 }
 
-input:hover {
-    border-bottom: 2px solid #c5453c;
-}
-
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
@@ -77,10 +76,6 @@ input:-webkit-autofill:active {
     width: 18%;
     border-radius: 10px;
     box-shadow: 4px 4px 20px -5px rgba(0, 0, 0, 0.15);
-}
-
-#tipo_feedback:hover {
-    border-bottom: 2px solid #c5453c;
 }
 
 #textarea_wrapper {

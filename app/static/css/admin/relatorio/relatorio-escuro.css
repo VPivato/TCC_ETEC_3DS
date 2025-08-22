@@ -9,11 +9,28 @@ body.modo-escuro .card {
     background: linear-gradient(135deg, #211726 0%, #1d183d 100%);
 }
 
+body.modo-escuro .dropdown-menu {
+    background: #211726;
+    background: linear-gradient(135deg, #211726 0%, #1d183d 100%);
+}
+
+body.modo-escuro .dropdown-menu a {
+    color: #d0d0d0 !important;
+}
+
+body.modo-escuro .dropdown-menu a:hover {
+    background: #211726;
+}
+
 body.modo-escuro .nav-link.active {
     background: #211726;
     background: linear-gradient(135deg, #211726 0%, #1d183d 100%);
     color: #d0d0d0;
     border: none;
+}
+
+body.modo-escuro #periodo {
+    background-color: #e1dbebd8 !important;
 }
 
 body.modo-escuro .tab-pane *,
@@ -33,6 +50,6 @@ body.modo-escuro #produtoBusca {
     color: #111;
 }
 
-body.modo-escuro #table-topCli *{
+body.modo-escuro #table-topCli * {
     background-color: transparent !important;
 }
