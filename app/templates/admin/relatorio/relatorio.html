@@ -18,7 +18,9 @@
             <div class="card-body">
                 <form id="filtroDatas" class="row g-3 align-items-end" method="get"
                     action="{{ url_for('relatorio.relatorio') }}">
-                    <div class="col">
+
+                    <!-- Select do período -->
+                    <div class="col-12 col-md-4">
                         <label for="periodo" class="form-label">Período</label>
                         <select class="form-select" id="periodo" name="periodo">
                             <option value="hoje" {% if periodo=='hoje' %}selected{% endif %}>Hoje</option>
@@ -33,24 +35,28 @@
                         </select>
                     </div>
 
-                    <div class="col campo-data" {% if periodo !='personalizado' %}style="display:none;" {% endif %}>
+                    <!-- Datas só aparecem quando "personalizado" -->
+                    <div class="col-12 col-md-4 campo-data" {% if periodo !='personalizado' %}style="display:none;" {%
+                        endif %}>
                         <label for="dataInicio" class="form-label">Data Início</label>
                         <input type="date" class="form-control" id="dataInicio" name="dataInicio"
                             value="{{ data_inicio }}">
                     </div>
 
-                    <div class="col campo-data" {% if periodo !='personalizado' %}style="display:none;" {% endif %}>
+                    <div class="col-12 col-md-4 campo-data" {% if periodo !='personalizado' %}style="display:none;" {%
+                        endif %}>
                         <label for="dataFim" class="form-label">Data Fim</label>
                         <input type="date" class="form-control" id="dataFim" name="dataFim" value="{{ data_fim }}">
                     </div>
 
-                    <div class="col">
+                    <!-- Botões -->
+                    <div class="col-6 col-md-4">
                         <button type="submit" class="btn btn-primary w-100">
                             Filtrar
                         </button>
                     </div>
 
-                    <div class="col">
+                    <div class="col-6 col-md-4">
                         <a href="{{ url_for('relatorio.relatorio') }}" class="btn btn-secondary w-100">
                             Limpar Filtro
                         </a>
@@ -87,10 +93,10 @@
         <div class="tab-content mt-3">
             <!-- Relatório Geral -->
             <div class="tab-pane fade show active" id="geral" role="tabpanel" data-relatorio="geral">
-                <!-- KPIs -->
-                <div class="row mb-4">
-                    <div class="col-md-3">
-                        <div class="card bg-light shadow-sm">
+                <!-- KPIs geral -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="card bg-light shadow-sm h-100">
                             <div class="card-body">
                                 <h5 class="card-title">Vendas Totais</h5>
                                 <h3 class="fw-bold">R$ {{ "%.2f" | format(geral.kpis.vendas_totais) }}</h3>
@@ -98,8 +104,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card bg-light shadow-sm">
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="card bg-light shadow-sm h-100">
                             <div class="card-body">
                                 <h5 class="card-title">Pedidos</h5>
                                 <h3 class="fw-bold">{{ geral.kpis.total_pedidos }}</h3>
@@ -107,8 +113,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card bg-light shadow-sm">
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="card bg-light shadow-sm h-100">
                             <div class="card-body">
                                 <h5 class="card-title">Clientes Atendidos</h5>
                                 <h3 class="fw-bold">{{ geral.kpis.clientes_atendidos }}</h3>
@@ -116,8 +122,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card bg-light shadow-sm">
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="card bg-light shadow-sm h-100">
                             <div class="card-body">
                                 <h5 class="card-title">Venda Média</h5>
                                 <h3 class="fw-bold">R$ {{ "%.2f" | format(geral.kpis.venda_media) }}</h3>
@@ -156,39 +162,37 @@
 
             <!-- Relatório de Produtos -->
             <div class="tab-pane fade" id="produtos" role="tabpanel" data-relatorio="produtos">
-                <!-- KPIs Produtos -->
+                <!-- KPIs produtos  -->
                 <div class="row g-3 mb-4 text-center">
-                    <div class="col-md-3 col-6">
-                        <div class="p-3 bg-light rounded shadow-sm card">
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="p-3 bg-light rounded shadow-sm card h-100">
                             <h6 class="text-muted">Total de Produtos</h6>
-                            <h4 class="fw-bold" id="kpi-total-produtos">{{ produto.kpis.total_produtos }}</h4>
+                            <h4 class="fw-bold">{{ produto.kpis.total_produtos }}</h4>
                         </div>
                     </div>
-                    <div class="col-md-3 col-6">
-                        <div class="p-3 bg-light rounded shadow-sm card">
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="p-3 bg-light rounded shadow-sm card h-100">
                             <h6 class="text-muted">Produtos Esgotados</h6>
-                            <h4 class="fw-bold text-danger" id="kpi-produtos-esgotados">{{
-                                produto.kpis.produtos_esgotados }}</h4>
+                            <h4 class="fw-bold text-danger">{{ produto.kpis.produtos_esgotados }}</h4>
                         </div>
                     </div>
-                    <div class="col-md-3 col-6">
-                        <div class="p-3 bg-light rounded shadow-sm card">
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="p-3 bg-light rounded shadow-sm card h-100">
                             <h6 class="text-muted">Estoque Baixo (&le; 5)</h6>
-                            <h4 class="fw-bold text-warning" id="kpi-produtos-estoque-baixo">{{
-                                produto.kpis.produtos_estoque_baixo }}</h4>
+                            <h4 class="fw-bold text-warning">{{ produto.kpis.produtos_estoque_baixo }}</h4>
                         </div>
                     </div>
-                    <div class="col-md-3 col-6">
-                        <div class="p-3 bg-light rounded shadow-sm card">
+                    <div class="col-12 col-sm-6 col-lg-3">
+                        <div class="p-3 bg-light rounded shadow-sm card h-100">
                             <h6 class="text-muted">Estoque total</h6>
-                            <h4 class="fw-bold" id="kpi-preco-medio">{{ produto.kpis.estoque_total }}</h4>
+                            <h4 class="fw-bold">{{ produto.kpis.estoque_total }}</h4>
                         </div>
                     </div>
                 </div>
 
                 <!-- Gráficos -->
                 <div class="row mb-4">
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-4">
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title">Produtos com estoque baixo</h5>
@@ -233,7 +237,7 @@
 
                 <!-- Informações produto específico -->
                 <div class="row mb-4">
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-4">
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h5 class="mb-2">Informações do Produto Selecionado</h5>
@@ -241,37 +245,37 @@
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Descrição</span>
-                                        <span class="fw-bold" id="descricaoProduto">--</span>
+                                        <span class="fw-bold text-end" id="descricaoProduto">--</span>
                                     </li>
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Categoria</span>
-                                        <span class="fw-bold" id="categoriaProduto">--</span>
+                                        <span class="fw-bold text-end" id="categoriaProduto">--</span>
                                     </li>
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Faturamento</span>
-                                        <span class="fw-bold text-success" id="faturamentoProduto">R$ 0</span>
+                                        <span class="fw-bold text-success text-end" id="faturamentoProduto">R$ 0</span>
                                     </li>
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Vendas</span>
-                                        <span class="fw-bold" id="vendasProduto">0</span>
+                                        <span class="fw-bold text-end" id="vendasProduto">0</span>
                                     </li>
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Estoque Atual</span>
-                                        <span class="fw-bold" id="estoqueProduto">0 unidades</span>
+                                        <span class="fw-bold text-end" id="estoqueProduto">0 unidades</span>
                                     </li>
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Presente em</span>
-                                        <span class="fw-bold" id="presenteEm">0% dos pedidos</span>
+                                        <span class="fw-bold text-end" id="presenteEm">0% dos pedidos</span>
                                     </li>
                                     <li
                                         class="list-group-item d-flex justify-content-between align-items-center li-prod">
                                         <span>Participação no faturamento total</span>
-                                        <span class="fw-bold" id="participacaoTotal">0%</span>
+                                        <span class="fw-bold text-end" id="participacaoTotal">0%</span>
                                     </li>
                                 </ul>
                             </div>
@@ -291,34 +295,34 @@
 
             <!-- Relatório de Clientes -->
             <div class="tab-pane fade" id="clientes" role="tabpanel" data-relatorio="clientes">
-                <!-- KPIs de Clientes -->
-                <div class="row text-center mb-4">
-                    <div class="col-md-3">
-                        <div class="card shadow-sm">
+                <!-- KPIs Clientes -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-sm-6 col-md-3">
+                        <div class="card shadow-sm text-center">
                             <div class="card-body">
                                 <h6 class="text-muted">Total de Clientes</h6>
                                 <h4 class="fw-bold">{{ clientes.kpis.total_clientes }}</h4>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card shadow-sm">
+                    <div class="col-12 col-sm-6 col-md-3">
+                        <div class="card shadow-sm text-center">
                             <div class="card-body">
                                 <h6 class="text-muted">Novos no Período</h6>
                                 <h4 class="fw-bold text-success">{{ clientes.kpis.novos_clientes }}</h4>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card shadow-sm">
+                    <div class="col-12 col-sm-6 col-md-3">
+                        <div class="card shadow-sm text-center">
                             <div class="card-body">
                                 <h6 class="text-muted">Clientes Ativos</h6>
                                 <h4 class="fw-bold">{{ clientes.kpis.clientes_ativos }}</h4>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="card shadow-sm">
+                    <div class="col-12 col-sm-6 col-md-3">
+                        <div class="card shadow-sm text-center">
                             <div class="card-body">
                                 <h6 class="text-muted">Clientes Inativos</h6>
                                 <h4 class="fw-bold text-danger">{{ clientes.kpis.clientes_inativos }}</h4>
@@ -380,37 +384,37 @@
 
             <!-- Relatório de Pedidos -->
             <div class="tab-pane fade" id="pedidos" role="tabpanel" data-relatorio="pedidos">
-                <!-- KPIs -->
-                <div class="row mb-4">
-                    <div class="col-md-3">
+                <!-- KPIs Pedidos -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-sm-6 col-md-3">
                         <div class="card text-center shadow-sm">
                             <div class="card-body">
                                 <h6 class="text-muted">Faturamento</h6>
-                                <h4 class="mb-0">R$ {{ "%.2f" | format(pedidos.kpis.faturamento) }}</h4>
+                                <h4 class="fw-bold">R$ {{ "%.2f" | format(pedidos.kpis.faturamento) }}</h4>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-12 col-sm-6 col-md-3">
                         <div class="card text-center shadow-sm">
                             <div class="card-body">
                                 <h6 class="text-muted">Total de Pedidos</h6>
-                                <h4 class="mb-0">{{ pedidos.kpis.total_pedidos }}</h4>
+                                <h4 class="fw-bold">{{ pedidos.kpis.total_pedidos }}</h4>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-12 col-sm-6 col-md-3">
                         <div class="card text-center shadow-sm">
                             <div class="card-body">
                                 <h6 class="text-muted">Taxa de Cancelamento</h6>
-                                <h4 class="mb-0">{{ pedidos.kpis.taxa_cancelamento }}%</h4>
+                                <h4 class="fw-bold">{{ pedidos.kpis.taxa_cancelamento }}%</h4>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-12 col-sm-6 col-md-3">
                         <div class="card text-center shadow-sm">
                             <div class="card-body">
                                 <h6 class="text-muted">Venda Média</h6>
-                                <h4 class="mb-0">R$ {{ "%.2f" | format(pedidos.kpis.valor_medio_pedido) }}</h4>
+                                <h4 class="fw-bold">R$ {{ "%.2f" | format(pedidos.kpis.valor_medio_pedido) }}</h4>
                             </div>
                         </div>
                     </div>
@@ -433,7 +437,7 @@
                     </div>
 
                     <!-- Vendas por Dia -->
-                    <div class="col-md-6">
+                    <div class="col-md-6 mb-4">
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title">Vendas por Dia (R$)</h5>
@@ -448,41 +452,36 @@
 
             <!-- Relatório de Feedbacks -->
             <div class="tab-pane fade" id="feedbacks" role="tabpanel" data-relatorio="feedbacks">
-                <!-- KPIs -->
-                <div class="row mb-4">
-                    <div class="col">
-                        <div class="card shadow-sm rounded-3 p-3 text-center">
-                            <h6>Total de Feedbacks</h6>
-                            <h2 id="kpi-total-feedbacks" class="fw-bold text-primary">{{ feedbacks.kpis.total_feedbacks
-                                }}</h2>
+                <!-- KPIs Feedbacks -->
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-sm-6 col-md">
+                        <div class="card shadow-sm text-center p-3">
+                            <h6 class="text-muted">Total de Feedbacks</h6>
+                            <h4 class="fw-bold text-primary">{{ feedbacks.kpis.total_feedbacks }}</h4>
                         </div>
                     </div>
-
-                    <div class="col">
-                        <div class="card shadow-sm rounded-3 p-3 text-center">
-                            <h6>Dúvidas</h6>
-                            <h2 id="kpi-duvidas" class="fw-bold text-info">{{ feedbacks.kpis.duvidas }}</h2>
+                    <div class="col-12 col-sm-6 col-md">
+                        <div class="card shadow-sm text-center p-3">
+                            <h6 class="text-muted">Dúvidas</h6>
+                            <h4 class="fw-bold text-info">{{ feedbacks.kpis.duvidas }}</h4>
                         </div>
                     </div>
-
-                    <div class="col">
-                        <div class="card shadow-sm rounded-3 p-3 text-center">
-                            <h6>Reclamações</h6>
-                            <h2 id="kpi-reclamacoes" class="fw-bold text-danger">{{ feedbacks.kpis.reclamacoes }}</h2>
+                    <div class="col-12 col-sm-6 col-md">
+                        <div class="card shadow-sm text-center p-3">
+                            <h6 class="text-muted">Reclamações</h6>
+                            <h4 class="fw-bold text-danger">{{ feedbacks.kpis.reclamacoes }}</h4>
                         </div>
                     </div>
-
-                    <div class="col">
-                        <div class="card shadow-sm rounded-3 p-3 text-center">
-                            <h6>Sugestões</h6>
-                            <h2 id="kpi-sugestoes" class="fw-bold text-warning">{{ feedbacks.kpis.sugestoes }}</h2>
+                    <div class="col-12 col-sm-6 col-md">
+                        <div class="card shadow-sm text-center p-3">
+                            <h6 class="text-muted">Sugestões</h6>
+                            <h4 class="fw-bold text-warning">{{ feedbacks.kpis.sugestoes }}</h4>
                         </div>
                     </div>
-
-                    <div class="col">
-                        <div class="card shadow-sm rounded-3 p-3 text-center">
-                            <h6>Elogios</h6>
-                            <h2 id="kpi-elogios" class="fw-bold text-success">{{ feedbacks.kpis.elogios }}</h2>
+                    <div class="col-12 col-sm-6 col-md">
+                        <div class="card shadow-sm text-center p-3">
+                            <h6 class="text-muted">Elogios</h6>
+                            <h4 class="fw-bold text-success">{{ feedbacks.kpis.elogios }}</h4>
                         </div>
                     </div>
                 </div>
@@ -519,7 +518,8 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                        <a class="dropdown-item" href="#" id="btnExportPDF" data-url="{{ url_for('relatorio.exportar_relatorio_pdf') }}">
+                        <a class="dropdown-item" href="#" id="btnExportPDF"
+                            data-url="{{ url_for('relatorio.exportar_relatorio_pdf') }}">
                             <i class="bi bi-file-earmark-pdf-fill me-1"></i> PDF
                         </a>
                     </li>

@@ -1,4 +1,3 @@
-Refinar responsividade relatórios
 Buscar falhas na responsividade
 
 Home ao entrar, login ao tentar comprar
