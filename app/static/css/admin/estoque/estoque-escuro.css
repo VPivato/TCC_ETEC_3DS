@@ -1,6 +1,6 @@
 body.modo-escuro {
-    background: #17041f;
-    background: linear-gradient(135deg, #17041f 0%, #08031f 100%);
+    background: #17041f !important;
+    background: linear-gradient(135deg, #17041f 0%, #08031f 100%) !important;
     color: #d0d0d0;
 }
 
@@ -25,4 +25,8 @@ body.modo-escuro .produtos table * {
 body.modo-escuro .filtro input,
 body.modo-escuro .modal-content input {
     background-color: #e1dbebd8 !important;
+}
+
+body.modo-escuro #tabela-todos-produtos tbody span {
+    color: #111 !important;
 }

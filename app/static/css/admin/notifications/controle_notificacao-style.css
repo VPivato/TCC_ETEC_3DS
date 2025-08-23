@@ -208,6 +208,7 @@ a:hover,
     #form-container {
         width: 50%;
         margin-bottom: 30px;
+        margin: 0px auto 30px;
     }
 
     #visualizacao-tabela {
