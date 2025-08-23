@@ -3,6 +3,9 @@ body {
 }
 
 canvas {
+    width: 100% !important;
+    height: auto;
+    max-width: 100%;
     min-height: 350px;
     max-height: 350px;
 }

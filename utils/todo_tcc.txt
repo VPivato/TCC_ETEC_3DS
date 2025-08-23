@@ -2,7 +2,6 @@ Buscar falhas na responsividade
 
 Home ao entrar, login ao tentar comprar
 Mudar o home
-Melhorias no CSS perfil
 Banner e fotos da equipe página sobre
 
 Mudança modelo usuário (nível da conta, conta ativa)

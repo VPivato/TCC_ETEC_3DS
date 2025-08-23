@@ -13,24 +13,30 @@ html {
 body {
     background: #EEE;
     background: linear-gradient(135deg, rgba(238, 238, 238, 1) 40%, rgba(224, 224, 224, 1) 100%);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
     overflow-y: scroll;
 }
 
 #container {
     display: flex;
+    flex: 1;
     flex-direction: row;
-    height: 888px;
+    min-height: calc(100vh - 90px);
     width: 100%;
 }
 
 #esquerda {
     display: flex;
+    overflow-y: auto;
     flex-direction: column;
     justify-content: space-between;
-    background: #1C5C20;
     background: linear-gradient(180deg, rgba(28, 92, 32, 1) 40%, rgba(33, 112, 26, 1) 100%);
     width: 420px;
-    height: 100%;
+    min-height: calc(100vh - 90px);
+    height: auto;
     box-shadow: 5px 0px 25px 0px #002c0b6e;
 }
 
@@ -111,6 +117,8 @@ body {
 }
 
 .main-content {
+    flex: 1;
+    overflow-y: auto;
     width: 90%;
     height: max-content;
     padding: 20px;
@@ -211,7 +219,10 @@ input:disabled {
 }
 
 #conteudo {
-    width: 100%;
+    flex: 1;
+    min-height: calc(100vh - 90px);
+    background: #EEE;
+    overflow-y: auto;
 }
 
 .active {
@@ -224,8 +235,8 @@ input:disabled {
 
 .conteudo-pagina.ativo {
     display: block;
-    max-height: 88vh;
-    overflow: auto;
+    min-height: 100%;
+    padding-bottom: 30px;
 }
 
 .switch {
@@ -308,12 +319,11 @@ canvas {
         flex-direction: column;
     }
 
-    #conteudo {
-        width: 100%;
-    }
-
     #esquerda {
         width: 100%;
+        min-height: fit-content;
+        max-height: fit-content;
+        height: auto;
     }
 
     #perfil-wrapper {
@@ -326,5 +336,16 @@ canvas {
 
     .perfil-inpt {
         width: 95%;
+    }
+}
+
+@media (max-height: 820px) {
+    #perfil-wrapper {
+        margin-top: 30px;
+    }
+
+    #perfil-wrapper #pfp {
+        width: 200px;
+        height: 200px;
     }
 }
