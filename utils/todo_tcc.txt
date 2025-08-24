@@ -1,4 +1,3 @@
-Home ao entrar, login ao tentar comprar
 Mudar o home
 Banner e fotos da equipe página sobre
 

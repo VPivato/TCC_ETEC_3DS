@@ -248,7 +248,7 @@ def estatisticas_usuario():
 @perfil_bp.route('/sair')
 def sair():
     session.clear()
-    return redirect(url_for("auth.login"))
+    return redirect(url_for("home.home"))
 
 
 

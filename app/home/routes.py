@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template
 
-home_bp = Blueprint("home", __name__, url_prefix="/home")
+home_bp = Blueprint("home", __name__, url_prefix="/")
 
 # Rota Home, depois de entrar ou registrar com sucesso
 @home_bp.route('/')

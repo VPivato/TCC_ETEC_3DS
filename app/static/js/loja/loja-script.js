@@ -42,6 +42,22 @@ botoes.forEach(btn => {
 let carrinho = {};
 let total = 0;
 function adicionarProduto(id, nome, preco, estoqueDisponivel) {
+    if (!window.usuarioLogado) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Atenção!',
+            text: 'Você precisa estar logado para adicionar produtos ao carrinho.',
+            confirmButtonText: 'Fazer login',
+            showCancelButton: true,
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/auth";
+            }
+        });
+        return;
+    }
+
     if (carrinho[id]) {
         if (carrinho[id].quantidade >= estoqueDisponivel) {
             alert(`Estoque insuficiente! Apenas ${estoqueDisponivel} unidades disponíveis.`);

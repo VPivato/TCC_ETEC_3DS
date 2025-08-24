@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, session, request, flash, redirect,
 from ..models.usuario import Usuarios
 from ..extensions import db
 
-auth_bp = Blueprint("auth", __name__, url_prefix="/")
+auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 # Rota Tela de Login/Cadastro
 @auth_bp.route('/')

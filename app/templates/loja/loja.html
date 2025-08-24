@@ -203,5 +203,8 @@
 {% endblock %}
 
 {% block extra_js %}
+<script>
+    window.usuarioLogado = {{ 'true' if user_logado else 'false' }};
+</script>
 <script src="{{ url_for('static', filename='js/loja/loja-script.js') }}"></script>
 {% endblock %}

@@ -38,7 +38,8 @@
         <div class="col-6 col-md-3">
             <div class="card shadow-sm text-center border-0 h-100">
                 <div class="card-body">
-                    <h5 class="text-success" id="valor-estoque">{{ info.kpis.valor_total_estoque }}</h5>
+                    <h5 class="text-success" id="valor-estoque">R$ {{ "%.2f" | format(info.kpis.valor_total_estoque) }}
+                    </h5>
                     <p class="mb-0 text-muted">Valor total em estoque</p>
                 </div>
             </div>
