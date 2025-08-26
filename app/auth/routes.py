@@ -31,6 +31,10 @@ def entrar():
     if not usuario:
         flash("Este aluno ainda não possui conta cadastrada.", "warning")
         return redirect(url_for("auth.login"))
+    
+    if usuario.conta_ativa != "sim":
+        flash("Esta conta está desativada. Crie uma nova conta ou contate o suporte.", "danger")
+        return redirect(url_for("auth.login"))
 
     # Verificar senha
     if not usuario.check_senha(senha):
@@ -50,12 +54,10 @@ def registrar():
     senha = request.form.get("senha")
     confirmar = request.form.get("confirmar")
 
-    # Verifica se as senhas coincidem
     if senha != confirmar:
         flash("As senhas devem ser iguais.", "danger")
         return redirect(url_for("auth.login"))
 
-    # Busca o aluno na tabela externa
     aluno = Alunos.query.filter_by(
         codigo_etec_aluno=codigo_etec,
         rm_aluno=rm
@@ -65,12 +67,20 @@ def registrar():
         flash("Código ETEC ou RM inválidos.", "danger")
         return redirect(url_for("auth.login"))
 
-    # Verifica se o aluno já possui conta
-    if aluno.usuario:
-        flash("Este aluno já possui uma conta registrada.", "warning")
-        return redirect(url_for("auth.login"))
+    usuario = Usuarios.query.filter_by(aluno_id=aluno.id).first()
+    if usuario:
+        if usuario.conta_ativa == "sim":
+            flash("Este aluno já possui uma conta registrada.", "warning")
+            return redirect(url_for("auth.login"))
+        else:
+            # Reativar conta desativada
+            usuario.set_senha(senha)
+            usuario.conta_ativa = "sim"
+            db.session.commit()
+            flash("Conta reativada com sucesso! Agora você pode fazer login.", "success")
+            return redirect(url_for("auth.login"))
 
-    # Cria o usuário vinculado ao aluno
+    # Criar usuário novo
     novo_usuario = Usuarios(aluno_id=aluno.id)
     novo_usuario.set_senha(senha)
     db.session.add(novo_usuario)

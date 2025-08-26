@@ -264,9 +264,11 @@ def excluir_perfil():
                 )
                 if os.path.exists(caminho_arquivo):
                     os.remove(caminho_arquivo)
-            db.session.delete(usuario)
+
+            # Marca a conta como inativa
+            usuario.conta_ativa = "nao"
             db.session.commit()
             session.clear()
-            return redirect(url_for("auth.login"))
+            return redirect(url_for("home.home"))
         except Exception as e:
             return f"ERROR: {e}"

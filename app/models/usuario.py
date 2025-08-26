@@ -23,6 +23,3 @@ class Usuarios(db.Model):
     
     def check_senha(self, senha):
         return check_password_hash(self.hash_senha_usuario, senha)
-    
-    def __repr__(self):
-        return f"ID: {self.id_usuario}, Nome: {self.nome_usuario}"
