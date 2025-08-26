@@ -12,7 +12,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(90deg, #e2e2e2, #9c3939);
+    background-color: #f4f4f6;
     /*Corpo do site*/
 }
 
@@ -30,7 +30,7 @@ body {
 
 .container h1 {
     font-size: 36px;
-    margin: -10px 0;
+    margin: 20px 0;
     overflow: hidden;
     color: #000;
 }
@@ -56,7 +56,6 @@ body {
     padding: 40px;
     z-index: 1;
     transition: .6s ease-in-out 1.2s, visibility 0s 1s;
-    /*Espaço de login/cadastro*/
 }
 
 .container.active .form-box {
@@ -65,7 +64,6 @@ body {
 
 .form-box.register {
     visibility: hidden;
-    /*Transição entre login/cadastro (Esconder o login para aparecer cadastro)*/
 }
 
 .container.active .form-box.register {
@@ -76,14 +74,18 @@ form {
     width: 100%;
 }
 
+#etecrm {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
 
 .input-box {
     position: relative;
-    margin: 30px 0;
-    margin-bottom: -10px;
+    margin: 20px 0;
 }
 
-.input-box input {
+input {
     width: 100%;
     padding: 13px 50px 13px 20px;
     background: #e2e2e2;
@@ -98,8 +100,41 @@ form {
     align-items: center;
 }
 
+#codeEtec {
+    font-size: 12px;
+}
+
+#pwI {
+    margin-bottom: 20px;
+}
+
 #input-password {
     margin-bottom: 20px;
+}
+
+#codeEtecLogin {
+    margin-bottom: 20px;
+}
+
+#termos {
+    display: grid;
+    grid-template-columns: 1fr 15fr;
+    margin-bottom: 20px;
+}
+
+#termoscbx {
+    width: 15px;
+    height: 15px;
+}
+
+.cbx-a,
+.cbx-a:visited {
+    color: #0000EE;
+    text-decoration: none;
+}
+
+#txtt {
+    font-size: 10px;
 }
 
 .input-box input::placeholder {
@@ -116,43 +151,13 @@ form {
     color: #888;
 }
 
-.input-box input:focus {
-    border: 2px solid #460606;
-    box-shadow: 6px 6px 6px #2101019d;
-    transition: .2s ease-in-out;
-    outline: none;
-}
-
-#input-user {
-    width: 60%;
-    position: relative;
-    left: 137px;
-    top: -22px;
-}
-
-#codeEtec {
-    width: 37%;
-    position: relative;
-    right: 1px;
-    top: 23px;
-}
-
-#input-user-login {
-    width: 60%;
-    position: relative;
-    left: 137px;
-    top: -22px;
-}
-
-#codeEtecLogin {
-    width: 37%;
-    position: relative;
-    right: 1px;
-    top: 23px;
+#link:hover {
+    transition: 1s;
+    font-weight: 600;
 }
 
 .forgot-link {
-    margin: 10px 0 15px;
+    margin: 30px 0 15px;
 }
 
 .forgot-link a {
@@ -173,7 +178,20 @@ form {
 .btn {
     width: 100%;
     height: 48px;
-    background: #aa0404;
+    background: #f83435;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: #fff;
+    font-weight: 600;
+}
+
+.btn.n {
+    width: 100%;
+    height: 48px;
+    background: #2e9a60;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, .1);
     border: none;
@@ -184,13 +202,18 @@ form {
 }
 
 .btn:hover {
-    background: #460606;
-    transition: .8s ease-in-out;
+    background: #dd0101e1;
+    transition: .2s ease-out;
 }
 
 .btn:focus {
-    background: #460606;
+    background: #dd0101e1;
     transition: .1s ease-in-out;
+}
+
+.btn.n:hover {
+    background: #0b8142;
+    transition: .2s ease-out;
 }
 
 .btn::before {
@@ -212,7 +235,7 @@ form {
 }
 
 .toggle-box .btn:hover {
-    color: #aa0404;
+    color: #f83435;
     background: #fff;
     transition: .7s;
 }
@@ -228,7 +251,7 @@ form {
     left: -250%;
     width: 300%;
     height: 100%;
-    background: radial-gradient(circle, #fff 20%, #aa0404 80%);
+    background: radial-gradient(circle, #fff 25%, #2e9a60 90%);
     border-radius: 150px;
     z-index: 1;
     transition: 1.4s ease-in-out;
@@ -236,13 +259,14 @@ form {
 
 .container.active .toggle-box::before {
     left: 50%;
+    background: radial-gradient(circle, #fff 25%, #f83435 75%);
 }
 
 .toggle-panel {
     position: absolute;
     width: 50%;
     height: 100%;
-    color: #aa0404;
+    color: #f83435;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -253,7 +277,7 @@ form {
 
 .toggle-panel.toggle-left {
     left: 0;
-    transition-delay: .6s;
+    transition-delay: .2s;
 }
 
 .container.active .toggle-panel.toggle-left {
@@ -284,14 +308,14 @@ form {
     box-shadow: none;
 }
 
-.warning {
-    color: red;
-    font-size: .8rem;
+.btn.register-btn:hover {
+    color: #2e9a60;
 }
 
-@media screen and (max-width: 650px) {
+@media screen and (max-width: 870px) {
     .container {
-        height: calc(100vh -20px);
+        height: calc(100vh - 20px) !important;
+
     }
 
     .form-box {
@@ -341,31 +365,91 @@ form {
         bottom: 0;
     }
 
-    #input-user {
-        width: 50%;
-        position: relative;
-        left: 148px;
-        top: -22px;
+    input {
+        height: 75px;
+        font-size: 20px;
     }
 
-    #input-user-login {
-        width: 50%;
-        position: relative;
-        left: 148px;
-        top: -22px;
+    button {
+        height: 70px !important;
+        font-size: 20px !important;
+    }
+
+    .btn.n {
+        margin-top: 70px;
+    }
+
+    #termos {
+        grid-template-columns: 1fr 15fr;
+    }
+
+    #txtt {
+        font-size: 20px;
+    }
+
+    #termoscbx {
+        width: 25px;
+        height: 25px;
+        margin-left: 40px;
+    }
+
+    #link {
+        font-size: 20px;
+    }
+
+    #codeEtec {
+        font-size: 20px;
     }
 }
 
-@media screen and (max-width: 400px) {
-    .form-box {
-        padding: 20px;
+@media (max-width: 400px) {
+    .btn.n {
+        margin-top: 0;
     }
 
-    .toggle-panel h1 {
-        font-size: 30px;
+    input {
+        height: 50px;
+        font-size: 20px;
     }
 
-    #input-user-login {
-        left: 160px;
+    .container h1 {
+        font-size: 28px;
+    }
+
+    button {
+        height: 50px !important;
+        font-size: 16px !important;
+    }
+
+    #txtt {
+        font-size: 12px;
+    }
+
+    #termoscbx {
+        width: 15px;
+        height: 15px;
+        margin-left: 0;
+    }
+
+    #etecrm {
+        grid-template-columns: 1fr;
+        gap: .5rem;
+    }
+
+    #termos {
+        margin-bottom: 5px;
+    }
+
+    .input-box {
+        margin: .5rem 0;
+    }
+
+    #pwI,
+    #codeEtecLogin {
+        margin-bottom: .5rem;
+    }
+
+    #subt {
+        margin: 0 0 10px;
     }
 }

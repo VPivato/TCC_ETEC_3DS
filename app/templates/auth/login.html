@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Crédito CPS</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/auth/login-style.css') }}">
-    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='images/shared/favicon.png') }}" type="image/x-icon">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 
 <body>
@@ -16,58 +15,36 @@
             <form action="{{ url_for('auth.entrar') }}" method="POST">
                 <h1>Login</h1>
                 <div class="input-box">
-                    <input type="text" placeholder="Código" name="codigo-entrar" required id="codeEtecLogin"
-                        id="input-code">
-                    <input type="text" placeholder="Usuário" name="nome-entrar" required id="input-user-login">
-                    <i class='bx bxs-user-circle'></i>
+                    <input type="text" placeholder="Código ETEC" required id="codeEtecLogin" name="codigo_etec_entrar">
+                    <input type="text" placeholder="RM" required id="input-user-login" name="rm_entrar">
                 </div>
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                {% for message in messages %}
-                {% if message == "Usuário não cadastrado" %}
-                <span class="warning">{{ message }}</span>
-                {% endif %}
-                {% endfor %}
-                {% endif %}
-                {% endwith %}
                 <div class="input-box">
-                    <input type="password" placeholder="Senha" name="senha-entrar" required id="input-password">
-                    <i class='bx bxs-lock-alt'></i>
+                    <input type="password" placeholder="Senha" required id="input-password" name="senha_entrar">
                 </div>
-                {% with messages = get_flashed_messages() %}
-                {% if messages %}
-                {% for message in messages %}
-                {% if message == "Senha incorreta" %}
-                <span class="warning">{{ message }}</span>
-                {% endif %}
-                {% endfor %}
-                {% endif %}
-                {% endwith %}
                 <div class="forgot-link">
                     <a href="https://nsa.cps.sp.gov.br/frmesenha.aspx" id="link">Esqueceu a senha?</a>
                 </div>
-                <button type="submit" class="btn">Login</button>
+                <button type="submit" class="btn n">Login</button>
             </form>
         </div>
 
         <div class="form-box register">
             <form action="{{ url_for('auth.registrar') }}" method="POST">
-                <h1>Cadastro</h1>
-                <div class="input-box">
-                    <input type="email" name="email-registrar" placeholder="Email" required>
-                    <i class='bx bxs-envelope'></i>
+                <h1>Cadastre-se</h1>
+                <div id="etecrm">
+                    <input type="text" name="codigo_etec" placeholder="Código ETEC" id="codeEtec" required>
+                    <input type="text" name="rm" placeholder="RM" id="input-user" required>
                 </div>
                 <div class="input-box">
-                    <input type="text" placeholder="Código" name="codigo-registrar" required id="codeEtec">
-                    <input type="text" placeholder="Usuário" name="nome-registrar" required id="input-user">
-                    <i class='bx bxs-user-circle'></i>
+                    <input type="password" name="senha" id="pwI" placeholder="Senha" required>
+                    <input type="password" name="confirmar" id="pwII" placeholder="Confirmar senha" required>
                 </div>
-                <div class="input-box">
-                    <input type="password" placeholder="Senha" name="senha-registrar" required>
-                    <i class='bx bxs-lock-alt'></i>
-                </div>
-                <div class="forgot-link">
-                    <a href="https://nsa.cps.sp.gov.br/frmesenha.aspx" id="link">Esqueceu a senha?</a>
+                <div id="termos">
+                    <input type="checkbox" id="termoscbx" required>
+                    <span id="txtt">Eu concordo com os
+                        <a class="cbx-a" href="{{ url_for('info.termos') }}">termos de uso</a> e
+                        <a class="cbx-a" href="{{ url_for('info.politica') }}">políticas de privacidade</a>.
+                    </span>
                 </div>
                 <button type="submit" class="btn">Cadastro</button>
             </form>
@@ -75,28 +52,45 @@
         <div class="toggle-box">
             <div class="toggle-panel toggle-left">
                 <h1>Olá, novamente!</h1>
-                <p>Não se cadastrou?</p>
+                <p id="subt">Não se cadastrou?</p>
                 <button class="btn register-btn" onclick="toggle()">Cadastre-se</button>
             </div>
 
             <div class="toggle-box">
                 <div class="toggle-panel toggle-right">
                     <h1>Bem vindo!</h1>
-                    <p>Já está cadastrado?</p>
-                    <button class="btn login-btn" onclick="untoggle()">Faça login!</button>
+                    <p id="subt">Já está cadastrado?</p>
+                    <button class="btn login-btn" onclick="untoggle()" id="trade">Faça login!</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                const hash = window.location.hash;
-                if (hash === "#registrar") {
-                    document.querySelector(".register-btn").click();
-                }
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const hash = window.location.hash;
+            if (hash === "#registrar") {
+                document.querySelector(".register-btn").click();
+            }
+        });
+    </script>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            {% for category, message in messages %}
+            Swal.fire({
+                icon: "{{ 'success' if category == 'success' else 'error' if category == 'danger' else 'warning' if category == 'warning' else 'info' }}",
+                text: "{{ message|safe }}",
+                showConfirmButton: false,
+                timer: 3000
             });
-        </script>
-        <script src="{{ url_for('static', filename='js/auth/login-script.js') }}"></script>
+            {% endfor %}
+        });
+    </script>
+    {% endif %}
+    {% endwith %}
+    <script src="{{ url_for('static', filename='js/auth/login-script.js') }}"></script>
 </body>
 
 </html>

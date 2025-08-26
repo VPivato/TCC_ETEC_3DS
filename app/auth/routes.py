@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, session, request, flash, redirect, url_for
 from ..models.usuario import Usuarios
 from ..extensions import db
+from ..models import Alunos
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
-# Rota Tela de Login/Cadastro
 @auth_bp.route('/')
 def login():
     return render_template('auth/login.html')
@@ -12,43 +12,69 @@ def login():
 # Rota para entrar
 @auth_bp.route('/entrar', methods=["POST"])
 def entrar():
-    # Coletar informações do formulário entrar
-    codigo = request.form["codigo-entrar"]
-    nome = request.form["nome-entrar"]
-    senha = request.form["senha-entrar"]
-    usuario_bd = Usuarios.query.filter_by(nome_usuario=nome).first() # Verifica se usuario existe no BD, se não, retorna None
-    codigo_bd = usuario_bd.codigo_etec_usuario if usuario_bd else None # Pega o codigo do usuario se ele existir, se não, retorna None
+    codigo_etec = request.form.get("codigo_etec_entrar")
+    rm = request.form.get("rm_entrar")
+    senha = request.form.get("senha_entrar")
 
-    # Se usuario existir, senha descriptografada coincidir com a digitada, e codigo estiver correto
-    if usuario_bd and usuario_bd.check_senha(senha) and codigo_bd == codigo:
-        session["user_id"] = usuario_bd.id
-        return redirect(url_for("home.home")) # Direciona para página Home
-    # Se não existir
-    else:
-        flash("Usuário não cadastrado" if not usuario_bd else None)
-        flash(("Senha incorreta" if usuario_bd.check_senha(senha) != senha else None) if usuario_bd else None)
-        return redirect("/")
+    # Buscar aluno pelo código e RM
+    aluno = Alunos.query.filter_by(
+        codigo_etec_aluno=codigo_etec,
+        rm_aluno=rm
+    ).first()
+
+    if not aluno:
+        flash("Código ETEC ou RM inválidos.", "danger")
+        return redirect(url_for("auth.login"))
+
+    # Verificar se esse aluno já possui conta
+    usuario = Usuarios.query.filter_by(aluno_id=aluno.id).first()
+    if not usuario:
+        flash("Este aluno ainda não possui conta cadastrada.", "warning")
+        return redirect(url_for("auth.login"))
+
+    # Verificar senha
+    if not usuario.check_senha(senha):
+        flash("Senha incorreta.", "danger")
+        return redirect(url_for("auth.login"))
+
+    # Login bem-sucedido → salvar na sessão
+    session["user_id"] = usuario.id
+    return redirect(url_for("home.home"))
+
 
 # Rota para registrar
 @auth_bp.route('/registrar', methods=["POST"])
 def registrar():
-    # Coletar informação do formulário registrar
-    email = request.form["email-registrar"]
-    codigo = request.form["codigo-registrar"]
-    nome = request.form["nome-registrar"]
-    senha = request.form["senha-registrar"]
-    nome_cadastrado = True if Usuarios.query.filter_by(nome_usuario=nome).first() else False # Verifica se nome existe no BD
-    email_cadastrado = True if Usuarios.query.filter_by(email_usuario=email).first() else False # Verifica se email existe no BD
+    codigo_etec = request.form.get("codigo_etec")
+    rm = request.form.get("rm")
+    senha = request.form.get("senha")
+    confirmar = request.form.get("confirmar")
 
-    if nome_cadastrado or email_cadastrado:
+    # Verifica se as senhas coincidem
+    if senha != confirmar:
+        flash("As senhas devem ser iguais.", "danger")
         return redirect(url_for("auth.login"))
-    else:
-        novo_usuario = Usuarios(nome_usuario=nome, email_usuario=email, codigo_etec_usuario=codigo) # Define usuario para adicionar
-        novo_usuario.set_senha(senha) # Criptografa a senha e manda para o BD
-        try:
-            db.session.add(novo_usuario)
-            db.session.commit()
-            session["user_id"] = novo_usuario.id
-            return redirect(url_for("home.home")) # Redireciona para pagina Home
-        except Exception as e:
-            return f"ERROR: {e}"
+
+    # Busca o aluno na tabela externa
+    aluno = Alunos.query.filter_by(
+        codigo_etec_aluno=codigo_etec,
+        rm_aluno=rm
+    ).first()
+
+    if not aluno:
+        flash("Código ETEC ou RM inválidos.", "danger")
+        return redirect(url_for("auth.login"))
+
+    # Verifica se o aluno já possui conta
+    if aluno.usuario:
+        flash("Este aluno já possui uma conta registrada.", "warning")
+        return redirect(url_for("auth.login"))
+
+    # Cria o usuário vinculado ao aluno
+    novo_usuario = Usuarios(aluno_id=aluno.id)
+    novo_usuario.set_senha(senha)
+    db.session.add(novo_usuario)
+    db.session.commit()
+
+    flash("Conta criada com sucesso! Agora você pode fazer login.", "success")
+    return redirect(url_for("auth.login"))

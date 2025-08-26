@@ -9,6 +9,7 @@ from ...models.feedback import Feedbacks
 from ...models.produto import Produtos
 from ...models.pedido import Pedido
 from ...models.item_pedido import ItemPedido
+from ...models.aluno import Alunos
 
 from ...extensions import db
 
@@ -21,6 +22,7 @@ MODELOS = {
     "Produtos": Produtos,
     "Pedidos": Pedido,
     "ItemPedido": ItemPedido,
+    "Alunos": Alunos
 }
 
 @database_bp.route('/', methods=["POST", "GET"])

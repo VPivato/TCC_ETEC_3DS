@@ -12,6 +12,19 @@ loginBtn.addEventListener('click', () => {
     container.classList.remove('active');
 });
 
+const Btn = document.querySelector('.btn');
+
+loginBtn.addEventListener('click', () => {
+    Btn.classList.add('n');
+});
+
+const toggle = document.querySelector('.btn register-btn');
+
+loginBtn.addEventListener('click', () => {
+    toggle.classList.add('n');
+});
+
+
 //Fazer a o link abrir em outra guia no computador, mas no celular não.
 
 document.getElementById('link').addEventListener('click', function (event) {

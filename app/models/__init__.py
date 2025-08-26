@@ -5,3 +5,4 @@ from .notificacao import Notificacoes
 from .produto import Produtos
 from .pedido import Pedido
 from .item_pedido import ItemPedido
+from .aluno import Alunos

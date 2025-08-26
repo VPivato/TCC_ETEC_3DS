@@ -66,23 +66,22 @@
                     <button type="submit" id="salvar-pfp">Salvar</button>
                 </form>
 
-                <form action="" method="POST" id="perfil-informacoes-basicas">
-                    <label for="nome-perfil" class="label-opcao">Nome de usuário</label>
-                    <input type="text" id="nome-perfil" name="nome-perfil" class="perfil-inpt"
-                        placeholder="Fulano da Silva" disabled>
+                <div id="info-usuario">
+                    <h4>Nome do aluno</h4>
+                    <p>{{ user_logado.aluno.nome_aluno }}</p>
 
-                    <label for="rm-perfil" class="label-opcao">RM</label>
-                    <input type="text" id="rm-perfil" name="rm-perfil" class="perfil-inpt"
-                        placeholder="{{ user_logado.nome_usuario }}" disabled>
+                    <h4>Email institucional</h4>
+                    <p>{{ user_logado.aluno.email_aluno }}</p>
 
-                    <label for="cod-etec-perfil" class="label-opcao">Código ETEC</label>
-                    <input type="text" id="cod-etec-perfil" name="cod-etec-perfil" class="perfil-inpt"
-                        placeholder="{{ user_logado.codigo_etec_usuario }}" disabled>
+                    <h4>RM</h4>
+                    <p>{{ user_logado.aluno.rm_aluno }}</p>
 
-                    <label for="instituicao-perfil" class="label-opcao">Instituição</label>
-                    <input type="text" id="instituicao-perfil" name="instituicao-perfil" class="perfil-inpt"
-                        placeholder="ETEC Prof. Eudécio Luiz Vicente" disabled>
-                </form>
+                    <h4>Código ETEC</h4>
+                    <p>{{ user_logado.aluno.codigo_etec_aluno }}</p>
+
+                    <h4>Instituição</h4>
+                    <p>{{ user_logado.aluno.descricao_etec }}</p>
+                </div>
             </div>
         </div>
 

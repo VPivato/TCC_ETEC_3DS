@@ -6,12 +6,14 @@ class Usuarios(db.Model):
     __tablename__ = "usuarios"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    nome_usuario = db.Column(db.String(40), nullable=False, unique=True)
-    email_usuario = db.Column(db.String(70), nullable=False, unique=True)
-    codigo_etec_usuario = db.Column(db.String(30), nullable=False)
+    aluno_id = db.Column(db.Integer, db.ForeignKey('alunos.id'), nullable=False)
     hash_senha_usuario = db.Column(db.String(100), nullable=False)
     data_criacao_usuario = db.Column(db.DateTime, default=datetime.now)
     imagem_usuario = db.Column(db.String(255), nullable=True, default='uploads/pfp/default.jpg')
+    nivel_conta = db.Column(db.Integer, default=0, nullable=False)
+    conta_ativa = db.Column(db.String(3), nullable=True, default='sim')
+
+    aluno = db.relationship("Alunos", backref="usuario", uselist=False)
 
     notificacoes_ativas = db.Column(db.Boolean, default=True)
     ultima_notificacao_vista = db.Column(db.Boolean, default=False)
