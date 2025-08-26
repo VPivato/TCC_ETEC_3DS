@@ -1,10 +1,7 @@
 Mudar o home
 Banner e fotos da equipe página sobre
 
-Mudança modelo usuário (nível da conta, conta ativa)
-Adicionar clientes ativos e inativos no relatório de clientes
 Cadastro admin
-Simulação tabela NSA
 Impedir entrar em paginas admin pela url
 
 Modularização e refatoração

@@ -437,12 +437,15 @@ def gerar_relatorio_clientes(data_inicio, data_fim):
             "total_pedidos": pedidos_por_cliente.get(cid, 0),
             "faturamento_total": faturamento_por_cliente[cid]
         })
+    
+    ativos = db.session.query(Usuarios).filter_by(conta_ativa="sim").count()
+    inativos = db.session.query(Usuarios).filter_by(conta_ativa="nao").count()
 
     kpis_clientes = {
         "total_clientes": total_clientes,
         "novos_clientes": novos_clientes,
-        "clientes_ativos": "to do",
-        "clientes_inativos": "to do"
+        "clientes_ativos": ativos,
+        "clientes_inativos": inativos
     }
 
     return {
