@@ -6,7 +6,9 @@ class Usuarios(db.Model):
     __tablename__ = "usuarios"
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    aluno_id = db.Column(db.Integer, db.ForeignKey('alunos.id'), nullable=False)
+    aluno_id = db.Column(db.Integer, db.ForeignKey('alunos.id'))
+    codigo_etec_usuario = db.Column(db.String(5), nullable=False)
+    rm_usuario = db.Column(db.String(10), nullable=False)
     hash_senha_usuario = db.Column(db.String(100), nullable=False)
     data_criacao_usuario = db.Column(db.DateTime, default=datetime.now)
     imagem_usuario = db.Column(db.String(255), nullable=True, default='uploads/pfp/default.jpg')

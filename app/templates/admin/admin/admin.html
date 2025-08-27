@@ -88,7 +88,7 @@
 
             <!-- Cadastrar Admin -->
             <div class="col-6 col-md-4 col-lg-3">
-                <a href="#" target="_blank" class="text-decoration-none">
+                <a href="#" class="text-decoration-none" data-bs-toggle="modal" data-bs-target="#modalCadastrarAdmin">
                     <div class="card text-center shadow-sm h-100 border-0">
                         <div class="card-body">
                             <i class="bi bi-person-plus fs-1 text-primary"></i>
@@ -96,6 +96,49 @@
                         </div>
                     </div>
                 </a>
+            </div>
+
+            <!-- Modal Cadastrar admin -->
+            <div class="modal fade" id="modalCadastrarAdmin" tabindex="-1" aria-labelledby="modalCadastrarAdminLabel"
+                aria-hidden="true">
+                <div class="modal-dialog">
+                    <form method="POST" action="{{ url_for('admin.cadastrar_admin') }}">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalCadastrarAdminLabel">Cadastrar Admin</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Fechar"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="etec_admin" class="form-label">Código ETEC</label>
+                                    <input type="text" class="form-control" id="etec_admin" name="etec_admin" required
+                                        maxlength="5">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="usuario_admin" class="form-label">Usuário</label>
+                                    <input type="text" class="form-control" id="usuario_admin" name="usuario_admin"
+                                        required maxlength="10">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="senha_admin" class="form-label">Senha</label>
+                                    <input type="password" class="form-control" id="senha_admin" name="senha_admin"
+                                        required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="confirmar_senha_admin" class="form-label">Confirmar Senha</label>
+                                    <input type="password" class="form-control" id="confirmar_senha_admin"
+                                        name="confirmar_senha_admin" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-primary">Cadastrar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
 
             <!-- Sair -->
@@ -116,5 +159,21 @@
 {% endblock %}
 
 {% block extra_js %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        {% for category, message in messages %}
+        Swal.fire({
+            icon: "{{ 'success' if category == 'success' else 'error' if category == 'danger' else 'warning' if category == 'warning' else 'info' }}",
+            text: "{{ message|safe }}",
+            showConfirmButton: false,
+            timer: 3000
+        });
+        {% endfor %}
+    });
+</script>
+{% endif %}
+{% endwith %}
 <script src="{{ url_for('static', filename='js/admin/admin/admin-script.js') }}"></script>
 {% endblock %}''

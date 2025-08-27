@@ -1,7 +1,6 @@
 Mudar o home
 Banner e fotos da equipe página sobre
 
-Cadastro admin
 Impedir entrar em paginas admin pela url
 
 Modularização e refatoração

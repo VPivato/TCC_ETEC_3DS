@@ -16,23 +16,18 @@ def entrar():
     rm = request.form.get("rm_entrar")
     senha = request.form.get("senha_entrar")
 
-    # Buscar aluno pelo código e RM
-    aluno = Alunos.query.filter_by(
-        codigo_etec_aluno=codigo_etec,
-        rm_aluno=rm
+    # Buscar usuário pelo código e RM
+    usuario = Usuarios.query.filter_by(
+        codigo_etec_usuario=codigo_etec,
+        rm_usuario=rm
     ).first()
 
-    if not aluno:
+    if not usuario:
         flash("Código ETEC ou RM inválidos.", "danger")
         return redirect(url_for("auth.login"))
 
-    # Verificar se esse aluno já possui conta
-    usuario = Usuarios.query.filter_by(aluno_id=aluno.id).first()
-    if not usuario:
-        flash("Este aluno ainda não possui conta cadastrada.", "warning")
-        return redirect(url_for("auth.login"))
-    
-    if usuario.conta_ativa != "sim":
+    # Verifica se a conta está ativa (somente alunos)
+    if usuario.aluno_id and usuario.conta_ativa != "sim":
         flash("Esta conta está desativada. Crie uma nova conta ou contate o suporte.", "danger")
         return redirect(url_for("auth.login"))
 
@@ -43,7 +38,13 @@ def entrar():
 
     # Login bem-sucedido → salvar na sessão
     session["user_id"] = usuario.id
-    return redirect(url_for("home.home"))
+    session["nivel_conta"] = usuario.nivel_conta  # útil para diferenciar aluno/admin
+
+    # Redirecionar conforme tipo de conta
+    if usuario.nivel_conta == 1:
+        return redirect(url_for("admin.admin"))  # página/admin para admins
+    else:
+        return redirect(url_for("home.home"))  # página/home para alunos
 
 
 # Rota para registrar
@@ -81,7 +82,11 @@ def registrar():
             return redirect(url_for("auth.login"))
 
     # Criar usuário novo
-    novo_usuario = Usuarios(aluno_id=aluno.id)
+    novo_usuario = Usuarios(
+        aluno_id=aluno.id,
+        codigo_etec_usuario=aluno.codigo_etec_aluno,
+        rm_usuario=aluno.rm_aluno
+    )
     novo_usuario.set_senha(senha)
     db.session.add(novo_usuario)
     db.session.commit()

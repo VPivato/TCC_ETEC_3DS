@@ -8,4 +8,4 @@ class Alunos(db.Model):
     email_aluno = db.Column(db.String(70), nullable=False, unique=True)
     codigo_etec_aluno = db.Column(db.String(5), nullable=False)
     descricao_etec = db.Column(db.String(70), nullable=False)
-    rm_aluno = db.Column(db.String(8), nullable=False)
+    rm_aluno = db.Column(db.String(10), nullable=False)
