@@ -122,8 +122,13 @@
                                 <!-- Informações extras só aparecem quando o card está expandido -->
                                 <div class="collapse mt-1" id="info-header-{{ pedido.id }}">
                                     <small class="text-muted d-block">
+                                        {% if pedido.usuario.nivel_conta == 0 %}
+                                        Nome: {{ pedido.usuario.aluno.nome_aluno }}<br>
+                                        {% else %}
+                                        Nome: Admin {{ pedido.usuario.rm_usuario }}<br>
+                                        {% endif %}
                                         Código ETEC: {{ pedido.usuario.codigo_etec_usuario }}<br>
-                                        RM: {{ pedido.usuario.nome_usuario }}
+                                        RM: {{ pedido.usuario.rm_usuario }}
                                     </small>
                                 </div>
                             </div>

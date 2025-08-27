@@ -36,7 +36,7 @@ def visualizar_pedidos():
         elif campo_busca == 'id_usuario':
             query = query.filter(Pedido.id_usuario == termo_busca)
         elif campo_busca == 'rm':
-            query = query.join(Usuarios).filter(Usuarios.nome_usuario.ilike(f'%{termo_busca}%'))
+            query = query.join(Usuarios).filter(Usuarios.rm_usuario.ilike(f'%{termo_busca}%'))
         elif campo_busca == 'codigo_etec':
             query = query.join(Usuarios).filter(Usuarios.codigo_etec_usuario.ilike(f'%{termo_busca}%'))
 
