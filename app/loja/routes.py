@@ -61,7 +61,7 @@ def finalizar_compra():
             db.session.rollback()
             return jsonify({'erro': f'Estoque insuficiente para {produto.descricao_produto}'}), 400
 
-        preco_unit = float(produto.preco_produto)  # transforma Decimal -> float
+        preco_unit = float(produto.preco_produto)
         subtotal = preco_unit * qt
         total += subtotal
 
@@ -87,7 +87,21 @@ def finalizar_compra():
     pedido.total = float(total)
     db.session.commit()
 
-    comprovante_url = url_for('perfil.baixar_comprovante', pedido_id=pedido.id)  # rota abaixo
+    comprovante_url = url_for('perfil.baixar_comprovante', pedido_id=pedido.id)
+
+    # --- Parte adaptada para tratar admins ---
+    if usuario.aluno_id:  # é aluno
+        usuario_info = {
+            'id': usuario.id,
+            'nome': usuario.aluno.nome_aluno,
+            'email': usuario.aluno.email_aluno
+        }
+    else:  # é admin
+        usuario_info = {
+            'id': usuario.id,
+            'nome': f"Admin {usuario.rm_usuario}",
+            'email': None
+        }
 
     resposta = {
         'mensagem': 'Compra registrada com sucesso!',
@@ -96,16 +110,13 @@ def finalizar_compra():
             'total': f"{total:.2f}",
             'data_hora': pedido.data_hora.isoformat(),
             'itens': itens_resposta,
-            'usuario': {
-                'id': usuario.id,
-                'nome': usuario.nome_usuario,
-                'email': usuario.email_usuario
-            }
+            'usuario': usuario_info
         },
         'comprovante_url': comprovante_url
     }
 
     return jsonify(resposta), 200
+
 
 
 @loja_bp.route('/comprovante/<int:pedido_id>')

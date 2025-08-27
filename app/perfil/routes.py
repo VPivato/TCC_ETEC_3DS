@@ -40,7 +40,7 @@ def upload_pfp():
 
             # Monta o nome do arquivo no padrão: id_codigoetec_rm.jpg
             ext = file.filename.rsplit('.', 1)[1].lower()  # Extrai extensão (jpg, png, etc.)
-            filename = f"{usuario.id}_{usuario.codigo_etec_usuario}_{usuario.nome_usuario}_{datetime.now().strftime('%M-%S')}.{ext}"
+            filename = f"{usuario.id}_{usuario.codigo_etec_usuario}_{usuario.rm_usuario}_{datetime.now().strftime('%M-%S')}.{ext}"
             filename = secure_filename(filename)  # Garante nome seguro
 
             # Caminho para salvar
@@ -164,8 +164,10 @@ def baixar_comprovante(pedido_id):
 
     # Rodapé
     elementos.append(Paragraph(f"Etec: {usuario.codigo_etec_usuario}", custom_style))
-    elementos.append(Paragraph(f"RM: {usuario.nome_usuario}", custom_style))
-    elementos.append(Paragraph(f"E-mail: {usuario.email_usuario}", custom_style))
+    elementos.append(Paragraph(f"RM: {usuario.rm_usuario}", custom_style))
+    if usuario.nivel_conta == 0:
+        elementos.append(Paragraph(f"Nome: {usuario.aluno.nome_aluno}", custom_style))
+        elementos.append(Paragraph(f"E-mail: {usuario.aluno.email_aluno}", custom_style))
     elementos.append(Spacer(1, 12))
     elementos.append(Paragraph("Obrigado por comprar com FoodPay! Esperamos vê-lo novamente em breve.", custom_style))
 
