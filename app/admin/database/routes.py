@@ -84,10 +84,11 @@ def excluir_registro(modelo, id):
 
         # 🔹 Caso especial: se for um Pedido, devolver o estoque
         if modelo_classe.__tablename__ == "pedido":
-            for item in registro.itens:
-                produto = Produtos.query.get(item.produto_id)
-                if produto:
-                    produto.estoque_produto += item.quantidade
+            if registro.status == 'pendente':
+                for item in registro.itens:
+                    produto = Produtos.query.get(item.produto_id)
+                    if produto:
+                        produto.estoque_produto += item.quantidade
 
         # Busca e exclui imagem, se houver
         for attr_name in dir(registro):
@@ -191,10 +192,11 @@ def excluir_varios():
         for registro in registros:
             # 🔹 Caso especial: devolução de estoque se for Pedido
             if modelo.__tablename__ == "pedido":
-                for item in registro.itens:
-                    produto = Produtos.query.get(item.produto_id)
-                    if produto:
-                        produto.estoque_produto += item.quantidade
+                if registro.status == 'pendente':
+                    for item in registro.itens:
+                        produto = Produtos.query.get(item.produto_id)
+                        if produto:
+                            produto.estoque_produto += item.quantidade
 
             # Busca e exclui imagem, se houver
             for attr_name in dir(registro):
