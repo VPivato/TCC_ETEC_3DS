@@ -1,13 +1,17 @@
 from flask import Blueprint, render_template, redirect, url_for, request
 from datetime import datetime
+
 from ...models.produto import Produtos
 from ...models.pedido import Pedido
 from ...models.usuario import Usuarios
 from ...extensions import db
 
+from utils.decorators import admin_required
+
 pedido_bp = Blueprint('pedido', __name__, url_prefix='/pedido')
 
 @pedido_bp.route('/')
+@admin_required
 def visualizar_pedidos():
     ordenar = request.args.get('ordenar', 'desc')  # padrão decrescente
 
@@ -48,6 +52,7 @@ def visualizar_pedidos():
 
 
 @pedido_bp.route('/finalizar/<int:pedido_id>', methods=['POST', 'GET'])
+@admin_required
 def finalizar_pedido(pedido_id):
     pedido = Pedido.query.get_or_404(pedido_id)
     if pedido.status != 'pendente':
@@ -65,6 +70,7 @@ def finalizar_pedido(pedido_id):
 
 
 @pedido_bp.route('/cancelar/<int:pedido_id>', methods=['POST', 'GET'])
+@admin_required
 def cancelar_pedido(pedido_id):
     pedido = Pedido.query.get_or_404(pedido_id)
 

@@ -32,12 +32,15 @@
                         <p class="d-inline nav-p">Sobre</p>
                     </a>
                 </li>
+                {% if user_logado.nivel_conta == 1 %}
                 <li class="nav-item">
                     <a class="nav-link text-white" href="{{ url_for('admin.admin') }}">
                         <!-- <i class="bi bi-tools"></i> -->
                         <p class="d-inline nav-p">Admin</p>
                     </a>
                 </li>
+                {% endif %}
+
                 {% if user_logado %}
                 <li class="nav-item d-block d-md-none">
                     <a class="nav-link text-white" href="{{ url_for('perfil.perfil') }}">

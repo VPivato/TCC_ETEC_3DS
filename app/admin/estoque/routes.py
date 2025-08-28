@@ -1,15 +1,18 @@
 from flask import Blueprint, render_template, request, jsonify
 from ...models.produto import Produtos
 from ...extensions import db
+from utils.decorators import admin_required
 
 estoque_bp = Blueprint("estoque", __name__, url_prefix="/estoque")
 
 @estoque_bp.route('/')
+@admin_required
 def estoque():
     info = calcular_informacoes()
     return render_template('admin/estoque/estoque.html', info=info)
 
 @estoque_bp.route('/repor', methods=['POST'])
+@admin_required
 def repor_estoque():
     data = request.get_json()
     produto_id = data.get('produto_id')
@@ -27,6 +30,7 @@ def repor_estoque():
         db.session.rollback()
         return jsonify({"success": False, "message": str(e)})
 
+@admin_required
 def calcular_informacoes():
     # Consulta todos os produtos
     produtos = Produtos.query.all()

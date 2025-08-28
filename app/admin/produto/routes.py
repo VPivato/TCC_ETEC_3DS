@@ -1,18 +1,23 @@
 import os
 from flask import Blueprint, render_template, request, redirect, url_for, current_app
 from werkzeug.utils import secure_filename
+
 from ...models.produto import Produtos, categoriasProduto
 from ...extensions import db
+
+from utils.decorators import admin_required
 
 produto_bp = Blueprint("produto", __name__, url_prefix="/produto")
 
 @produto_bp.route('/', methods=['POST', 'GET'])
+@admin_required
 def produto():
     colunas_produto = Produtos.__table__.columns.keys()
     registros_produto = Produtos.query.order_by(Produtos.id).all()
     return render_template('admin/produto/cadastro-produto.html', categorias=categoriasProduto, colunas=colunas_produto, registros=registros_produto)
 
 @produto_bp.route('/cadastrar', methods=['POST'])
+@admin_required
 def cadastrar():
     try:
         file = request.files['imagem']
@@ -40,6 +45,7 @@ def cadastrar():
 
 
 @produto_bp.route('/excluir/<int:id>', methods=['POST', 'GET'])
+@admin_required
 def excluir_produto(id):
     produto = Produtos.query.get_or_404(id)
     try:
@@ -57,6 +63,7 @@ def excluir_produto(id):
 
 
 @produto_bp.route('/editar/<int:id>', methods=['POST', 'GET'])
+@admin_required
 def editar_produto(id):
     produto = Produtos.query.get_or_404(id)
 

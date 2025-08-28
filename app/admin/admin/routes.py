@@ -2,14 +2,17 @@ from flask import Blueprint, request, redirect, url_for, flash, session, render_
 from werkzeug.security import generate_password_hash
 from ...extensions import db
 from ...models.usuario import Usuarios
+from utils.decorators import admin_required
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
 @admin_bp.route('/')
+@admin_required
 def admin():
     return render_template('admin/admin/admin.html')
 
 @admin_bp.route('/cadastrar_admin', methods=["POST"])
+@admin_required
 def cadastrar_admin():
     etec = request.form.get('etec_admin')
     usuario = request.form.get('usuario_admin')

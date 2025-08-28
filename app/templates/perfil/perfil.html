@@ -12,8 +12,12 @@
     <aside id="esquerda">
         <div id="perfil-wrapper">
             <img src="{{ url_for('static', filename=user_logado.imagem_usuario) }}" alt="" id="pfp">
-            <p id="nome-usuario">Fulano da Silva</p>
-            <p id="rm-usuario">RM: {{ user_logado.nome_usuario }}</p>
+            {% if user_logado.nivel_conta == 0 %}
+            <p id="nome-usuario">{{ user_logado.aluno.nome_aluno}}</p>
+            <p id="rm-usuario">RM: {{ user_logado.rm_usuario }}</p>
+            {% elif user_logado.nivel_conta == 1 %}
+            <p id="rm-usuario">Admin "{{ user_logado.rm_usuario }}"</p>
+            {% endif %}
         </div>
 
         <section id="lower-section">
@@ -66,6 +70,7 @@
                     <button type="submit" id="salvar-pfp">Salvar</button>
                 </form>
 
+                {% if user_logado.nivel_conta == 0 %}
                 <div id="info-usuario">
                     <h4>Nome do aluno</h4>
                     <p>{{ user_logado.aluno.nome_aluno }}</p>
@@ -82,6 +87,15 @@
                     <h4>Instituição</h4>
                     <p>{{ user_logado.aluno.descricao_etec }}</p>
                 </div>
+                {% elif user_logado.nivel_conta == 1 %}
+                <div id="info-usuario">
+                    <h4>Login</h4>
+                    <p>Admin "{{ user_logado.rm_usuario }}"</p>
+
+                    <h4>Código ETEC</h4>
+                    <p>{{ user_logado.codigo_etec_usuario }}</p>
+                </div>
+                {% endif %}
             </div>
         </div>
 

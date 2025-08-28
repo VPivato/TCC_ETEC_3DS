@@ -20,7 +20,7 @@ perfil_bp = Blueprint("perfil", __name__, url_prefix="/perfil")
 def perfil():
     usuario_id = session.get('user_id')
     if not usuario_id:
-        return redirect(url_for('auth.login'))
+        return abort(401)
 
     pedidos = Pedido.query.filter_by(id_usuario=usuario_id).order_by(Pedido.data_hora.desc()).all()
     notificacoes = Notificacoes.query.order_by(Notificacoes.data_notificacao.desc()).all()

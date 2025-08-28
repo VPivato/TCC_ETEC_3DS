@@ -2,10 +2,12 @@ from flask import Blueprint, render_template, request, redirect, url_for, sessio
 from ..extensions import db
 from ..models.notificacao import Notificacoes
 from ..models.usuario import Usuarios
+from utils.decorators import admin_required
 
 notificacao_bp = Blueprint("notificacao", __name__, url_prefix="/notificacao")
 
 @notificacao_bp.route('/', methods=['POST', 'GET'])
+@admin_required
 def controle_notificacao():
     colunas = Notificacoes.__table__.columns.keys()
     registros = Notificacoes.query.order_by(Notificacoes.data_notificacao.desc()).all()
@@ -14,6 +16,7 @@ def controle_notificacao():
 
 
 @notificacao_bp.route("/enviar", methods=["POST"])
+@admin_required
 def enviar():
     if request.method == "POST":
         Usuarios.query.update({Usuarios.ultima_notificacao_vista: False})
@@ -27,6 +30,7 @@ def enviar():
 
 
 @notificacao_bp.route('/excluir/<int:id>', methods=['POST'])
+@admin_required
 def excluir_notificacao(id:int):
     excluir_notificacao = Notificacoes.query.get_or_404(id)
     try:
@@ -40,6 +44,7 @@ def excluir_notificacao(id:int):
 
 
 @notificacao_bp.route('/editar/<int:id>', methods=['POST', 'GET'])
+@admin_required
 def editar_notificacao(id):
     notificacao = Notificacoes.query.get_or_404(id)
 
@@ -54,6 +59,7 @@ def editar_notificacao(id):
 
 
 @notificacao_bp.route('/marcar_como_vista', methods=["POST", "GET"])
+@admin_required
 def marcar_como_vista():
     user = Usuarios.query.get(session['user_id'])
     if user:
@@ -65,6 +71,7 @@ def marcar_como_vista():
 
 
 @notificacao_bp.route('/atualizar_notificacoes', methods=['POST'])
+@admin_required
 def atualizar_notificacoes():
     data = request.get_json()
     estado = data.get('notificacoes_ativas')

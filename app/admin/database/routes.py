@@ -10,8 +10,9 @@ from ...models.produto import Produtos
 from ...models.pedido import Pedido
 from ...models.item_pedido import ItemPedido
 from ...models.aluno import Alunos
-
 from ...extensions import db
+
+from utils.decorators import admin_required
 
 database_bp = Blueprint("database", __name__, url_prefix="/database")
 
@@ -26,12 +27,14 @@ MODELOS = {
 }
 
 @database_bp.route('/', methods=["POST", "GET"])
+@admin_required
 def database():
     return render_template("admin/database/database.html", modelos=MODELOS.keys())
 
 
 
 @database_bp.route('/get_colunas', methods=['POST'])
+@admin_required
 def get_colunas():
     nome_modelo = request.json.get("modelo")
     modelo = MODELOS.get(nome_modelo)
@@ -43,6 +46,7 @@ def get_colunas():
 
 
 @database_bp.route('/get_registros', methods=['POST'])
+@admin_required
 def get_registros():
     nome_modelo = request.json.get('modelo')
     modelo = MODELOS.get(nome_modelo)
@@ -67,6 +71,7 @@ def get_registros():
 
 
 @database_bp.route('/excluir/<modelo>/<int:id>', methods=['POST'])
+@admin_required
 def excluir_registro(modelo, id):
     try:
         modelo_classe = MODELOS.get(modelo)
@@ -104,6 +109,7 @@ def excluir_registro(modelo, id):
 
 
 @database_bp.route('/filtrar', methods=['POST'])
+@admin_required
 def filtrar():
     dados = request.json
     modelo_nome = dados.get('modelo')
@@ -170,6 +176,7 @@ def filtrar():
 
 
 @database_bp.route('/excluir_varios', methods=['POST'])
+@admin_required
 def excluir_varios():
     dados = request.json
     modelo_nome = dados.get('modelo')

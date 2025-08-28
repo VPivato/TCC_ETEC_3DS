@@ -21,9 +21,12 @@ from ...models.usuario import Usuarios
 from ...models.feedback import Feedbacks
 from ...extensions import db
 
+from utils.decorators import admin_required
+
 relatorio_bp = Blueprint("relatorio", __name__, url_prefix="/relatorio")
 
 @relatorio_bp.route('/')
+@admin_required
 def relatorio():
     session.pop('produto_especifico', None)
     periodo = request.args.get("periodo", "ultima_semana")  # valor padrão
@@ -81,10 +84,12 @@ def relatorio():
                            )
 
 @relatorio_bp.route('/limpar_produto_especifico', methods=["POST"])
+@admin_required
 def limpar_produto_especifico():
     session.pop('produto_especifico', None)
     return jsonify({"status": "ok"})
 
+@admin_required
 def gerar_relatorio_geral(data_inicio, data_fim):
     # Query base com filtro aplicado
     pedidos_query = db.session.query(Pedido)
@@ -207,6 +212,7 @@ def gerar_relatorio_geral(data_inicio, data_fim):
         "frases": frases
     }
 
+@admin_required
 def gerar_relatorio_produtos(data_inicio, data_fim):
     todos_produtos = db.session.query(Produtos).all()
 
@@ -262,6 +268,7 @@ def gerar_relatorio_produtos(data_inicio, data_fim):
     }
 
 @relatorio_bp.route("/produto", methods=["POST"])
+@admin_required
 def relatorio_produto():
     dados = request.get_json()
     produto_busca = dados.get("produtoBusca")
@@ -384,6 +391,7 @@ def relatorio_produto():
 
     return jsonify(resposta)
 
+@admin_required
 def gerar_relatorio_clientes(data_inicio, data_fim):
     # --- Total de clientes ---
     total_clientes = Usuarios.query.count()
@@ -457,6 +465,7 @@ def gerar_relatorio_clientes(data_inicio, data_fim):
         "top_clientes": top_clientes
     }
 
+@admin_required
 def gerar_relatorio_pedidos(data_inicio, data_fim):
     # --- Pedidos do período atual ---
     pedidos = Pedido.query.filter(
@@ -510,6 +519,7 @@ def gerar_relatorio_pedidos(data_inicio, data_fim):
         }
     }
 
+@admin_required
 def gerar_relatorio_feedbacks(data_inicio, data_fim):
     # Query base com filtro de datas
     query = db.session.query(Feedbacks)
@@ -562,6 +572,7 @@ def gerar_relatorio_feedbacks(data_inicio, data_fim):
 
 
 @relatorio_bp.route('/exportar/excel', methods=['POST'])
+@admin_required
 def exportar_relatorio_excel():
     relatorio_ativo = request.form.get('relatorio')
 
@@ -745,6 +756,7 @@ def exportar_relatorio_excel():
     )
 
 @relatorio_bp.route("/exportar/pdf", methods=['POST'])
+@admin_required
 def exportar_relatorio_pdf():
     relatorio_ativo = request.form.get('relatorio')
     buffer = BytesIO()
