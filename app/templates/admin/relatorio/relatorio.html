@@ -357,6 +357,7 @@
                                         <thead>
                                             <tr>
                                                 <th>Nome</th>
+                                                <th>RM</th>
                                                 <th>Código ETEC</th>
                                                 <th>Email</th>
                                                 <th>Total de Pedidos</th>
@@ -367,6 +368,7 @@
                                             {% for cliente in clientes.top_clientes %}
                                             <tr>
                                                 <td>{{ cliente.nome }}</td>
+                                                <td>{{ cliente.rm }}</td>
                                                 <td>{{ cliente.codigo_etec }}</td>
                                                 <td>{{ cliente.email }}</td>
                                                 <td>{{ cliente.total_pedidos }}</td>

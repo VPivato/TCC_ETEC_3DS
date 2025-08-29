@@ -8,6 +8,9 @@ from io import BytesIO
 import pandas as pd
 import re
 
+from utils.relatorio_utils import (filtrar_pedidos, calcular_kpis_geral, vendas_por_produto, analisar_movimento_diario,
+                                   analisar_produtos, info_mais_vendidos, info_menos_vendidos, analisar_faturamento_diario)
+
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, PageBreak
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER
@@ -89,108 +92,30 @@ def limpar_produto_especifico():
     session.pop('produto_especifico', None)
     return jsonify({"status": "ok"})
 
-@admin_required
 def gerar_relatorio_geral(data_inicio, data_fim):
-    # Query base com filtro aplicado
-    pedidos_query = db.session.query(Pedido)
-    if data_inicio:
-        pedidos_query = pedidos_query.filter(Pedido.data_hora >= data_inicio)
-    if data_fim:
-        pedidos_query = pedidos_query.filter(Pedido.data_hora <= data_fim)
-    
-    pedidos_filtrados = pedidos_query.all()
+    # Query de todos os pedidos entre o periodo definido
+    pedidos_periodo = filtrar_pedidos(data_inicio, data_fim)
 
-    # KPIs
-    vendas_totais = sum(p.total for p in pedidos_filtrados if p.status == "retirado")
-    total_pedidos = len(pedidos_filtrados)
-    clientes_atendidos = sum(1 for p in pedidos_filtrados if p.status == "retirado")
-    ticket_medio = vendas_totais / clientes_atendidos if clientes_atendidos > 0 else 0
+    # KPIs geral
+    kpis_geral = calcular_kpis_geral(pedidos_periodo)
 
-    kpis_geral = {
-        "vendas_totais": vendas_totais,
-        "total_pedidos": total_pedidos,
-        "clientes_atendidos": clientes_atendidos,
-        "venda_media": ticket_medio
-    }
+    # Gráfico top_X produtos mais vendidos
+    labels_produtos, valores_produtos = vendas_por_produto(pedidos_periodo, 5)
 
-    # Vendas por produto (top 5)
-    vendas_por_produto = defaultdict(float)
-    for pedido in pedidos_filtrados:
-        if pedido.status == "retirado":
-            for item in pedido.itens:
-                vendas_por_produto[item.produto.descricao_produto] += item.quantidade
-    produtos_ordenados = sorted(vendas_por_produto.items(), key=lambda x: x[1], reverse=True)
-    labels_produtos = [p[0] for p in produtos_ordenados[:5]]
-    valores_produtos = [p[1] for p in produtos_ordenados[:5]]
+    # Pico e menor volume (qnt.) de pedidos
+    dia_pico, pico_valor, dia_menor, menor_valor = analisar_movimento_diario(pedidos_periodo)
 
-    # --- Frases destacadas ---
+    # Dicionário de produtos vendidos (qnt.) e seu respectivo faturamento (R$)
+    vendas_produtos, faturamento_produtos = analisar_produtos(pedidos_periodo)
 
-    # --- Pedidos do período atual ---
-    pedidos = Pedido.query.filter(
-        Pedido.data_hora >= data_inicio,
-        Pedido.data_hora <= data_fim,
-    ).all()
+    # Produtos mais vendidos e mais lucrativos
+    produto_mais_vendido, percentual_vendas, produto_mais_lucro, percentual_lucro = info_mais_vendidos(vendas_produtos, faturamento_produtos)
 
-    # Pico e menor volume de pedidos
-    pedidos_por_dia = {}
-    for p in pedidos:
-        dia = p.data_hora.strftime("%d/%m")
-        pedidos_por_dia[dia] = pedidos_por_dia.get(dia, 0) + 1
+    # Produtos menos vendidos e menos lucrativos
+    produto_menos_vendido, percentual_vendas_min, produto_menos_lucro, percentual_lucro_min = info_menos_vendidos(vendas_produtos, faturamento_produtos)
 
-    if pedidos_por_dia:
-        dia_pico = max(pedidos_por_dia, key=pedidos_por_dia.get)
-        pico_valor = pedidos_por_dia[dia_pico]
-        dia_menor = min(pedidos_por_dia, key=pedidos_por_dia.get)
-        menor_valor = pedidos_por_dia[dia_menor]
-    else:
-        dia_pico = dia_menor = "--"
-        pico_valor = menor_valor = 0
-
-    # Produto mais vendido e que mais contribui para faturamento
-    vendas_produtos = {}
-    faturamento_produtos = {}
-    for p in pedidos:
-        if p.status != "retirado":
-            continue  # ignora pedidos pendentes ou cancelados
-        for item in p.itens:
-            vendas_produtos[item.produto.descricao_produto] = vendas_produtos.get(item.produto.descricao_produto, 0) + item.quantidade
-            faturamento_produtos[item.produto.descricao_produto] = faturamento_produtos.get(item.produto.descricao_produto, 0) + item.quantidade * item.preco_unitario
-
-    if vendas_produtos:
-        # Mais vendidos e mais lucrativos
-        produto_mais_vendido = max(vendas_produtos, key=vendas_produtos.get)
-        percentual_vendas = round((vendas_produtos[produto_mais_vendido] / sum(vendas_produtos.values())) * 100, 1)
-        produto_mais_lucro = max(faturamento_produtos, key=faturamento_produtos.get)
-        percentual_lucro = round((faturamento_produtos[produto_mais_lucro] / sum(faturamento_produtos.values())) * 100, 1)
-
-        # Menos vendidos e menos lucrativos
-        produto_menos_vendido = min(vendas_produtos, key=vendas_produtos.get)
-        percentual_vendas_min = round((vendas_produtos[produto_menos_vendido] / sum(vendas_produtos.values())) * 100, 1)
-        produto_menos_lucro = min(faturamento_produtos, key=faturamento_produtos.get)
-        percentual_lucro_min = round((faturamento_produtos[produto_menos_lucro] / sum(faturamento_produtos.values())) * 100, 1)
-    else:
-        produto_mais_vendido = produto_mais_lucro = "--"
-        produto_menos_vendido = produto_menos_lucro = "--"
-        percentual_vendas = percentual_lucro = 0
-        percentual_vendas_min = percentual_lucro_min = 0
-    
-    # Pico e menor faturamento
-    faturamento_por_dia = {}
-    for p in pedidos:
-        if p.status != "retirado":
-            continue
-        dia = p.data_hora.strftime("%d/%m")
-        valor_pedido = sum(item.quantidade * item.preco_unitario for item in p.itens)
-        faturamento_por_dia[dia] = faturamento_por_dia.get(dia, 0) + valor_pedido
-
-    if faturamento_por_dia:
-        dia_pico_fat = max(faturamento_por_dia, key=faturamento_por_dia.get)
-        pico_fat_valor = faturamento_por_dia[dia_pico_fat]
-        dia_menor_fat = min(faturamento_por_dia, key=faturamento_por_dia.get)
-        menor_fat_valor = faturamento_por_dia[dia_menor_fat]
-    else:
-        dia_pico_fat = dia_menor_fat = "--"
-        pico_fat_valor = menor_fat_valor = 0
+    # dia de maior/menor faturamento diário
+    dia_pico_fat, pico_fat_valor, dia_menor_fat, menor_fat_valor = analisar_faturamento_diario(pedidos_periodo)
 
     frases = [
         f'<i class="bi bi-currency-dollar text-success"></i> O pico de faturamento ocorreu no dia <strong>{dia_pico_fat}</strong> com <strong>R${pico_fat_valor:,.2f}</strong> vendidos.',
@@ -212,7 +137,6 @@ def gerar_relatorio_geral(data_inicio, data_fim):
         "frases": frases
     }
 
-@admin_required
 def gerar_relatorio_produtos(data_inicio, data_fim):
     todos_produtos = db.session.query(Produtos).all()
 
@@ -391,7 +315,6 @@ def relatorio_produto():
 
     return jsonify(resposta)
 
-@admin_required
 def gerar_relatorio_clientes(data_inicio, data_fim):
     # --- Total de clientes ---
     total_clientes = Usuarios.query.count()
@@ -439,9 +362,10 @@ def gerar_relatorio_clientes(data_inicio, data_fim):
     for cid in top_clientes_ids:
         cliente = Usuarios.query.get(cid)
         top_clientes.append({
-            "nome": cliente.nome_usuario,
+            "nome": cliente.aluno.nome_aluno if cliente.nivel_conta == 0 else "--",
+            "rm": cliente.rm_usuario,
             "codigo_etec": cliente.codigo_etec_usuario,
-            "email": cliente.email_usuario,
+            "email": cliente.aluno.email_aluno if cliente.nivel_conta == 0 else "--",
             "total_pedidos": pedidos_por_cliente.get(cid, 0),
             "faturamento_total": faturamento_por_cliente[cid]
         })
@@ -465,7 +389,6 @@ def gerar_relatorio_clientes(data_inicio, data_fim):
         "top_clientes": top_clientes
     }
 
-@admin_required
 def gerar_relatorio_pedidos(data_inicio, data_fim):
     # --- Pedidos do período atual ---
     pedidos = Pedido.query.filter(
@@ -519,7 +442,6 @@ def gerar_relatorio_pedidos(data_inicio, data_fim):
         }
     }
 
-@admin_required
 def gerar_relatorio_feedbacks(data_inicio, data_fim):
     # Query base com filtro de datas
     query = db.session.query(Feedbacks)
