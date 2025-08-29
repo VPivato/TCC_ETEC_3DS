@@ -1,7 +1,7 @@
-# app/utils/relatorio_utils.py
 from datetime import datetime, timedelta
 from io import BytesIO
 import re
+import pandas as pd
 
 from sqlalchemy import func
 from collections import defaultdict
@@ -91,6 +91,19 @@ def calcular_kpis_produtos():
         "produtos_estoque_baixo": len(produtos_estoque_baixo),
         "lista_produtos_estoque_baixo": produtos_estoque_baixo,
         "estoque_total": estoque_total
+    }
+
+
+def calcular_kpis_clientes(data_inicio, data_fim):
+    total_clientes = Usuarios.query.count()
+    novos_clientes = novos_clientes_no_periodo(data_inicio, data_fim)
+    ativos, inativos = contar_clientes_ativos_inativos()
+
+    return {
+        "total_clientes": total_clientes,
+        "novos_clientes": novos_clientes,
+        "clientes_ativos": ativos,
+        "clientes_inativos": inativos
     }
 
 
@@ -371,3 +384,4 @@ def grafico_feedbacks_por_dia(feedbacks):
         "labels": [d.strftime("%d/%m") for d in feedbacks_por_dia.keys()],
         "valores": list(feedbacks_por_dia.values())
     }
+
