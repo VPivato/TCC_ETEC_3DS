@@ -85,6 +85,26 @@ def calcular_kpis_produtos():
     }
 
 
+def calcular_kpis_pedidos(pedidos):
+    pedidos_retirados = [p for p in pedidos if p.status == "retirado"]
+    pedidos_cancelados = [p for p in pedidos if p.status == "cancelado"]
+
+    faturamento = sum(p.total for p in pedidos_retirados)
+    total_pedidos = len(pedidos)
+    total_retirados = len(pedidos_retirados)
+    total_cancelados = len(pedidos_cancelados)
+
+    taxa_cancelamento = round((total_cancelados / total_pedidos) * 100, 1) if total_pedidos else 0
+    valor_medio = round(faturamento / total_retirados, 2) if total_retirados else 0
+
+    return {
+        "faturamento": faturamento,
+        "total_pedidos": total_pedidos,
+        "taxa_cancelamento": taxa_cancelamento,
+        "valor_medio_pedido": valor_medio
+    }
+
+
 def vendas_por_produto(pedidos, top_x):
     vendas = defaultdict(float)
     for pedido in pedidos:
@@ -274,3 +294,29 @@ def top_clientes_por_faturamento(data_inicio, data_fim, limite=3):
             "faturamento_total": float(faturamento_total or 0)
         })
     return top_clientes
+
+
+def grafico_pedidos_por_status(pedidos):
+    status_contagem = {"pendente": 0, "retirado": 0, "cancelado": 0}
+    for p in pedidos:
+        if p.status in status_contagem:
+            status_contagem[p.status] += 1
+    return {
+        "labels": list(status_contagem.keys()),
+        "valores": list(status_contagem.values())
+    }
+
+
+def grafico_faturamento_por_dia(pedidos):
+    vendas_por_dia = defaultdict(float)
+    for pedido in pedidos:
+        if pedido.status == "retirado":
+            dia = pedido.data_hora.date()
+            vendas_por_dia[dia] += pedido.total
+
+    vendas_por_dia = dict(sorted(vendas_por_dia.items()))
+    return {
+        "labels": [d.strftime("%d/%m") for d in vendas_por_dia.keys()],
+        "valores": list(vendas_por_dia.values())
+    }
+

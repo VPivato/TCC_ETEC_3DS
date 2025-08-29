@@ -13,7 +13,8 @@ from utils.relatorio_utils import (filtrar_pedidos, calcular_kpis_geral, vendas_
                                    analisar_produtos, info_mais_vendidos, info_menos_vendidos, analisar_faturamento_diario,
                                    analisar_categorias, calcular_kpis_produtos, buscar_produto, analisar_vendas_produto,
                                    contar_clientes_ativos_inativos, top_clientes_por_faturamento, ajustar_periodo,
-                                   novos_clientes_no_periodo, crescimento_clientes_por_dia,
+                                   novos_clientes_no_periodo, crescimento_clientes_por_dia, calcular_kpis_pedidos,
+                                   grafico_faturamento_por_dia, grafico_pedidos_por_status
                                    )
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, PageBreak
@@ -252,56 +253,22 @@ def gerar_relatorio_clientes(data_inicio, data_fim):
     }
 
 def gerar_relatorio_pedidos(data_inicio, data_fim):
-    # --- Pedidos do período atual ---
-    pedidos = Pedido.query.filter(
-        Pedido.data_hora >= data_inicio,
-        Pedido.data_hora <= data_fim,
-    ).all()
+    # Buscar pedidos do período
+    pedidos = filtrar_pedidos(data_inicio, data_fim)
 
-    # --- KPIs ---
-    def calcular_kpis(pedidos_periodo):
-        pedidos_retirados = len([p for p in pedidos if p.status == "retirado"])
-        faturamento = sum(sum(item.quantidade * item.preco_unitario for item in p.itens) for p in pedidos_periodo if p.status == "retirado")
-        total_pedidos = len([p for p in pedidos_periodo])
-        cancelados = len([p for p in pedidos_periodo if p.status == "cancelado"])
-        taxa_cancelamento = round((cancelados / total_pedidos) * 100, 1) if total_pedidos else 0
-        valor_medio = round(faturamento / pedidos_retirados, 2) if pedidos_retirados else 0
+    # KPIs pedidos
+    kpis = calcular_kpis_pedidos(pedidos)
 
-        return {
-            "faturamento": faturamento,
-            "total_pedidos": total_pedidos,
-            "taxa_cancelamento": taxa_cancelamento,
-            "valor_medio_pedido": valor_medio,
-        }
+    # Gráfico de donut por status
+    grafico_status = grafico_pedidos_por_status(pedidos)
 
-    kpis = calcular_kpis(pedidos)
-
-    # --- Gráfico de donut por status ---
-    status_contagem = {"pendente": 0, "retirado": 0, "cancelado": 0}
-    for p in pedidos:
-        if p.status in status_contagem:
-            status_contagem[p.status] += 1
-    
-    # Vendas por dia
-    vendas_por_dia = defaultdict(float)
-    for pedido in pedidos:
-        if pedido.status == "retirado":
-            dia = pedido.data_hora.date()
-            vendas_por_dia[dia] += pedido.total
-    vendas_por_dia = dict(sorted(vendas_por_dia.items()))
-    labels_vendas_dia = [d.strftime("%d/%m") for d in vendas_por_dia.keys()]
-    valores_vendas_dia = list(vendas_por_dia.values())
+    # Gráfico de vendas por dia
+    grafico_vendas_dia = grafico_faturamento_por_dia(pedidos)
 
     return {
         "kpis": kpis,
-        "grafico_status": {
-            "labels": list(status_contagem.keys()),
-            "valores": list(status_contagem.values())
-        },
-        "grafico_vendas_dia": {
-            "labels": labels_vendas_dia,
-            "valores": valores_vendas_dia
-        }
+        "grafico_status": grafico_status,
+        "grafico_vendas_dia": grafico_vendas_dia
     }
 
 def gerar_relatorio_feedbacks(data_inicio, data_fim):
