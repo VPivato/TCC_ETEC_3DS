@@ -13,13 +13,44 @@ import matplotlib.pyplot as plt
 from app.extensions import db
 from app.models import Pedido, ItemPedido, Produtos, Usuarios
 
+def ajustar_periodo(periodo, data_inicio=None, data_fim=None):
+    now = datetime.now()
+    if periodo != "personalizado":
+        if periodo == "hoje":
+            data_inicio = now.replace(hour=0, minute=0, second=0)
+            data_fim = now.replace(hour=23, minute=59, second=59)
+            inicio_anterior = data_inicio - timedelta(days=1)
+            fim_anterior = data_fim - timedelta(days=1)
+        elif periodo == "ultima_semana":
+            data_inicio = now - timedelta(days=7)
+            data_fim = now
+            inicio_anterior = data_inicio - timedelta(days=7)
+            fim_anterior = data_inicio - timedelta(seconds=1)
+        elif periodo == "ultimo_mes":
+            data_inicio = now - timedelta(days=30)
+            data_fim = now
+            inicio_anterior = data_inicio - timedelta(days=30)
+            fim_anterior = data_inicio - timedelta(seconds=1)
+        elif periodo == "comeco_ano":
+            data_inicio = datetime(now.year, 1, 1)
+            data_fim = now
+            inicio_anterior = datetime(now.year - 1, 1, 1)
+            fim_anterior = datetime(now.year - 1, 12, 31)
+    else:
+        data_inicio = datetime.strptime(data_inicio, "%Y-%m-%d").replace(hour=0, minute=0, second=0)
+        data_fim = datetime.strptime(data_fim, "%Y-%m-%d").replace(hour=23, minute=59, second=59)
+        inicio_anterior = fim_anterior = None
+    return data_inicio, data_fim, inicio_anterior, fim_anterior
 
-def filtrar_pedidos(data_inicio, data_fim):
+
+def filtrar_pedidos(data_inicio, data_fim, status=None):
     pedidos_query = Pedido.query
     if data_inicio:
         pedidos_query = pedidos_query.filter(Pedido.data_hora >= data_inicio)
     if data_fim:
         pedidos_query = pedidos_query.filter(Pedido.data_hora <= data_fim)
+    if status:
+        pedidos_query = pedidos_query.filter(Pedido.status == status)
     return pedidos_query.all()
 
 
@@ -36,6 +67,21 @@ def calcular_kpis_geral(pedidos):
         "total_pedidos": total_pedidos,
         "clientes_atendidos": clientes_atendidos,
         "venda_media": ticket_medio
+    }
+
+
+def calcular_kpis_produtos():
+    total_produtos = db.session.query(func.count(Produtos.id)).scalar()
+    produtos_esgotados = db.session.query(func.count(Produtos.id)).filter(Produtos.estoque_produto == 0).scalar()
+    estoque_total = db.session.query(func.sum(Produtos.estoque_produto)).scalar() or 0
+    produtos_estoque_baixo = Produtos.query.filter(Produtos.estoque_produto > 0, Produtos.estoque_produto <= 5).all()
+
+    return {
+        "total_produtos": total_produtos,
+        "produtos_esgotados": produtos_esgotados,
+        "produtos_estoque_baixo": len(produtos_estoque_baixo),
+        "lista_produtos_estoque_baixo": produtos_estoque_baixo,
+        "estoque_total": estoque_total
     }
 
 
@@ -102,6 +148,15 @@ def analisar_produtos(pedidos):
     return vendas, faturamento
 
 
+def analisar_categorias(faturamento_dict, produtos_ref):
+    categorias = {"SALGADO": 0, "DOCE": 0, "BEBIDA": 0}
+    for produto, valor in faturamento_dict.items():
+        cat = produtos_ref[produto].categoria_produto
+        if cat in categorias:
+            categorias[cat] += valor
+    return categorias
+
+
 def info_mais_vendidos(vendas_dict, faturamento_dict):
     produto_mais_vendido = produto_mais_lucro = "--"
     percentual_vendas = percentual_lucro = 0
@@ -126,3 +181,35 @@ def info_menos_vendidos(vendas_dict, faturamento_dict):
         percentual_lucro_min = round((faturamento_dict[produto_menos_lucro] / sum(faturamento_dict.values())) * 100, 1)
 
     return produto_menos_vendido, percentual_vendas_min, produto_menos_lucro, percentual_lucro_min
+
+
+def buscar_produto(produto_busca):
+    if produto_busca.isdigit(): # Se digito, busca com base no id
+        return Produtos.query.get(int(produto_busca))
+    # Se não, busca com base na descrição
+    return Produtos.query.filter(
+        Produtos.descricao_produto.ilike(f"%{produto_busca}%")
+    ).first()
+
+
+def analisar_vendas_produto(produto, data_inicio, data_fim):
+    itens = (
+        db.session.query(ItemPedido, Pedido.data_hora)
+        .join(Pedido, Pedido.id == ItemPedido.pedido_id)
+        .filter(
+            Pedido.status == "retirado",
+            Pedido.data_hora >= data_inicio,
+            Pedido.data_hora <= data_fim,
+            ItemPedido.produto_id == produto.id
+        ).all()
+    )
+
+    total_vendas = sum(i.ItemPedido.quantidade for i in itens)
+    total_faturamento = sum(i.ItemPedido.quantidade * i.ItemPedido.preco_unitario for i in itens)
+
+    vendas_por_dia = {}
+    for item, data in itens:
+        dia = data.strftime("%d/%m")
+        vendas_por_dia[dia] = vendas_por_dia.get(dia, 0) + (item.quantidade * item.preco_unitario)
+
+    return total_vendas, total_faturamento, vendas_por_dia

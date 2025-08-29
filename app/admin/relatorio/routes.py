@@ -7,9 +7,12 @@ matplotlib.use("Agg")  # backend para geração de imagens sem interface gráfic
 from io import BytesIO
 import pandas as pd
 import re
+from sqlalchemy import func
 
 from utils.relatorio_utils import (filtrar_pedidos, calcular_kpis_geral, vendas_por_produto, analisar_movimento_diario,
-                                   analisar_produtos, info_mais_vendidos, info_menos_vendidos, analisar_faturamento_diario)
+                                   analisar_produtos, info_mais_vendidos, info_menos_vendidos, analisar_faturamento_diario,
+                                   analisar_categorias, calcular_kpis_produtos, buscar_produto, analisar_vendas_produto,
+                                   ajustar_periodo)
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, PageBreak
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -137,47 +140,20 @@ def gerar_relatorio_geral(data_inicio, data_fim):
         "frases": frases
     }
 
-def gerar_relatorio_produtos(data_inicio, data_fim):
-    todos_produtos = db.session.query(Produtos).all()
+def gerar_relatorio_produtos(data_inicio=None, data_fim=None):
+    # KPIs produtos
+    kpis_estoque = calcular_kpis_produtos()
 
-    # KPIs
-    total_produtos = len(todos_produtos)
-    produtos_esgotados = sum(1 for p in todos_produtos if p.estoque_produto == 0)
-    produtos_estoque_baixo = [p for p in todos_produtos if 0 < p.estoque_produto <= 5]
-    estoque_total = sum(p.estoque_produto for p in todos_produtos)
+    # Gráfico estoque baixo
+    labels_estoque_baixo = [p.descricao_produto for p in kpis_estoque.get('lista_produtos_estoque_baixo')]
+    valores_estoque_baixo = [p.estoque_produto for p in kpis_estoque.get('lista_produtos_estoque_baixo')]
 
-    kpis_estoque = {
-        "total_produtos": total_produtos,
-        "produtos_esgotados": produtos_esgotados,
-        "produtos_estoque_baixo": len(produtos_estoque_baixo),
-        "estoque_total": estoque_total
-    }
+    pedidos = filtrar_pedidos(data_inicio, data_fim)
+    _, faturamento_dict = analisar_produtos(pedidos)
 
-    # Dados para gráfico de barras (estoque baixo)
-    labels_estoque_baixo = [p.descricao_produto for p in produtos_estoque_baixo]
-    valores_estoque_baixo = [p.estoque_produto for p in produtos_estoque_baixo]
-
-    # Dados para gráfico donut (vendas por categoria) - agora respeitando datas
-    query_pedidos = db.session.query(Pedido).filter(Pedido.status == "retirado")
-
-    if data_inicio:
-        query_pedidos = query_pedidos.filter(Pedido.data_hora >= data_inicio)
-    if data_fim:
-        query_pedidos = query_pedidos.filter(Pedido.data_hora <= data_fim)
-
-    pedidos_retirados = query_pedidos.all()
-
-    vendas_por_categoria = {"SALGADO": 0, "DOCE": 0, "BEBIDA": 0}
-
-    for pedido in pedidos_retirados:
-        for item in pedido.itens:
-            categoria = item.produto.categoria_produto
-            if categoria in vendas_por_categoria:
-                valor_item = item.quantidade * item.produto.preco_produto
-                vendas_por_categoria[categoria] += valor_item
-
-    labels_vendas_categoria = list(vendas_por_categoria.keys())
-    valores_vendas_categoria = list(vendas_por_categoria.values())
+    # Gráfico vendas por categorias
+    produtos_ref = {p.descricao_produto: p for p in Produtos.query.all()}
+    vendas_por_categoria = analisar_categorias(faturamento_dict, produtos_ref)
 
     return {
         "kpis": kpis_estoque,
@@ -186,8 +162,8 @@ def gerar_relatorio_produtos(data_inicio, data_fim):
             "valores": valores_estoque_baixo
         },
         "grafico_vendas_categoria": {
-            "labels": labels_vendas_categoria,
-            "valores": valores_vendas_categoria
+            "labels": list(vendas_por_categoria.keys()),
+            "valores": list(vendas_por_categoria.values())
         }
     }
 
@@ -200,101 +176,37 @@ def relatorio_produto():
     data_inicio = dados.get("dataInicio")
     data_fim = dados.get("dataFim")
 
-    # --- Ajuste do período ---
+    # Ajuste do periodo
     try:
-        now = datetime.now()
-        if periodo != "personalizado":
-            if periodo == "hoje":
-                data_inicio = now.replace(hour=0, minute=0, second=0)
-                data_fim = now.replace(hour=23, minute=59, second=59)
-                inicio_anterior = data_inicio - timedelta(days=1)
-                fim_anterior = data_fim - timedelta(days=1)
-            elif periodo == "ultima_semana":
-                data_inicio = now - timedelta(days=7)
-                data_fim = now
-                inicio_anterior = data_inicio - timedelta(days=7)
-                fim_anterior = data_inicio - timedelta(seconds=1)
-            elif periodo == "ultimo_mes":
-                data_inicio = now - timedelta(days=30)
-                data_fim = now
-                inicio_anterior = data_inicio - timedelta(days=30)
-                fim_anterior = data_inicio - timedelta(seconds=1)
-            elif periodo == "comeco_ano":
-                data_inicio = datetime(now.year, 1, 1)
-                data_fim = now
-                inicio_anterior = datetime(now.year - 1, 1, 1)
-                fim_anterior = datetime(now.year - 1, 12, 31)
-        else:
-            # Período personalizado
-            data_inicio = datetime.strptime(data_inicio, "%Y-%m-%d").replace(hour=0, minute=0, second=0)
-            data_fim = datetime.strptime(data_fim, "%Y-%m-%d").replace(hour=23, minute=59, second=59)
-            inicio_anterior = fim_anterior = None  # sem variação
+        data_inicio, data_fim, inicio_anterior, fim_anterior = ajustar_periodo(periodo, data_inicio, data_fim)
     except Exception:
         return jsonify({"erro": "Datas inválidas."}), 400
 
-    # --- Buscar produto ---
-    if produto_busca.isdigit():
-        produto = Produtos.query.get(int(produto_busca))
-    else:
-        produto = Produtos.query.filter(Produtos.descricao_produto.ilike(f"%{produto_busca}%")).first()
+    # Buscar produto
+    produto = buscar_produto(produto_busca)
     if not produto:
         return jsonify({"erro": "Produto não encontrado."}), 404
+    
+    # Vendas produto
+    total_vendas, total_faturamento_produto, vendas_por_dia = analisar_vendas_produto(produto, data_inicio, data_fim)
 
-    # --- Pedidos retirados no período ---
-    pedidos = Pedido.query.filter(
-        Pedido.status == "retirado",
-        Pedido.data_hora >= data_inicio,
-        Pedido.data_hora <= data_fim
-    ).all()
-
-    total_vendas = 0
-    total_faturamento_produto = 0
-    pedidos_com_produto = 0
-    vendas_por_dia = {}
-
-    for p in pedidos:
-        itens_produto = [i for i in p.itens if i.produto_id == produto.id]
-        if itens_produto:
-            pedidos_com_produto += 1
-            total_vendas += sum(i.quantidade for i in itens_produto)
-            total_faturamento_produto += sum(i.quantidade * i.preco_unitario for i in itens_produto)
-
-            dia = p.data_hora.strftime("%d/%m")
-            vendas_por_dia[dia] = vendas_por_dia.get(dia, 0) + sum(i.quantidade * i.preco_unitario for i in itens_produto)
-
+    # Pedidos no período (todos os produtos)
+    pedidos = filtrar_pedidos(data_inicio, data_fim, status="retirado")
     total_pedidos = len(pedidos)
+    pedidos_com_produto = sum(1 for p in pedidos if any(i.produto_id == produto.id for i in p.itens))
     percentual_pedidos = round((pedidos_com_produto / total_pedidos) * 100, 1) if total_pedidos > 0 else 0
 
-    # --- Faturamento total do período (todos os produtos) ---
-    faturamento_total = sum(
-        i.quantidade * i.preco_unitario
-        for p in pedidos
-        for i in p.itens
-    )
+    faturamento_total = sum(i.quantidade * i.preco_unitario for p in pedidos for i in p.itens)
     percentual_participacao = round((total_faturamento_produto / faturamento_total) * 100, 1) if faturamento_total > 0 else 0
 
-    # --- Variação de faturamento em relação ao período anterior ---
+    # Variação faturamento
+    variacao_faturamento = None
     if inicio_anterior and fim_anterior:
-        pedidos_anteriores = Pedido.query.filter(
-            Pedido.status == "retirado",
-            Pedido.data_hora >= inicio_anterior,
-            Pedido.data_hora <= fim_anterior
-        ).all()
-
-        faturamento_anterior = sum(
-            i.quantidade * i.preco_unitario
-            for p in pedidos_anteriores
-            for i in p.itens
-            if i.produto_id == produto.id
-        )
-
+        _, faturamento_anterior, _ = analisar_vendas_produto(produto, inicio_anterior, fim_anterior)
         variacao_faturamento = round(
-            ((total_faturamento_produto - faturamento_anterior) / faturamento_anterior) * 100,
-            1
+            ((total_faturamento_produto - faturamento_anterior) / faturamento_anterior) * 100, 1
         ) if faturamento_anterior > 0 else 0
-    else:
-        variacao_faturamento = None  # período personalizado
-    
+
     resposta = {
         "descricao": produto.descricao_produto,
         "id_prod": int(produto.id),
@@ -310,9 +222,8 @@ def relatorio_produto():
             "valores": list(vendas_por_dia.values())
         }
     }
-    
-    session['produto_especifico'] = resposta
 
+    session['produto_especifico'] = resposta
     return jsonify(resposta)
 
 def gerar_relatorio_clientes(data_inicio, data_fim):
