@@ -12,7 +12,9 @@ from sqlalchemy import func
 from utils.relatorio_utils import (filtrar_pedidos, calcular_kpis_geral, vendas_por_produto, analisar_movimento_diario,
                                    analisar_produtos, info_mais_vendidos, info_menos_vendidos, analisar_faturamento_diario,
                                    analisar_categorias, calcular_kpis_produtos, buscar_produto, analisar_vendas_produto,
-                                   ajustar_periodo)
+                                   contar_clientes_ativos_inativos, top_clientes_por_faturamento, ajustar_periodo,
+                                   novos_clientes_no_periodo, crescimento_clientes_por_dia,
+                                   )
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, PageBreak
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -227,62 +229,11 @@ def relatorio_produto():
     return jsonify(resposta)
 
 def gerar_relatorio_clientes(data_inicio, data_fim):
-    # --- Total de clientes ---
     total_clientes = Usuarios.query.count()
-
-    # --- Novos no período ---
-    novos_clientes = Usuarios.query.filter(
-        Usuarios.data_criacao_usuario >= data_inicio,
-        Usuarios.data_criacao_usuario <= data_fim
-    ).count()
-
-    # --- Gráfico de crescimento ---
-    crescimento_por_dia = {}
-    clientes_no_periodo = Usuarios.query.filter(
-        Usuarios.data_criacao_usuario >= data_inicio,
-        Usuarios.data_criacao_usuario <= data_fim
-    ).all()
-    
-    for cliente in clientes_no_periodo:
-        dia = cliente.data_criacao_usuario.strftime("%d/%m")
-        crescimento_por_dia[dia] = crescimento_por_dia.get(dia, 0) + 1
-
-    # --- Top 3 clientes por faturamento ---
-    pedidos = Pedido.query.filter(
-        Pedido.status == "retirado",
-        Pedido.data_hora >= data_inicio,
-        Pedido.data_hora <= data_fim
-    ).all()
-
-    faturamento_por_cliente = {}
-    pedidos_por_cliente = {}
-
-    for p in pedidos:
-        if p.id_usuario:
-            # Soma faturamento
-            faturamento_por_cliente[p.id_usuario] = faturamento_por_cliente.get(p.id_usuario, 0) + sum(
-                item.quantidade * item.preco_unitario for item in p.itens
-            )
-            # Conta pedidos
-            pedidos_por_cliente[p.id_usuario] = pedidos_por_cliente.get(p.id_usuario, 0) + 1
-
-    # Pega os 3 maiores por faturamento
-    top_clientes_ids = sorted(faturamento_por_cliente, key=faturamento_por_cliente.get, reverse=True)[:3]
-
-    top_clientes = []
-    for cid in top_clientes_ids:
-        cliente = Usuarios.query.get(cid)
-        top_clientes.append({
-            "nome": cliente.aluno.nome_aluno if cliente.nivel_conta == 0 else "--",
-            "rm": cliente.rm_usuario,
-            "codigo_etec": cliente.codigo_etec_usuario,
-            "email": cliente.aluno.email_aluno if cliente.nivel_conta == 0 else "--",
-            "total_pedidos": pedidos_por_cliente.get(cid, 0),
-            "faturamento_total": faturamento_por_cliente[cid]
-        })
-    
-    ativos = db.session.query(Usuarios).filter_by(conta_ativa="sim").count()
-    inativos = db.session.query(Usuarios).filter_by(conta_ativa="nao").count()
+    novos_clientes = novos_clientes_no_periodo(data_inicio, data_fim)
+    ativos, inativos = contar_clientes_ativos_inativos()
+    crescimento_por_dia = crescimento_clientes_por_dia(data_inicio, data_fim)
+    top_clientes = top_clientes_por_faturamento(data_inicio, data_fim)
 
     kpis_clientes = {
         "total_clientes": total_clientes,
@@ -518,6 +469,7 @@ def exportar_relatorio_excel():
             df_top = pd.DataFrame([
                 {
                     "Nome": c.get('nome'),
+                    "RM": c.get('rm'),
                     "Código ETEC": c.get('codigo_etec'),
                     "Email": c.get('email'),
                     "Total de Pedidos": c.get('total_pedidos'),
@@ -917,8 +869,8 @@ def exportar_relatorio_pdf():
             )
             elementos.append(Paragraph("Top Clientes", estilo_heading2_centralizado))
             tabela_top = Table(
-                [["Nome", "Código ETEC", "Email", "Total Pedidos", "Faturamento Total"]] +
-                [[c["nome"], c["codigo_etec"], c["email"], c["total_pedidos"], f"R${c['faturamento_total']:.2f}"]
+                [["Nome","RM", "Código ETEC", "Email", "Total Pedidos", "Faturamento Total"]] +
+                [[c["nome"], c['rm'], c["codigo_etec"], c["email"], c["total_pedidos"], f"R${c['faturamento_total']:.2f}"]
                 for c in top_clientes]
             )
             tabela_top.setStyle(TableStyle([

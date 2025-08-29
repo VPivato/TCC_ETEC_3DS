@@ -213,3 +213,64 @@ def analisar_vendas_produto(produto, data_inicio, data_fim):
         vendas_por_dia[dia] = vendas_por_dia.get(dia, 0) + (item.quantidade * item.preco_unitario)
 
     return total_vendas, total_faturamento, vendas_por_dia
+
+
+def contar_clientes_ativos_inativos():
+    ativos = db.session.query(func.count(Usuarios.id)).filter_by(conta_ativa="sim").scalar()
+    inativos = db.session.query(func.count(Usuarios.id)).filter_by(conta_ativa="nao").scalar()
+    return ativos, inativos
+
+
+def novos_clientes_no_periodo(data_inicio, data_fim):
+    return Usuarios.query.filter(
+        Usuarios.data_criacao_usuario.between(data_inicio, data_fim)
+    ).count()
+
+
+def crescimento_clientes_por_dia(data_inicio, data_fim):
+    resultados = (
+        db.session.query(
+            func.date(Usuarios.data_criacao_usuario).label("dia"),
+            func.count(Usuarios.id)
+        )
+        .filter(Usuarios.data_criacao_usuario.between(data_inicio, data_fim))
+        .group_by(func.date(Usuarios.data_criacao_usuario))
+        .order_by("dia")
+        .all()
+    )
+
+    crescimento = {datetime.strptime(r.dia, "%Y-%m-%d").strftime("%d/%m"): r[1] for r in resultados}
+    return crescimento
+
+
+def top_clientes_por_faturamento(data_inicio, data_fim, limite=3):
+    resultados = (
+        db.session.query(
+            Pedido.id_usuario,
+            func.count(Pedido.id).label("total_pedidos"),
+            func.sum(ItemPedido.quantidade * ItemPedido.preco_unitario).label("faturamento_total")
+        )
+        .join(ItemPedido, ItemPedido.pedido_id == Pedido.id)
+        .filter(
+            Pedido.status == "retirado",
+            Pedido.data_hora.between(data_inicio, data_fim),
+            Pedido.id_usuario.isnot(None)
+        )
+        .group_by(Pedido.id_usuario)
+        .order_by(func.sum(ItemPedido.quantidade * ItemPedido.preco_unitario).desc())
+        .limit(limite)
+        .all()
+    )
+
+    top_clientes = []
+    for cid, total_pedidos, faturamento_total in resultados:
+        cliente = Usuarios.query.get(cid)
+        top_clientes.append({
+            "nome": cliente.aluno.nome_aluno if cliente.nivel_conta == 0 else "--",
+            "rm": cliente.rm_usuario,
+            "codigo_etec": cliente.codigo_etec_usuario,
+            "email": cliente.aluno.email_aluno if cliente.nivel_conta == 0 else "--",
+            "total_pedidos": total_pedidos,
+            "faturamento_total": float(faturamento_total or 0)
+        })
+    return top_clientes
