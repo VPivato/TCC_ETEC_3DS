@@ -14,7 +14,8 @@ from utils.relatorio_utils import (filtrar_pedidos, calcular_kpis_geral, vendas_
                                    analisar_categorias, calcular_kpis_produtos, buscar_produto, analisar_vendas_produto,
                                    contar_clientes_ativos_inativos, top_clientes_por_faturamento, ajustar_periodo,
                                    novos_clientes_no_periodo, crescimento_clientes_por_dia, calcular_kpis_pedidos,
-                                   grafico_faturamento_por_dia, grafico_pedidos_por_status
+                                   grafico_faturamento_por_dia, grafico_pedidos_por_status, filtrar_feedbacks,
+                                   calcular_kpis_feedbacks, grafico_feedbacks_por_tipo, grafico_feedbacks_por_dia
                                    )
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image, PageBreak
@@ -272,53 +273,21 @@ def gerar_relatorio_pedidos(data_inicio, data_fim):
     }
 
 def gerar_relatorio_feedbacks(data_inicio, data_fim):
-    # Query base com filtro de datas
-    query = db.session.query(Feedbacks)
-    if data_inicio:
-        query = query.filter(Feedbacks.data_feedback >= data_inicio)
-    if data_fim:
-        query = query.filter(Feedbacks.data_feedback <= data_fim)
-    
-    feedbacks_filtrados = query.all()
+    feedbacks = filtrar_feedbacks(data_inicio, data_fim)
 
-    # KPIs
-    total_feedbacks = len(feedbacks_filtrados)
-    kpi_duvidas = sum(1 for f in feedbacks_filtrados if f.tipo_feedback == "duvida")
-    kpi_reclamacoes = sum(1 for f in feedbacks_filtrados if f.tipo_feedback == "reclamacao")
-    kpi_sugestoes = sum(1 for f in feedbacks_filtrados if f.tipo_feedback == "sugestao")
-    kpi_elogios = sum(1 for f in feedbacks_filtrados if f.tipo_feedback == "elogio")
+    # KPIs feedbacks
+    kpis = calcular_kpis_feedbacks(feedbacks)
 
-    kpis = {
-        "total_feedbacks": total_feedbacks,
-        "duvidas": kpi_duvidas,
-        "reclamacoes": kpi_reclamacoes,
-        "sugestoes": kpi_sugestoes,
-        "elogios": kpi_elogios
-    }
+    # Gráfico por tipo
+    grafico_tipo = grafico_feedbacks_por_tipo(kpis)
 
-    # Gráfico: distribuição por tipo
-    tipos = ["duvida", "reclamacao", "sugestao", "elogio"]
-    valores_tipo = [kpis[t] for t in ["duvidas", "reclamacoes", "sugestoes", "elogios"]]
-
-    # Gráfico: evolução ao longo do tempo (quantidade por dia)
-    feedbacks_por_dia = defaultdict(int)
-    for f in feedbacks_filtrados:
-        dia = f.data_feedback.date()
-        feedbacks_por_dia[dia] += 1
-    feedbacks_por_dia = dict(sorted(feedbacks_por_dia.items()))
-    labels_tempo = [d.strftime("%d/%m") for d in feedbacks_por_dia.keys()]
-    valores_tempo = list(feedbacks_por_dia.values())
+    # Gráfico de evolução no tempo
+    grafico_tempo = grafico_feedbacks_por_dia(feedbacks)
 
     return {
         "kpis": kpis,
-        "grafico_tipo": {
-            "labels": tipos,
-            "valores": valores_tipo
-        },
-        "grafico_tempo": {
-            "labels": labels_tempo,
-            "valores": valores_tempo
-        }
+        "grafico_tipo": grafico_tipo,
+        "grafico_tempo": grafico_tempo
     }
 
 

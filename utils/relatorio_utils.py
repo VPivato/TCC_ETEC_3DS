@@ -11,7 +11,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 from app.extensions import db
-from app.models import Pedido, ItemPedido, Produtos, Usuarios
+from app.models import Pedido, ItemPedido, Produtos, Usuarios, Feedbacks
 
 def ajustar_periodo(periodo, data_inicio=None, data_fim=None):
     now = datetime.now()
@@ -52,6 +52,15 @@ def filtrar_pedidos(data_inicio, data_fim, status=None):
     if status:
         pedidos_query = pedidos_query.filter(Pedido.status == status)
     return pedidos_query.all()
+
+
+def filtrar_feedbacks(data_inicio=None, data_fim=None):
+    query = db.session.query(Feedbacks)
+    if data_inicio:
+        query = query.filter(Feedbacks.data_feedback >= data_inicio)
+    if data_fim:
+        query = query.filter(Feedbacks.data_feedback <= data_fim)
+    return query.all()
 
 
 def calcular_kpis_geral(pedidos):
@@ -102,6 +111,24 @@ def calcular_kpis_pedidos(pedidos):
         "total_pedidos": total_pedidos,
         "taxa_cancelamento": taxa_cancelamento,
         "valor_medio_pedido": valor_medio
+    }
+
+
+def calcular_kpis_feedbacks(feedbacks):
+    total = len(feedbacks)
+    tipos = ["duvida", "reclamacao", "sugestao", "elogio"]
+
+    contagem = {t: 0 for t in tipos}
+    for f in feedbacks:
+        if f.tipo_feedback in contagem:
+            contagem[f.tipo_feedback] += 1
+
+    return {
+        "total_feedbacks": total,
+        "duvidas": contagem["duvida"],
+        "reclamacoes": contagem["reclamacao"],
+        "sugestoes": contagem["sugestao"],
+        "elogios": contagem["elogio"]
     }
 
 
@@ -320,3 +347,27 @@ def grafico_faturamento_por_dia(pedidos):
         "valores": list(vendas_por_dia.values())
     }
 
+
+def grafico_feedbacks_por_tipo(kpis):
+    return {
+        "labels": ["duvida", "reclamacao", "sugestao", "elogio"],
+        "valores": [
+            kpis["duvidas"],
+            kpis["reclamacoes"],
+            kpis["sugestoes"],
+            kpis["elogios"]
+        ]
+    }
+
+
+def grafico_feedbacks_por_dia(feedbacks):
+    feedbacks_por_dia = defaultdict(int)
+    for f in feedbacks:
+        dia = f.data_feedback.date()
+        feedbacks_por_dia[dia] += 1
+
+    feedbacks_por_dia = dict(sorted(feedbacks_por_dia.items()))
+    return {
+        "labels": [d.strftime("%d/%m") for d in feedbacks_por_dia.keys()],
+        "valores": list(feedbacks_por_dia.values())
+    }
