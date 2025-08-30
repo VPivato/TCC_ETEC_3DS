@@ -30,19 +30,28 @@ def repor_estoque():
         db.session.rollback()
         return jsonify({"success": False, "message": str(e)})
 
-@admin_required
 def calcular_informacoes():
-    # Consulta todos os produtos
     produtos = Produtos.query.all()
 
-    # KPIs
-    total_estoque = sum(p.estoque_produto for p in produtos)
-    produtos_esgotados = [p for p in produtos if p.estoque_produto == 0]
-    produtos_baixo_estoque = [p for p in produtos if 0 < p.estoque_produto <= 5]
+    total_estoque = 0
+    valor_total_estoque = 0.0
+    produtos_esgotados = []
+    produtos_baixo_estoque = []
+    produtos_com_estoque = []
 
-    valor_total_estoque = sum(
-        float(p.preco_produto) * p.estoque_produto for p in produtos
-    )
+    for p in produtos:
+        total_estoque += p.estoque_produto
+        valor_total_estoque += float(p.preco_produto) * p.estoque_produto
+
+        if p.estoque_produto == 0:
+            produtos_esgotados.append(p)
+        elif p.estoque_produto <= 5:
+            produtos_baixo_estoque.append(p)
+            produtos_com_estoque.append(p)
+        else:
+            produtos_com_estoque.append(p)
+
+    produtos_ordenados = sorted(produtos_com_estoque, key=lambda p: p.estoque_produto)
 
     kpis = {
         "total_estoque": total_estoque,
@@ -51,21 +60,14 @@ def calcular_informacoes():
         "valor_total_estoque": valor_total_estoque,
     }
 
-    # Dados para gráfico de estoque baixo (barras)
     grafico_estoque_baixo = {
         "labels": [p.descricao_produto for p in produtos_baixo_estoque],
         "valores": [p.estoque_produto for p in produtos_baixo_estoque],
     }
 
-    # Filtrar produtos que ainda têm estoque
-    produtos_com_estoque = [p for p in produtos if p.estoque_produto > 0]
-    # Ordenar por estoque (crescente)
-    produtos_ordenados = sorted(produtos_com_estoque, key=lambda p: p.estoque_produto)
-
-
     return {
         "kpis": kpis,
         "grafico": grafico_estoque_baixo,
         "lista_esgotados": produtos_esgotados,
-        "produtos_ordenados": produtos_ordenados
+        "produtos_ordenados": produtos_ordenados,
     }
