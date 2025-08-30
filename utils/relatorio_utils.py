@@ -1,46 +1,48 @@
-from datetime import datetime, timedelta
-from io import BytesIO
-import re
-import pandas as pd
-
 from sqlalchemy import func
-from collections import defaultdict
-
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-
 from app.extensions import db
+from collections import defaultdict
+from datetime import datetime, timedelta
 from app.models import Pedido, ItemPedido, Produtos, Usuarios, Feedbacks
 
 def ajustar_periodo(periodo, data_inicio=None, data_fim=None):
     now = datetime.now()
-    if periodo != "personalizado":
-        if periodo == "hoje":
-            data_inicio = now.replace(hour=0, minute=0, second=0)
-            data_fim = now.replace(hour=23, minute=59, second=59)
-            inicio_anterior = data_inicio - timedelta(days=1)
-            fim_anterior = data_fim - timedelta(days=1)
-        elif periodo == "ultima_semana":
-            data_inicio = now - timedelta(days=7)
-            data_fim = now
-            inicio_anterior = data_inicio - timedelta(days=7)
-            fim_anterior = data_inicio - timedelta(seconds=1)
-        elif periodo == "ultimo_mes":
-            data_inicio = now - timedelta(days=30)
-            data_fim = now
-            inicio_anterior = data_inicio - timedelta(days=30)
-            fim_anterior = data_inicio - timedelta(seconds=1)
-        elif periodo == "comeco_ano":
-            data_inicio = datetime(now.year, 1, 1)
-            data_fim = now
-            inicio_anterior = datetime(now.year - 1, 1, 1)
-            fim_anterior = datetime(now.year - 1, 12, 31)
-    else:
+    periodo_formatado = ""
+
+    if periodo == "hoje":
+        data_inicio = now.replace(hour=0, minute=0, second=0)
+        data_fim = now.replace(hour=23, minute=59, second=59)
+        inicio_anterior = data_inicio - timedelta(days=1)
+        fim_anterior = data_fim - timedelta(days=1)
+        periodo_formatado = "Apenas hoje"
+
+    elif periodo == "ultima_semana":
+        data_inicio = now - timedelta(days=7)
+        data_fim = now
+        inicio_anterior = data_inicio - timedelta(days=7)
+        fim_anterior = data_inicio - timedelta(seconds=1)
+        periodo_formatado = "Nos últimos 7 dias"
+
+    elif periodo == "ultimo_mes":
+        data_inicio = now - timedelta(days=30)
+        data_fim = now
+        inicio_anterior = data_inicio - timedelta(days=30)
+        fim_anterior = data_inicio - timedelta(seconds=1)
+        periodo_formatado = "Nos últimos 30 dias"
+
+    elif periodo == "comeco_ano":
+        data_inicio = datetime(now.year, 1, 1)
+        data_fim = now
+        inicio_anterior = datetime(now.year - 1, 1, 1)
+        fim_anterior = datetime(now.year - 1, 12, 31)
+        periodo_formatado = "Desde o começo do ano"
+
+    elif periodo == "personalizado" and data_inicio and data_fim:
         data_inicio = datetime.strptime(data_inicio, "%Y-%m-%d").replace(hour=0, minute=0, second=0)
         data_fim = datetime.strptime(data_fim, "%Y-%m-%d").replace(hour=23, minute=59, second=59)
         inicio_anterior = fim_anterior = None
-    return data_inicio, data_fim, inicio_anterior, fim_anterior
+        periodo_formatado = f"Nos últimos {(data_fim - data_inicio).days} dias"
+
+    return data_inicio, data_fim, inicio_anterior, fim_anterior, periodo_formatado
 
 
 def filtrar_pedidos(data_inicio, data_fim, status=None):
