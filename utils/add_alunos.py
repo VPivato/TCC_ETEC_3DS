@@ -1,6 +1,6 @@
 from app import create_app
 from app.extensions import db
-from app.models.aluno import Alunos
+from app.models import Alunos
 
 app = create_app()
 with app.app_context():

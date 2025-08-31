@@ -1,2 +1,4 @@
 Mudar o home
 Banner e fotos da equipe página sobre
+
+Otimizar consultas relatórios para ~50K registros
