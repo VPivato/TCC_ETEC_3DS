@@ -48,24 +48,37 @@ def get_colunas():
 @database_bp.route('/get_registros', methods=['POST'])
 @admin_required
 def get_registros():
-    nome_modelo = request.json.get('modelo')
-    modelo = MODELOS.get(nome_modelo)
+    payload = request.json or {}
+    nome_modelo = payload.get('modelo')
+    page = int(payload.get('page', 1))
+    per_page = int(payload.get('per_page', 25))
 
+    # limitar per_page para evitar abuso
+    per_page = max(1, min(per_page, 200))
+
+    modelo = MODELOS.get(nome_modelo)
     if not modelo:
         return jsonify({'erro': 'Modelo não encontrado'}), 400
 
     colunas = [col.name for col in modelo.__table__.columns]
-    registros = db.session.query(modelo).all()
 
-    # Converte para lista de dicionários
+    # Query básica: ordena por id para consistência
+    query = db.session.query(modelo).order_by(getattr(modelo, 'id').asc())
+
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+
     registros_json = [
         {col: getattr(r, col) for col in colunas}
-        for r in registros
+        for r in pagination.items
     ]
 
     return jsonify({
         'colunas': colunas,
-        'registros': registros_json
+        'registros': registros_json,
+        'page': pagination.page,
+        'per_page': pagination.per_page,
+        'total': pagination.total,
+        'pages': pagination.pages
     })
 
 
@@ -112,30 +125,34 @@ def excluir_registro(modelo, id):
 @database_bp.route('/filtrar', methods=['POST'])
 @admin_required
 def filtrar():
-    dados = request.json
+    dados = request.json or {}
     modelo_nome = dados.get('modelo')
     coluna = dados.get('coluna')
     operador = dados.get('operador')
     valor = dados.get('valor')
+    page = int(dados.get('page', 1))
+    per_page = int(dados.get('per_page', 25))
+    per_page = max(1, min(per_page, 200))
 
     modelo = MODELOS.get(modelo_nome)
     if not modelo:
         return jsonify({'erro': 'Modelo inválido'}), 400
 
-    if coluna not in [c.name for c in modelo.__table__.columns]:
+    colunas = [c.name for c in modelo.__table__.columns]
+    if coluna not in colunas:
         return jsonify({'erro': 'Coluna inválida'}), 400
 
     try:
         col = getattr(modelo, coluna)
         tipo_coluna = str(col.property.columns[0].type)
         is_date = "DATE" in tipo_coluna.upper()
+
         if is_date:
             try:
                 valor_dt = datetime.strptime(valor, "%Y-%m-%d").date()
-            except ValueError:
+            except Exception:
                 return jsonify({"erro": "Data inválida"}), 400
-            
-            # Usa func.date para comparar apenas a data (sem hora)
+
             if operador == '=':
                 filtro = func.date(col) == valor_dt
             elif operador == '!=':
@@ -147,7 +164,6 @@ def filtrar():
             else:
                 return jsonify({'erro': 'Operador inválido para data'}), 400
         else:
-            # Filtros normais para texto/número
             if operador == '=':
                 filtro = col == valor
             elif operador == '!=':
@@ -157,19 +173,25 @@ def filtrar():
             elif operador == '<':
                 filtro = col < valor
             elif operador.upper() == 'LIKE':
-                filtro = col.like(f"%{valor}%")
+                filtro = col.ilike(f"%{valor}%")
             else:
                 return jsonify({'erro': 'Operador inválido'}), 400
 
-        registros = db.session.query(modelo).filter(filtro).all()
-        colunas = [c.name for c in modelo.__table__.columns]
+        query = db.session.query(modelo).filter(filtro).order_by(getattr(modelo, 'id').asc())
+        pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+
+        registros_json = [
+            {c: getattr(r, c) for c in colunas}
+            for r in pagination.items
+        ]
 
         return jsonify({
             'colunas': colunas,
-            'registros': [
-                {col: getattr(r, col) for col in colunas}
-                for r in registros
-            ]
+            'registros': registros_json,
+            'page': pagination.page,
+            'per_page': pagination.per_page,
+            'total': pagination.total,
+            'pages': pagination.pages
         })
     except Exception as e:
         return jsonify({'erro': f'Erro ao filtrar: {str(e)}'}), 500

@@ -41,7 +41,7 @@ def ajustar_periodo(periodo, data_inicio=None, data_fim=None):
         data_inicio = datetime.strptime(data_inicio, "%Y-%m-%d").replace(hour=0, minute=0, second=0)
         data_fim = datetime.strptime(data_fim, "%Y-%m-%d").replace(hour=23, minute=59, second=59)
         inicio_anterior = fim_anterior = None
-        periodo_formatado = f"Nos últimos {(data_fim - data_inicio).days} dias"
+        periodo_formatado = f"De {data_inicio.strftime("%d-%m-%y")} até {data_fim.strftime("%d-%m-%y")}"
 
     return data_inicio, data_fim, inicio_anterior, fim_anterior, periodo_formatado
 
