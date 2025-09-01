@@ -38,12 +38,23 @@ def relatorio():
     session['data_inicio'] = data_inicio
     session['data_fim'] = data_fim
     session['periodo_formatado'] = periodo_formatado
+
+    pedidos_periodo = filtrar_pedidos(data_inicio, data_fim)
+    feedbacks_periodo = filtrar_feedbacks(data_inicio, data_fim)
     
-    dados_geral = gerar_relatorio_geral(data_inicio, data_fim)
-    dados_produtos = gerar_relatorio_produtos(data_inicio, data_fim)
+    dados_geral = gerar_relatorio_geral(pedidos_periodo, data_inicio, data_fim)
+    dados_produtos = gerar_relatorio_produtos(pedidos_periodo)
     dados_clientes = gerar_relatorio_clientes(data_inicio, data_fim)
-    dados_pedidos = gerar_relatorio_pedidos(data_inicio, data_fim)
-    dados_feedbacks = gerar_relatorio_feedbacks(data_inicio, data_fim)
+    dados_pedidos = gerar_relatorio_pedidos(pedidos_periodo)
+    dados_feedbacks = gerar_relatorio_feedbacks(feedbacks_periodo)
+
+    session['relatorios_cache'] = {
+        "geral": dados_geral,
+        "produtos": dados_produtos,
+        "clientes": dados_clientes,
+        "pedidos": dados_pedidos,
+        "feedbacks": dados_feedbacks
+    }
 
     return render_template('admin/relatorio/relatorio.html', 
                            periodo=periodo,
@@ -64,15 +75,15 @@ def limpar_produto_especifico():
     session.pop('produto_especifico', None)
     return jsonify({"status": "ok"})
 
-def gerar_relatorio_geral(data_inicio, data_fim):
+def gerar_relatorio_geral(_pedidos_periodo, data_inicio=None, data_fim=None):
     # Query de todos os pedidos entre o periodo definido
-    pedidos_periodo = filtrar_pedidos(data_inicio, data_fim)
+    pedidos_periodo = _pedidos_periodo
 
     # KPIs geral
-    kpis_geral = calcular_kpis_geral(pedidos_periodo)
+    kpis_geral = calcular_kpis_geral(data_inicio, data_fim)
 
     # Gráfico top_X produtos mais vendidos
-    labels_produtos, valores_produtos = vendas_por_produto(pedidos_periodo, 5)
+    labels_produtos, valores_produtos = vendas_por_produto(5, data_inicio, data_fim)
 
     # Pico e menor volume (qnt.) de pedidos
     dia_pico, pico_valor, dia_menor, menor_valor = analisar_movimento_diario(pedidos_periodo)
@@ -109,7 +120,7 @@ def gerar_relatorio_geral(data_inicio, data_fim):
         "frases": frases
     }
 
-def gerar_relatorio_produtos(data_inicio=None, data_fim=None):
+def gerar_relatorio_produtos(_pedidos_periodo):
     # KPIs produtos
     kpis_estoque = calcular_kpis_produtos()
 
@@ -117,7 +128,7 @@ def gerar_relatorio_produtos(data_inicio=None, data_fim=None):
     labels_estoque_baixo = [p.descricao_produto for p in kpis_estoque.get('lista_produtos_estoque_baixo')]
     valores_estoque_baixo = [p.estoque_produto for p in kpis_estoque.get('lista_produtos_estoque_baixo')]
 
-    pedidos = filtrar_pedidos(data_inicio, data_fim)
+    pedidos = _pedidos_periodo
     _, faturamento_dict = analisar_produtos(pedidos)
 
     # Gráfico vendas por categorias
@@ -209,9 +220,9 @@ def gerar_relatorio_clientes(data_inicio, data_fim):
         "top_clientes": top_clientes
     }
 
-def gerar_relatorio_pedidos(data_inicio, data_fim):
+def gerar_relatorio_pedidos(_pedidos_periodo):
     # Buscar pedidos do período
-    pedidos = filtrar_pedidos(data_inicio, data_fim)
+    pedidos = _pedidos_periodo
 
     # KPIs pedidos
     kpis = calcular_kpis_pedidos(pedidos)
@@ -228,8 +239,8 @@ def gerar_relatorio_pedidos(data_inicio, data_fim):
         "grafico_vendas_dia": grafico_vendas_dia
     }
 
-def gerar_relatorio_feedbacks(data_inicio, data_fim):
-    feedbacks = filtrar_feedbacks(data_inicio, data_fim)
+def gerar_relatorio_feedbacks(_feedbacks_periodo):
+    feedbacks = _feedbacks_periodo
 
     # KPIs feedbacks
     kpis = calcular_kpis_feedbacks(feedbacks)
@@ -251,31 +262,25 @@ def gerar_relatorio_feedbacks(data_inicio, data_fim):
 @admin_required
 def exportar_relatorio_excel():
     relatorio_ativo = request.form.get('relatorio')
-    data_inicio = session.get('data_inicio')
-    data_fim = session.get('data_fim')
+    dados = session['relatorios_cache'].get(relatorio_ativo)
 
     output = BytesIO()
 
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
         if relatorio_ativo == 'geral':
-            geral = gerar_relatorio_geral(data_inicio, data_fim)
-            exportar_relatorio_geral_excel(writer, geral)
+            exportar_relatorio_geral_excel(writer, dados)
 
         elif relatorio_ativo == 'produtos':
-            produtos = gerar_relatorio_produtos(data_inicio, data_fim)
-            exportar_relatorio_produtos_excel(writer, produtos)
+            exportar_relatorio_produtos_excel(writer, dados)
 
         elif relatorio_ativo == 'clientes':
-            clientes = gerar_relatorio_clientes(data_inicio, data_fim)
-            exportar_relatorio_clientes_excel(writer, clientes)
+            exportar_relatorio_clientes_excel(writer, dados)
 
         elif relatorio_ativo == 'pedidos':
-            pedidos = gerar_relatorio_pedidos(data_inicio, data_fim)
-            exportar_relatorio_pedidos_excel(writer, pedidos)
+            exportar_relatorio_pedidos_excel(writer, dados)
             
         elif relatorio_ativo == 'feedbacks':
-            feedbacks = gerar_relatorio_feedbacks(data_inicio, data_fim)
-            exportar_relatorio_feedbacks_excel(writer, feedbacks)
+            exportar_relatorio_feedbacks_excel(writer, dados)
 
     output.seek(0)
     return send_file(
@@ -292,32 +297,21 @@ def exportar_relatorio_pdf():
     doc = SimpleDocTemplate(buffer, pagesize=A4)
     elementos = []
     styles = getSampleStyleSheet()
-    data_inicio = session.get('data_inicio')
-    data_fim = session.get('data_fim')
+    dados = session['relatorios_cache'].get(relatorio_ativo)
 
-    # ========= RELATÓRIO GERAL =========
     if relatorio_ativo == "geral":
-        dados = gerar_relatorio_geral(data_inicio, data_fim)
         elementos = exportar_relatorio_geral_pdf(dados, styles)
 
-    # ========= RELATÓRIO DE PRODUTOS =========
     if relatorio_ativo == "produtos":
-        dados = gerar_relatorio_produtos(data_inicio, data_fim)
         elementos = exportar_relatorio_produtos_pdf(dados, styles)
 
-    # ========= RELATÓRIO DE CLIENTES =========
     if relatorio_ativo == "clientes":
-        dados = gerar_relatorio_clientes(data_inicio, data_fim)
         elementos = exportar_relatorio_clientes_pdf(dados, styles)
 
-    # ========= RELATÓRIO DE PEDIDOS =========
     if relatorio_ativo == "pedidos":
-        dados = gerar_relatorio_pedidos(data_inicio, data_fim)
         elementos = exportar_relatorio_pedidos_pdf(dados, styles)
 
-    # ========= RELATÓRIO DE FEEDBACKS =========
     if relatorio_ativo == "feedbacks":
-        dados = gerar_relatorio_feedbacks(data_inicio, data_fim)
         elementos = exportar_relatorio_feedbacks_pdf(dados, styles)
 
     # Construir PDF

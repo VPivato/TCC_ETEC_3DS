@@ -1,6 +1,7 @@
 from sqlalchemy import func
 from app.extensions import db
 from collections import defaultdict
+from sqlalchemy.orm import joinedload
 from datetime import datetime, timedelta
 from app.models import Pedido, ItemPedido, Produtos, Usuarios, Feedbacks
 
@@ -46,7 +47,10 @@ def ajustar_periodo(periodo, data_inicio=None, data_fim=None):
 
 
 def filtrar_pedidos(data_inicio, data_fim, status=None):
-    pedidos_query = Pedido.query
+    pedidos_query = (
+        Pedido.query
+        .options(joinedload(Pedido.itens).joinedload(ItemPedido.produto))
+    )
     if data_inicio:
         pedidos_query = pedidos_query.filter(Pedido.data_hora >= data_inicio)
     if data_fim:
@@ -65,12 +69,24 @@ def filtrar_feedbacks(data_inicio=None, data_fim=None):
     return query.all()
 
 
-def calcular_kpis_geral(pedidos):
-    pedidos_retirados = [p for p in pedidos if p.status == "retirado"]
+def calcular_kpis_geral(data_inicio=None, data_fim=None):
+    vendas_totais = (
+        db.session.query(func.sum(Pedido.total))
+        .filter(Pedido.status == "retirado", Pedido.data_hora.between(data_inicio, data_fim))
+        .scalar() or 0
+    )
 
-    vendas_totais = sum(p.total for p in pedidos_retirados)
-    total_pedidos = len(pedidos)
-    clientes_atendidos = len(pedidos_retirados)
+    total_pedidos = (
+        db.session.query(func.count(Pedido.id))
+        .filter(Pedido.data_hora.between(data_inicio, data_fim))
+        .scalar()
+    )
+
+    clientes_atendidos = (
+        db.session.query(func.count(Pedido.id))
+        .filter(Pedido.status == "retirado", Pedido.data_hora.between(data_inicio, data_fim))
+        .scalar()
+    )
     ticket_medio = vendas_totais / clientes_atendidos if clientes_atendidos else 0
 
     return {
@@ -147,15 +163,27 @@ def calcular_kpis_feedbacks(feedbacks):
     }
 
 
-def vendas_por_produto(pedidos, top_x):
-    vendas = defaultdict(float)
-    for pedido in pedidos:
-        if pedido.status == "retirado":
-            for item in pedido.itens:
-                vendas[item.produto.descricao_produto] += item.quantidade
-    ordenado = sorted(vendas.items(), key=lambda x: x[1], reverse=True)
-    # Retorna labels, valores
-    return [p[0] for p in ordenado[:top_x]], [p[1] for p in ordenado[:top_x]]
+def vendas_por_produto(top_x, data_inicio=None, data_fim=None):
+    resultados = (
+        db.session.query(
+            ItemPedido.produto_id,
+            Produtos.descricao_produto,
+            func.sum(ItemPedido.quantidade).label("total_unidades")
+        )
+        .join(Pedido, Pedido.id == ItemPedido.pedido_id)
+        .join(Produtos, Produtos.id == ItemPedido.produto_id)
+        .filter(
+            Pedido.status == "retirado",
+            Pedido.data_hora.between(data_inicio, data_fim)
+        )
+        .group_by(ItemPedido.produto_id, Produtos.descricao_produto)
+        .order_by(func.sum(ItemPedido.quantidade).desc())
+        .limit(top_x)
+        .all()
+    )
+    labels = [r.descricao_produto for r in resultados]
+    valores = [int(r.total_unidades) for r in resultados]
+    return labels, valores
 
 
 def analisar_movimento_diario(pedidos):
