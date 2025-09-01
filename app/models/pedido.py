@@ -14,5 +14,10 @@ class Pedido(db.Model):
     status = db.Column(db.String(20), default='pendente')  
     # opções: 'pendente', 'retirado', 'cancelado'
 
-    itens = db.relationship('ItemPedido', backref='pedido', cascade="all, delete-orphan")
+    itens = db.relationship(
+        'ItemPedido',
+        backref='pedido',
+        cascade="all, delete-orphan",
+        passive_deletes=True
+    )
     usuario = db.relationship('Usuarios', backref='pedidos')

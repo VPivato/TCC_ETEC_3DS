@@ -8,20 +8,16 @@ def limpar_registros(db):
         sys.exit(1)
 
     nome_tabela = sys.argv[1]
-
     Model = getattr(models, nome_tabela, None)
 
     if Model is None:
         print(f"Modelo '{nome_tabela}' não encontrado em app.models")
         sys.exit(1)
-    
+
     try:
-        registros = db.session.query(Model).all()
-        num_registros = len(registros)
-
-        for r in registros:
-            db.session.delete(r)
-
+        num_registros = db.session.query(Model).delete(synchronize_session=False)
+        db.session.query(models.ItemPedido).delete(synchronize_session=False)
+        db.session.query(models.Pedido).delete(synchronize_session=False)
         db.session.commit()
         print(f"{num_registros} registros da tabela '{nome_tabela}' foram excluídos.")
     except Exception as e:
