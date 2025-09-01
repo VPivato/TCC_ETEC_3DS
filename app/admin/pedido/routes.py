@@ -13,10 +13,10 @@ pedido_bp = Blueprint('pedido', __name__, url_prefix='/pedido')
 @pedido_bp.route('/')
 @admin_required
 def visualizar_pedidos():
-    ordenar = request.args.get('ordenar', 'desc')  # padrão decrescente
-
-    # Filtro de status
+    ordenar = request.args.get('ordenar', 'desc')
     filtro_status = request.args.get('status', 'pendente')
+    campo_busca = request.args.get('campo')
+    termo_busca = request.args.get('busca')
 
     # Query inicial
     query = Pedido.query
@@ -31,9 +31,6 @@ def visualizar_pedidos():
         query = query.order_by(Pedido.data_hora.desc())
 
     # Busca
-    campo_busca = request.args.get('campo')
-    termo_busca = request.args.get('busca')
-
     if campo_busca and termo_busca:
         if campo_busca == 'id_pedido':
             query = query.filter(Pedido.id == termo_busca)
@@ -44,10 +41,20 @@ def visualizar_pedidos():
         elif campo_busca == 'codigo_etec':
             query = query.join(Usuarios).filter(Usuarios.codigo_etec_usuario.ilike(f'%{termo_busca}%'))
 
-    # Resultado final
-    pedidos = query.all()
+    # Paginação
+    page = request.args.get('page', 1, type=int)
+    per_page = 20  # quantidade de pedidos por página
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
 
-    return render_template('admin/pedido/pedido.html', pedidos=pedidos, filtro_status=filtro_status, ordenar=ordenar, campo_busca=campo_busca, termo_busca=termo_busca)
+    return render_template(
+        'admin/pedido/pedido.html',
+        pedidos=pagination.items,
+        pagination=pagination,
+        filtro_status=filtro_status,
+        ordenar=ordenar,
+        campo_busca=campo_busca,
+        termo_busca=termo_busca
+    )
 
 
 
