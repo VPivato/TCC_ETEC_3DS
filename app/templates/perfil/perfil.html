@@ -122,15 +122,66 @@
                                     <span class="badge bg-warning text-dark">Pendente</span>
                                     {% endif %}
                                 </p>
-                                <a href="{{ url_for('perfil.baixar_comprovante', pedido_id=pedido.id) }}"
-                                    class="btn btn-outline-primary btn-sm">
-                                    Baixar comprovante (PDF)
-                                </a>
+
+                                <!-- Botões -->
+                                <div class="d-flex gap-2">
+                                    <a href="{{ url_for('perfil.baixar_comprovante', pedido_id=pedido.id) }}"
+                                        class="btn btn-outline-primary btn-sm">
+                                        Baixar comprovante (PDF)
+                                    </a>
+
+                                    {% if pedido.status == 'pendente' %}
+                                    <form action="{{ url_for('perfil.cancelar_pedido_usuario', pedido_id=pedido.id) }}"
+                                        method="POST" class="form-cancelar-pedido">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            Cancelar
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
+
+                <!-- paginação (mantida igual) -->
+                <nav aria-label="Navegação de páginas" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if pagination.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="{{ url_for('perfil.perfil', page=pagination.prev_num) }}">Anterior</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                        {% endif %}
+
+                        {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1,
+                        right_current=2) %}
+                        {% if page_num %}
+                        {% if page_num == pagination.page %}
+                        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                        {% else %}
+                        <li class="page-item"><a class="page-link"
+                                href="{{ url_for('perfil.perfil', page=page_num) }}">{{ page_num }}</a></li>
+                        {% endif %}
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                        {% endif %}
+                        {% endfor %}
+
+                        {% if pagination.has_next %}
+                        <li class="page-item">
+                            <a class="page-link"
+                                href="{{ url_for('perfil.perfil', page=pagination.next_num) }}">Próximo</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">Próximo</span></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+
                 {% else %}
                 <div class="alert alert-info" role="alert">
                     Você ainda não fez nenhum pedido.
@@ -138,6 +189,7 @@
                 {% endif %}
             </div>
         </div>
+
 
         <div id="conteudo-stats" class="conteudo-pagina">
             <div class="main-content">
@@ -240,6 +292,30 @@
         </div>
     </div>
 </div>
+
+{% if toast_message %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        Swal.fire({
+            toast: true,
+            position: 'bottom-end',
+            icon: "{{ request.args.get('toast_type', 'success') }}",
+            title: "{{ toast_message }}",
+            showConfirmButton: false,
+            timer: 2500,
+            timerProgressBar: true,
+            background: '#fff',
+        });
+    });
+    document.addEventListener("DOMContentLoaded", () => {
+        if (window.location.search) {
+            const url = new URL(window.location.href);
+            url.search = ""; // remove os parâmetros
+            window.history.replaceState({}, document.title, url);
+        }
+    });
+</script>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}

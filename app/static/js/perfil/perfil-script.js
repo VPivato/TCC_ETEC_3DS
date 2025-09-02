@@ -232,3 +232,86 @@ function atualizarEstatisticas() {
 }
 
 document.addEventListener('DOMContentLoaded', atualizarEstatisticas);
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".form-cancelar-pedido").forEach(form => {
+        form.addEventListener("submit", function (e) {
+            e.preventDefault(); // impede envio imediato
+
+            Swal.fire({
+                title: "Cancelar pedido?",
+                text: "Esta ação não poderá ser desfeita.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: "Sim, cancelar",
+                cancelButtonText: "Não",
+                heightAuto: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit(); // envia o formulário se confirmado
+                }
+            });
+        });
+    });
+});
+document.addEventListener('DOMContentLoaded', () => {
+    // nome das seções possíveis: 'geral', 'comprovantes', 'stats', 'conf'
+    const DEFAULT_TAB = 'geral';
+    const asideButtons = document.querySelectorAll('.aside-wrapper');
+    const contents = document.querySelectorAll('.conteudo-pagina');
+
+    function activateTab(tabName) {
+        if (!tabName) tabName = DEFAULT_TAB;
+        // remover classes
+        asideButtons.forEach(b => b.classList.remove('active'));
+        contents.forEach(c => c.classList.remove('ativo'));
+
+        // ativar botão e conteúdo correspondentes
+        const btn = document.getElementById(`${tabName}-wrapper`);
+        const content = document.getElementById(`conteudo-${tabName}`);
+        if (btn) btn.classList.add('active');
+        if (content) content.classList.add('ativo');
+
+        // salva no sessionStorage (fallback caso o hash seja perdido)
+        try { sessionStorage.setItem('perfil_tab', tabName); } catch (e) { }
+    }
+
+    // determina aba inicial: primeiro hash, depois sessionStorage, depois default
+    let initialTab = null;
+    if (location.hash && location.hash.length > 1) {
+        initialTab = location.hash.slice(1); // remove '#'
+    } else {
+        try { initialTab = sessionStorage.getItem('perfil_tab') || null; } catch (e) { initialTab = null; }
+    }
+    initialTab = initialTab || DEFAULT_TAB;
+    activateTab(initialTab);
+
+    // atualiza URL (sem scroll) e storage quando usuário clica no menu lateral
+    asideButtons.forEach(botao => {
+        botao.addEventListener('click', (e) => {
+            const tab = botao.id.replace('-wrapper', '');
+            // altera a URL sem provocar scroll
+            history.replaceState(null, '', `#${tab}`);
+            activateTab(tab);
+        });
+    });
+
+    // garantir que, se alguém mudar manualmente o hash (ex: link externo), a aba atualize
+    window.addEventListener('hashchange', () => {
+        const tab = location.hash.slice(1) || sessionStorage.getItem('perfil_tab') || DEFAULT_TAB;
+        activateTab(tab);
+    });
+
+    // Ao clicar em links de paginação, adiciona o hash atual ao href para preservar aba
+    // (previne comportamento padrão apenas para injetar o hash)
+    document.querySelectorAll('.pagination a').forEach(link => {
+        link.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            const href = link.getAttribute('href');
+            const currentTab = (location.hash && location.hash.length > 1) ? location.hash.slice(1) : (sessionStorage.getItem('perfil_tab') || DEFAULT_TAB);
+            // navega com o hash anexado
+            window.location.href = href + `#${currentTab}`;
+        });
+    });
+});

@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from ..models.usuario import Usuarios
 from ..models.notificacao import Notificacoes
 from ..models.pedido import Pedido
+from ..models.produto import Produtos
 from ..extensions import db
 
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
@@ -16,16 +17,32 @@ import io
 
 perfil_bp = Blueprint("perfil", __name__, url_prefix="/perfil")
 
+from flask import request
+
 @perfil_bp.route('/')
 def perfil():
     usuario_id = session.get('user_id')
     if not usuario_id:
         return abort(401)
 
-    pedidos = Pedido.query.filter_by(id_usuario=usuario_id).order_by(Pedido.data_hora.desc()).all()
-    notificacoes = Notificacoes.query.order_by(Notificacoes.data_notificacao.desc()).all()
-    return render_template("perfil/perfil.html", notificacoes=notificacoes, pedidos=pedidos, header_mode='perfil')
+    page = request.args.get('page', 1, type=int)
+    per_page = 10
+    pedidos_pagination = Pedido.query.filter_by(id_usuario=usuario_id) \
+        .order_by(Pedido.data_hora.desc()) \
+        .paginate(page=page, per_page=per_page, error_out=False)
 
+    notificacoes = Notificacoes.query.order_by(Notificacoes.data_notificacao.desc()).all()
+
+    toast_message = request.args.get('toast')  # 👈 pega o texto do toast
+
+    return render_template(
+        "perfil/perfil.html",
+        notificacoes=notificacoes,
+        pedidos=pedidos_pagination.items,
+        pagination=pedidos_pagination,
+        toast_message=toast_message,
+        header_mode='perfil'
+    )
 
 
 @perfil_bp.route('/upload_pfp', methods=['POST'])
@@ -247,11 +264,39 @@ def estatisticas_usuario():
     })
 
 
+@perfil_bp.route("/cancelar_pedido/<int:pedido_id>", methods=["POST"])
+def cancelar_pedido_usuario(pedido_id):
+    pedido = Pedido.query.get_or_404(pedido_id)
+
+    # só permite cancelar pedidos do próprio usuário e que estejam pendentes
+    if pedido.id_usuario != session.get('user_id', None) or pedido.status != "pendente":
+        return redirect(url_for("perfil.perfil"))
+
+    try:
+        # devolve o estoque dos produtos
+        for item in pedido.itens:
+            produto = Produtos.query.get(item.produto_id)
+            if produto:
+                produto.estoque_produto += item.quantidade
+
+        # atualiza status
+        pedido.status = "cancelado"
+        pedido.data_cancelamento = datetime.now()
+
+        db.session.commit()
+        return redirect(url_for(
+            "perfil.perfil",
+            toast=f"Pedido #{pedido.id} foi cancelado com sucesso!"
+        ) + "#comprovantes")
+    except Exception as e:
+        db.session.rollback()
+        return f"ERROR:: {e}"
+
+
 @perfil_bp.route('/sair')
 def sair():
     session.clear()
     return redirect(url_for("home.home"))
-
 
 
 @perfil_bp.route('/excluir_perfil', methods=["POST"])

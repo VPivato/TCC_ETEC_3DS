@@ -227,7 +227,7 @@ input:disabled {
     overflow-y: auto;
 }
 
-.active {
+.aside-wrapper.active {
     border-left: 8px solid #278d2e;
 }
 
