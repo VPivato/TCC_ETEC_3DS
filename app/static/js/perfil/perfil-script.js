@@ -263,17 +263,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function activateTab(tabName) {
         if (!tabName) tabName = DEFAULT_TAB;
+
         // remover classes
         asideButtons.forEach(b => b.classList.remove('active'));
         contents.forEach(c => c.classList.remove('ativo'));
 
-        // ativar botão e conteúdo correspondentes
-        const btn = document.getElementById(`${tabName}-wrapper`);
+        // ativar botão e conteúdo correspondentes apenas se existir conteúdo
         const content = document.getElementById(`conteudo-${tabName}`);
-        if (btn) btn.classList.add('active');
-        if (content) content.classList.add('ativo');
+        if (!content) return;  // sai se não houver conteúdo
 
-        // salva no sessionStorage (fallback caso o hash seja perdido)
+        const btn = document.getElementById(`${tabName}-wrapper`);
+        if (btn) btn.classList.add('active');
+        content.classList.add('ativo');
+
+        // salva no sessionStorage
         try { sessionStorage.setItem('perfil_tab', tabName); } catch (e) { }
     }
 

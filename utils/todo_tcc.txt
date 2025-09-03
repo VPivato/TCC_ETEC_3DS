@@ -1,6 +1,5 @@
 Mudar o home
 Banner e fotos da equipe página sobre
 
-Adicionar informações aluno no form feedback automaticamente
 Filtro por data página pedidos
 Titulos relatorios pdf

@@ -14,11 +14,12 @@
     <form action="{{url_for('feedback.enviar_feedback')}}" method="POST" id="form-feedback">
         <div id="identificacao">
             <label for="nome_feedback">Nome:</label>
-            <input type="text" name="nome_feedback" id="nome_feedback" placeholder="Digite seu nome..." maxlength="40">
+            <input type="text" name="nome_feedback" id="nome_feedback" class="disabled-inpt"
+                placeholder="Digite seu nome..." maxlength="70" readonly>
 
             <label for="nome_feedback">Email:</label>
-            <input type="email" name="email_feedback" id="email_feedback" placeholder="Exemplo@gmail.com"
-                maxlength="70">
+            <input type="email" name="email_feedback" id="email_feedback" class="disabled-inpt"
+                placeholder="{{ user_logado.aluno.email_aluno }}" maxlength="70" readonly>
         </div>
 
         <div id="feedback">
@@ -48,6 +49,13 @@
         </div>
     </form>
 </main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('nome_feedback').value = '{% if user_logado.nivel_conta == 0 %} {{ user_logado.aluno.nome_aluno}} {% else %} Admin "{{ user_logado.rm_usuario }}" {% endif %}';
+    document.getElementById('email_feedback').value = '{% if user_logado.nivel_conta == 0 %} {{ user_logado.aluno.email_aluno}} {% else %} -- {% endif %}';
+    })
+</script>
 {% endblock %}
 
 {% block extra_js %}
