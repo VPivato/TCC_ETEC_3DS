@@ -13,6 +13,7 @@
     <div id="esquerda">
         <div id="principal-esquerda">
             <h2 class="mb-4">Gestão de Pedidos</h2>
+            <!-- Mais antigos ou mais recentes -->
             <form class="d-flex mb-3" method="get">
                 <div class="input-group input-group-sm" style="max-width: 200px;">
                     <label class="input-group-text bg-light" for="ordenar">
@@ -32,30 +33,112 @@
                 {% if termo_busca %}
                 <input type="hidden" name="busca" value="{{ termo_busca }}">
                 {% endif %}
+                {% if data_inicio %}
+                <input type="hidden" name="data_inicio" value="{{ data_inicio }}">
+                {% endif %}
+                {% if data_fim %}
+                <input type="hidden" name="data_fim" value="{{ data_fim }}">
+                {% endif %}
             </form>
 
+            <!-- Botão para abrir/fechar filtro de datas -->
+            <div class="mb-3">
+                <button class="btn btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#filtroDatas"
+                    aria-expanded="{{ 'true' if data_inicio or data_fim else 'false' }}" aria-controls="filtroDatas">
+                    <i class="bi bi-calendar-range"></i> Filtro de datas
+                </button>
+            </div>
+
+            <!-- Conteúdo colapsável do filtro de datas -->
+            <div class="collapse {% if data_inicio or data_fim %}show{% endif %}" id="filtroDatas">
+                <div class="card card-body border-0 shadow-sm mb-3">
+                    <!-- FORM para envio dos filtros -->
+                    <form method="get" action="{{ url_for('pedido.visualizar_pedidos') }}">
+                        <div class="row g-2 align-items-end">
+                            <div class="col">
+                                <div class="form-floating">
+                                    <input type="date" class="form-control" id="data_inicio" name="data_inicio"
+                                        value="{{ data_inicio or '' }}">
+                                    <label for="data_inicio">De</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-floating">
+                                    <input type="date" class="form-control" id="data_fim" name="data_fim"
+                                        value="{{ data_fim or '' }}">
+                                    <label for="data_inicio">Até</label>
+                                </div>
+                            </div>
+                            <div class="col-auto d-flex gap-2">
+                                <button class="btn btn-outline-secondary" type="submit">
+                                    <i class="bi bi-funnel"></i> Aplicar
+                                </button>
+                                <a class="btn btn-outline-secondary" href="{{ url_for('pedido.visualizar_pedidos',
+                        status=filtro_status,
+                        ordenar=ordenar,
+                        campo=campo_busca,
+                        busca=termo_busca) }}">
+                                    Limpar
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- manter outros filtros na submissão -->
+                        <input type="hidden" name="status" value="{{ filtro_status }}">
+                        <input type="hidden" name="ordenar" value="{{ ordenar }}">
+                        {% if campo_busca %}<input type="hidden" name="campo" value="{{ campo_busca }}">{% endif %}
+                        {% if termo_busca %}<input type="hidden" name="busca" value="{{ termo_busca }}">{% endif %}
+                    </form>
+                </div>
+            </div>
+
+            <!-- Filtro por status do pedido -->
             <div class="mb-4">
                 <div class="row g-2">
                     <div class="col-6 col-md">
-                        <a href="{{ url_for('pedido.visualizar_pedidos', status='pendente', campo=request.args.get('campo'), busca=request.args.get('busca'), ordenar=request.args.get('ordenar')) }}"
+                        <a href="{{ url_for('pedido.visualizar_pedidos',
+                                status='pendente',
+                                campo=request.args.get('campo'),
+                                busca=request.args.get('busca'),
+                                ordenar=request.args.get('ordenar'),
+                                data_inicio=request.args.get('data_inicio'),
+                                data_fim=request.args.get('data_fim')) }}"
                             class="btn w-100 btn-{{ 'primary' if filtro_status == 'pendente' else 'outline-primary' }}">
                             Pendentes
                         </a>
                     </div>
                     <div class="col-6 col-md">
-                        <a href="{{ url_for('pedido.visualizar_pedidos', status='retirado', campo=request.args.get('campo'), busca=request.args.get('busca'), ordenar=request.args.get('ordenar')) }}"
+                        <a href="{{ url_for('pedido.visualizar_pedidos',
+                                status='retirado',
+                                campo=request.args.get('campo'),
+                                busca=request.args.get('busca'),
+                                ordenar=request.args.get('ordenar'),
+                                data_inicio=request.args.get('data_inicio'),
+                                data_fim=request.args.get('data_fim')) }}"
                             class="btn w-100 btn-{{ 'success' if filtro_status == 'retirado' else 'outline-success' }}">
                             Retirados
                         </a>
                     </div>
                     <div class="col-6 col-md">
-                        <a href="{{ url_for('pedido.visualizar_pedidos', status='cancelado', campo=request.args.get('campo'), busca=request.args.get('busca'), ordenar=request.args.get('ordenar')) }}"
+                        <a href="{{ url_for('pedido.visualizar_pedidos',
+                                status='cancelado',
+                                campo=request.args.get('campo'),
+                                busca=request.args.get('busca'),
+                                ordenar=request.args.get('ordenar'),
+                                data_inicio=request.args.get('data_inicio'),
+                                data_fim=request.args.get('data_fim')) }}"
                             class="btn w-100 btn-{{ 'danger' if filtro_status == 'cancelado' else 'outline-danger' }}">
                             Cancelados
                         </a>
                     </div>
                     <div class="col-6 col-md">
-                        <a href="{{ url_for('pedido.visualizar_pedidos', status='todos', campo=request.args.get('campo'), busca=request.args.get('busca'), ordenar=request.args.get('ordenar')) }}"
+                        <a href="{{ url_for('pedido.visualizar_pedidos',
+                                status='todos',
+                                campo=request.args.get('campo'),
+                                busca=request.args.get('busca'),
+                                ordenar=request.args.get('ordenar'),
+                                data_inicio=request.args.get('data_inicio'),
+                                data_fim=request.args.get('data_fim')) }}"
                             class="btn w-100 btn-{{ 'secondary' if filtro_status == 'todos' else 'outline-secondary' }}">
                             Todos
                         </a>
@@ -63,9 +146,14 @@
                 </div>
             </div>
 
+            <!-- Pesquisa por coluna -->
             <form class="row g-2 align-items-center mb-4" method="get">
                 <input type="hidden" name="status" value="{{ filtro_status }}">
+                <input type="hidden" name="ordenar" value="{{ ordenar }}">
+                <input type="hidden" name="data_inicio" value="{{ request.args.get('data_inicio') or '' }}">
+                <input type="hidden" name="data_fim" value="{{ request.args.get('data_fim') or '' }}">
 
+                <!-- Colunas para pesquisa -->
                 <div class="col-auto">
                     <select name="campo" class="form-select" required>
                         <option value="">Pesquisar por...</option>
@@ -82,10 +170,13 @@
                             ETEC</option>
                     </select>
                 </div>
+
+                <!-- Valor para pesquisa -->
                 <div class="col-auto">
                     <input type="text" name="busca" class="form-control" placeholder="Digite o termo"
                         value="{{ request.args.get('busca') or '' }}" required>
                 </div>
+
                 <div class="btn-container">
                     <div class="col-auto">
                         <button type="submit" class="btn btn-primary">
@@ -204,50 +295,62 @@
         </div>
         {% if pagination.pages > 1 %}
         <nav aria-label="Navegação de páginas">
-            <ul class="pagination justify-content-center">
+            <ul class="pagination justify-content-center flex-column flex-sm-row gap-2">
 
                 <!-- Botão "Anterior" -->
                 <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
-                    <a class="page-link" href="{{ url_for('pedido.visualizar_pedidos',
+                    <a class="page-link text-center" href="{{ url_for('pedido.visualizar_pedidos',
                         page=pagination.prev_num,
                         status=filtro_status,
                         ordenar=ordenar,
                         campo=campo_busca,
-                        busca=termo_busca) }}">Anterior
+                        busca=termo_busca,
+                        data_inicio=request.args.get('data_inicio'),
+                        data_fim=request.args.get('data_fim')) }}">
+                        Anterior
                     </a>
                 </li>
 
                 <!-- Números -->
-                {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
-                {% if p %}
-                <li class="page-item {% if p == pagination.page %}active{% endif %}">
-                    <a class="page-link" href="{{ url_for('pedido.visualizar_pedidos',
-                        page=p,
-                        status=filtro_status,
-                        ordenar=ordenar,
-                        campo=campo_busca,
-                        busca=termo_busca) }}">{{ p }}
-                    </a>
+                <li>
+                    <ul class="pagination justify-content-center mb-0 flex-wrap">
+                        {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if p %}
+                        <li class="page-item {% if p == pagination.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('pedido.visualizar_pedidos',
+                                page=p,
+                                status=filtro_status,
+                                ordenar=ordenar,
+                                campo=campo_busca,
+                                busca=termo_busca,
+                                data_inicio=request.args.get('data_inicio'),
+                                data_fim=request.args.get('data_fim')) }}">{{ p }}
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
                 </li>
-                {% else %}
-                <li class="page-item disabled"><span class="page-link">…</span></li>
-                {% endif %}
-                {% endfor %}
 
                 <!-- Botão "Próximo" -->
                 <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
-                    <a class="page-link" href="{{ url_for('pedido.visualizar_pedidos',
+                    <a class="page-link text-center" href="{{ url_for('pedido.visualizar_pedidos',
                         page=pagination.next_num,
                         status=filtro_status,
                         ordenar=ordenar,
                         campo=campo_busca,
-                        busca=termo_busca) }}">Próximo
+                        busca=termo_busca,
+                        data_inicio=request.args.get('data_inicio'),
+                        data_fim=request.args.get('data_fim')) }}">
+                        Próximo
                     </a>
                 </li>
-
             </ul>
         </nav>
         {% endif %}
+
     </div>
 </main>
 {% endblock %}

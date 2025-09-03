@@ -1,9 +1,11 @@
 from flask import Blueprint, render_template, redirect, url_for, request
 from datetime import datetime
+from sqlalchemy.orm import joinedload
 
 from ...models.produto import Produtos
 from ...models.pedido import Pedido
 from ...models.usuario import Usuarios
+from ...models.item_pedido import ItemPedido
 from ...extensions import db
 
 from utils.decorators import admin_required
@@ -18,19 +20,43 @@ def visualizar_pedidos():
     campo_busca = request.args.get('campo')
     termo_busca = request.args.get('busca')
 
-    # Query inicial
-    query = Pedido.query
+    # --- Datas (strings no formato YYYY-MM-DD vindas dos inputs type=date) ---
+    data_inicio_str = request.args.get('data_inicio')
+    data_fim_str = request.args.get('data_fim')
+    data_inicio = data_fim = None
 
+    try:
+        if data_inicio_str:
+            data_inicio = datetime.strptime(data_inicio_str, '%Y-%m-%d').replace(hour=0, minute=0, second=0)
+    except ValueError:
+        data_inicio = None
+
+    try:
+        if data_fim_str:
+            # incluir o dia inteiro: 23:59:59
+            data_fim = datetime.strptime(data_fim_str, '%Y-%m-%d').replace(hour=23, minute=59, second=59)
+    except ValueError:
+        data_fim = None
+
+    # --- Query base com joinedload para evitar N+1 ao acessar usuario/itens/produto ---
+    query = Pedido.query.options(
+        joinedload(Pedido.usuario),
+        joinedload(Pedido.itens).joinedload(ItemPedido.produto)
+    )
+
+    # status
     if filtro_status != 'todos':
-        query = query.filter_by(status=filtro_status)
+        query = query.filter(Pedido.status == filtro_status)
 
-    # Ordenação
-    if ordenar == 'asc':
-        query = query.order_by(Pedido.data_hora.asc())
-    else:
-        query = query.order_by(Pedido.data_hora.desc())
+    # aplicar filtro de datas NO BANCO (muito mais rápido que carregar tudo e filtrar em Python)
+    if data_inicio and data_fim:
+        query = query.filter(Pedido.data_hora.between(data_inicio, data_fim))
+    elif data_inicio:
+        query = query.filter(Pedido.data_hora >= data_inicio)
+    elif data_fim:
+        query = query.filter(Pedido.data_hora <= data_fim)
 
-    # Busca
+    # busca textual/lógica (mantém comportamento atual)
     if campo_busca and termo_busca:
         if campo_busca == 'id_pedido':
             query = query.filter(Pedido.id == termo_busca)
@@ -41,9 +67,14 @@ def visualizar_pedidos():
         elif campo_busca == 'codigo_etec':
             query = query.join(Usuarios).filter(Usuarios.codigo_etec_usuario.ilike(f'%{termo_busca}%'))
 
-    # Paginação
+    # ordenação e paginação (mantém paginação)
+    if ordenar == 'asc':
+        query = query.order_by(Pedido.data_hora.asc())
+    else:
+        query = query.order_by(Pedido.data_hora.desc())
+
     page = request.args.get('page', 1, type=int)
-    per_page = 20  # quantidade de pedidos por página
+    per_page = 20
     pagination = query.paginate(page=page, per_page=per_page, error_out=False)
 
     return render_template(
@@ -53,7 +84,10 @@ def visualizar_pedidos():
         filtro_status=filtro_status,
         ordenar=ordenar,
         campo_busca=campo_busca,
-        termo_busca=termo_busca
+        termo_busca=termo_busca,
+        # mantém valores de datas para o template (pré-preenchimento)
+        data_inicio=data_inicio_str,
+        data_fim=data_fim_str
     )
 
 

@@ -52,6 +52,17 @@ main {
     margin-bottom: 1rem;
 }
 
+button[aria-expanded="false"] .bi::before {
+    content: "\f229";
+    /* bi-caret-down */
+}
+
+button[aria-expanded="true"] .bi::before {
+    content: "\f235";
+    /* bi-caret-up */
+}
+
+
 @media (max-width: 1200px) {
     main {
         flex-direction: column;

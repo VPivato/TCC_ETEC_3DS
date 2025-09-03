@@ -1,5 +1,4 @@
 Mudar o home
 Banner e fotos da equipe página sobre
 
-Filtro por data página pedidos
 Titulos relatorios pdf
