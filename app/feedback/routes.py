@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, session, abort
 from ..models.feedback import Feedbacks
 from ..extensions import db
 
@@ -6,10 +6,18 @@ feedback_bp = Blueprint("feedback", __name__, url_prefix="/feedback")
 
 @feedback_bp.route('/')
 def feedback():
+    usuario_id = session.get('user_id')
+    if not usuario_id:
+        return abort(401)
+    
     return render_template("feedback/feedback.html")
 
 @feedback_bp.route('/enviar_feedback', methods=["POST"])
 def enviar_feedback():
+    usuario_id = session.get('user_id')
+    if not usuario_id:
+        return abort(401)
+    
     if request.method == "POST":
         nome_feedback = request.form["nome_feedback"]
         email_feedback = request.form["email_feedback"]

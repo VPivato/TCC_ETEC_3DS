@@ -12,7 +12,7 @@ from reportlab.lib import colors
 from reportlab.lib.units import cm
 from reportlab.lib.enums import TA_CENTER
 from reportlab.lib.styles import ParagraphStyle
-from reportlab.platypus import Paragraph, Spacer, Table, TableStyle, Image
+from reportlab.platypus import Paragraph, Spacer, Table, TableStyle, Image, PageBreak
 
 def escrever_dataframe(writer, df, sheet_name):
     df.to_excel(writer, index=False, sheet_name=sheet_name)
@@ -53,6 +53,14 @@ def adicionar_subtitulo(elementos, styles):
     )
     elementos.append(Paragraph(f"Gerado em {agora} • Período: {periodo}", estilo_info))
     elementos.append(Spacer(1, 15))
+
+def titulo_centralizado(elementos, texto, styles):
+    estilo_heading4_centralizado = ParagraphStyle(
+                "Heading2Centralizado",
+                parent=styles["Heading4"],
+                alignment=TA_CENTER
+        )
+    elementos.append(Paragraph(texto, estilo_heading4_centralizado))
 
 def tabela_df(df):
     tabela = Table([df.columns.tolist()] + df.values.tolist())
@@ -268,6 +276,7 @@ def exportar_relatorio_geral_pdf(dados, styles):
     elementos.append(Spacer(1, 15))
 
     # Frases
+    titulo_centralizado(elementos, "Visão geral:", styles)
     for frase in dados.get("frases", []):
         elementos.append(Paragraph(frase, styles["Normal"]))
         elementos.append(Spacer(1, 6))
@@ -316,19 +325,11 @@ def exportar_relatorio_produtos_pdf(dados, styles):
     # Caso produto específico tenha sido filtrado
     produto_espec = session.get("produto_especifico")
     if produto_espec:
+        elementos.append(PageBreak())
         elementos.append(Spacer(1, 5))
 
-        estilo_heading2_centralizado = ParagraphStyle(
-            "Heading2Centralizado",
-            parent=styles["Heading2"],
-            alignment=TA_CENTER
-        )
         # Subtítulo do produto
-        elementos.append(Paragraph(
-            f"Produto filtrado: <b>{produto_espec['descricao']}</b> "
-            f"(Categoria: {produto_espec['categ']})", 
-            estilo_heading2_centralizado
-        ))
+        titulo_centralizado(elementos, f"Produto filtrado: <b>{produto_espec['descricao']}</b>"f"(Categoria: {produto_espec['categ']})", styles)
         elementos.append(Spacer(1, 10))
 
         # KPIs do produto específico
