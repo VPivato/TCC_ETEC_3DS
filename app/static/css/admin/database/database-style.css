@@ -80,20 +80,6 @@ label {
     letter-spacing: 2px;
 }
 
-#excluir-varios,
-#filtrar {
-    background-color: #3ab340 !important;
-    color: #eee;
-    border: none;
-}
-
-#cancelar-selecao,
-#limpar {
-    border: 2px solid #c5453c;
-    color: #c5453c;
-    background-color: #eee;
-}
-
 .switch {
     position: relative;
     display: inline-block;
@@ -232,6 +218,7 @@ tbody button:hover {
     #filtro-wrapper {
         border-right: none;
         border-bottom: 2px dotted #cfcdda;
+        padding-right: 0;
     }
 
     #selecao-multipla-wrapper {

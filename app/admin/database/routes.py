@@ -1,5 +1,7 @@
 import os
-from flask import Blueprint, render_template, request, jsonify, current_app
+import sqlite3
+import tempfile
+from flask import Blueprint, render_template, request, jsonify, current_app, flash, redirect, url_for, send_file
 from sqlalchemy import func
 from datetime import datetime
 
@@ -11,6 +13,7 @@ from ...models.pedido import Pedido
 from ...models.item_pedido import ItemPedido
 from ...models.aluno import Alunos
 from ...extensions import db
+from app import models
 
 from utils.decorators import admin_required
 
@@ -21,7 +24,7 @@ MODELOS = {
     "Notificacoes": Notificacoes,
     "Feedbacks": Feedbacks,
     "Produtos": Produtos,
-    "Pedidos": Pedido,
+    "Pedido": Pedido,
     "ItemPedido": ItemPedido,
     "Alunos": Alunos
 }
@@ -196,7 +199,63 @@ def filtrar():
     except Exception as e:
         return jsonify({'erro': f'Erro ao filtrar: {str(e)}'}), 500
 
+@database_bp.route("/limpar/<string:nome_tabela>", methods=["POST"])
+@admin_required
+def limpar_tabela(nome_tabela):
+    try:
+        num = limpar_registros(nome_tabela)
+        flash(f"{num} registros da tabela {nome_tabela} foram excluídos.", "success")
+    except Exception as e:
+        flash(f"Erro ao excluir registros: {e}", "danger")
 
+    return redirect(url_for("database.database"))
+
+
+def limpar_registros(nome_tabela):
+    Model = getattr(models, nome_tabela, None)
+
+    if Model is None:
+        raise ValueError(f"Modelo '{nome_tabela}' não encontrado em app.models")
+
+    try:
+        num_registros = db.session.query(Model).delete(synchronize_session=False)
+
+        if nome_tabela == "Pedido":
+            db.session.query(models.ItemPedido).delete(synchronize_session=False)
+            db.session.query(models.Pedido).delete(synchronize_session=False)
+
+        db.session.commit()
+        return num_registros
+    except Exception as e:
+        db.session.rollback()
+        raise e
+
+@database_bp.route("/backup", methods=["GET"])
+def backup():
+    # Caminho do banco principal
+    db_path = os.path.join("instance", "banco_de_dados.db")
+
+    # Criar arquivo temporário
+    tmp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".db")
+    backup_path = tmp_file.name
+    tmp_file.close()
+
+    # Backup seguro com sqlite3
+    con = sqlite3.connect(db_path)
+    bck = sqlite3.connect(backup_path)
+    with bck:
+        con.backup(bck)
+    bck.close()
+    con.close()
+
+    timestamp = datetime.now().strftime("%d%m%y_%H%M")
+    filename = f"db_backup_{timestamp}.db"
+
+    return send_file(
+        backup_path,
+        as_attachment=True,
+        download_name=filename
+    )
 
 @database_bp.route('/excluir_varios', methods=['POST'])
 @admin_required
