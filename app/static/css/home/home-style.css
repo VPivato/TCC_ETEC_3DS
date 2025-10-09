@@ -1,212 +1,531 @@
-html {
-  scroll-behavior: smooth;
-}
-
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Inter', sans-serif;
+    padding: 0;
+    margin: 0;
+    scroll-behavior: smooth;
+    box-sizing: border-box;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'SegoeUI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue',
+        sans-serif;
 }
 
-/* IMAGEM PRINCIPAL */
-#img-menu {
-  width: 100%;
-  height: auto;
-  user-select: none;
-  -webkit-user-drag: none;
+html,
+body {
+    overflow-x: hidden;
+    font-size: 100%;
+    scroll-behavior: smooth;
+    font-style: normal;
+
 }
 
-/* SLOGAN */
-#menu-slogan {
-  height: 500px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+body {
+    height: 100%;
+    width: 100%;
+    background-color: white;
+
+    min-height: 100vh;
+    color: rgb(75 85 99);
 }
 
-#letra-foodpay {
-  font-family: "Chau Philomene One", sans-serif;
-  font-size: 6rem;
-  color: #2e9a60;
+body.dark-mode {
+    background-color: #272727;
+    color: #ffffff;
 }
 
-#title_beneficios {
-  font-family: "Chau Philomene One", sans-serif;
-  font-size: 3rem;
-  color: #2e9a60;
+/* ========== SEÇÃO PRINCIPAL ========== */
+.first {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
 }
 
-#letra-texto {
-  font-size: 1.2rem;
-  color: #333;
-  max-width: 800px;
-  padding: 0 20px;
-  margin-top: 20px;
-  line-height: 1.6;
+#fpn {
+    width: 100vw;
+    object-fit: cover;
+    margin-top: 0;
 }
 
-/* COMO FUNCIONA */
-#como-funciona {
-  background-color: #f7f7f7;
-  padding: 80px 20px;
-  text-align: center;
+/* ========== TERCEIRA SEÇÃO / CARDS ========== */
+.features1 {
+    flex-direction: row;
+    display: flex;
+    padding: 50px 0 0 50px;
+    align-items: center;
+    justify-content: center;
+    gap: 200px;
 }
 
-#como-funciona h2 {
-  font-size: 3rem;
-  color: #2e9a60;
-  margin-bottom: 40px;
-  font-family: "Chau Philomene One", sans-serif;
+.allcards-fat {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    height: 650px;
+    width: 450px;
+
 }
 
-.passos {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 40px;
+/* CARD CELULAR */
+.cardcel {
+    width: 350px;
+    height: 700px;
+    background: black;
+    border-radius: 35px;
+    border: 2px solid rgb(40, 40, 40);
+    padding: 7px;
+    position: relative;
+    box-shadow: 2px 5px 15px rgba(0, 0, 0, 0.486);
 }
 
-.passo {
-  max-width: 280px;
+.simcel {
+    height: 200px;
 }
 
-.passo img {
-  width: 80px;
-  margin-bottom: 20px;
+.card-int {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-image: linear-gradient(to bottom, #ffffff, #ffffff,
+            #fc3131, #fa9d9d);
+    background-size: 200% 200%;
+    background-position: 0% 0%;
+    height: 100%;
+    border-radius: 25px;
+    transition: all 0.6s ease-out;
+    overflow: hidden;
 }
 
-.passo h3 {
-  font-size: 1.5rem;
-  color: #f83435;
+.cardcel:hover .card-int {
+    background-position: 100% 100%;
 }
 
-.passo p {
-  font-size: 1.3rem;
-  color: #444;
+/* Parte superior do celular */
+.top {
+    position: absolute;
+    top: 0;
+    right: 50%;
+    transform: translate(50%, 0);
+    width: 35%;
+    height: 18px;
+    background-color: black;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
 }
 
-/* BENEFÍCIOS */
-#beneficios {
-  background-color: #fff;
-  padding: 80px 20px;
-  text-align: center;
+.speaker {
+    position: absolute;
+    top: 2px;
+    right: 50%;
+    transform: translate(50%, 0);
+    width: 40%;
+    height: 2px;
+    border-radius: 2px;
+    background-color: rgb(20, 20, 20);
 }
 
-#beneficios h2 {
-  font-size: 3rem;
-  color: #2e9a60;
-  margin-bottom: 40px;
-  font-family: "Chau Philomene One", sans-serif;
+.camera {
+    position: absolute;
+    top: 6px;
+    right: 84%;
+    transform: translate(50%, 0);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.048);
 }
 
-.beneficios-container {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 40px;
+.int {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    top: 50%;
+    right: 50%;
+    transform: translate(50%, -50%);
+    background-color: rgba(0, 0, 255, 0.212);
 }
 
-.beneficio {
-  max-width: 250px;
-  padding: 20px;
-  border-radius: 12px;
-  background-color: #f9f9f9;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease;
+/* Botões laterais do celular */
+.btn1,
+.btn2,
+.btn3,
+.btn4 {
+    position: absolute;
+    width: 2px;
+    background-image: linear-gradient(to right, #111111, #222222,
+            #333333, #464646, #595959);
 }
 
-.beneficio:hover {
-  transform: translateY(-8px);
+.btn1 {
+    height: 45px;
+    top: 30%;
+    right: -4px;
 }
 
-.beneficio img {
-  width: 60px;
-  margin-bottom: 15px;
+.btn2,
+.btn3 {
+    transform: scale(-1);
+    left: -4px;
+    height: 30px;
 }
 
-.beneficio h4 {
-  font-size: 1.5rem;
-  color: #f83435;
-  margin-bottom: 10px;
+.btn2 {
+    top: 26%;
 }
 
-.beneficio p {
-  font-size: 1.3rem;
-  color: #333;
+.btn3 {
+    top: 36%;
 }
 
-/* VANTAGENS */
-#vantagens {
-  background-color: #f7f7f7;
-  padding: 80px 20px;
-  text-align: center;
+/* Conteúdo do card */
+.hello {
+    display: flex;
+    flex-flow: column;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe
+ UI', Roboto, Oxygen, Ubuntu, Cantarell, ' Open Sans', ' Helvetica Neue',
+ sans-serif;
+    font-size: 5rem;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    line-height: 35px;
+    height: 100%;
+    transition: 0.5s ease-in-out;
 }
 
-#vantagens h2 {
-  font-size: 3rem;
-  color: #2e9a60;
-  margin-bottom: 40px;
-  font-family: "Chau Philomene One", sans-serif;
+.hidden {
+    display: block;
+    opacity: 0;
+    font-size: 1rem;
+    transition: all 0.3s ease-in;
 }
 
-.vantagens-lista {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 40px;
+.cardcel:hover .hidden {
+    opacity: 1;
 }
 
-.vantagem {
-  max-width: 250px;
+.cardcel:hover .hello {
+    transform: translateY(-20px);
 }
 
-.vantagem img {
-  width: 60px;
-  margin-bottom: 20px;
+.features1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.vantagem h4 {
-  font-size: 1.5rem;
-  color: #f83435;
+.cardtitle {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
 }
 
-.vantagem p {
-  font-size: 1.3rem;
-  color: #333;
+.cadasicon {
+    width: 55px;
+    margin: 10px 5px;
 }
 
-/* RODAPÉ */
+.imgcards {
+    width: 500px;
+    height: 450px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    justify-content: center;
+}
+
+.txtcards {
+    text-align: justify;
+    padding: 30px;
+}
+
+.title {
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: rgb(31 41 55);
+}
+
+.description {
+    margin-top: 0rem;
+    font-size: 1.5rem;
+    line-height: 2rem;
+    color: rgb(75 85 99);
+}
+
+/* ========== SEÇÃO FOURTH (BENEFÍCIOS) ========== */
+.features {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 60px;
+    margin: 80px 0 0 0;
+    padding: 90px 20px;
+    background-color: #f2f2f3;
+    width: 100%;
+}
+
+.feature-card {
+    display: flex;
+    box-sizing: border-box;
+    height: 450px;
+    justify-content: flex-end;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    max-width: 450px;
+    width: 100%;
+    padding: 30px 25px;
+    background-color: #fafafa;
+    border-radius: 12px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+
+}
+
+.feature-card {
+    height: 416px;
+}
+
+.feature-content h4 {
+    color: #2c3e50;
+    margin-top: .5rem;
+    font-size: 1.5rem;
+}
+
+.imgcardsesp {
+    width: 200px;
+    height: 170px;
+
+}
+
+.feature-card p {
+    margin-top: 1rem;
+    font-size: 1.4rem;
+    line-height: 2rem;
+    color: rgb(75 85 99);
+    text-align: left;
+}
+
+.imagemfim {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 40px;
+    gap: 30px;
+    flex-direction: row;
+
+}
+
+#imgfim {
+    height: 80vh;
+    object-fit: contain;
+}
+
+.imagemfim>div {
+    width: 20rem;
+}
+
+.imagemfim div h1 {
+    font-size: 4rem;
+    color: #2e9a60;
+
+}
+
+.imagemfim div h3 {
+    color: #2e9a60;
+    font-weight: 100;
+}
+
+.imagemfim button {
+    width: 150px;
+    font-size: 20px;
+    background: #2e9a60;
+    color: white;
+    padding: 0.7em;
+    padding-left: 0.9em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    gap: .6rem;
+}
+
+.imagemfim button span {
+    display: block;
+}
+
+.imagemfim button svg {
+    display: block;
+    transform-origin: center center;
+}
+
 #rodape {
-  background-color: #2e9a60;
-  color: #fff;
-  padding: 40px 20px;
-  text-align: center;
+    background-color: #2e9a60;
+    color: #fff;
+    width: 100%;
+    padding: 40px 20px;
+    text-align: center;
 }
 
 .rodape-logo {
-  width: 80px;
-  margin-bottom: 20px;
+    width: 80px;
+    margin-bottom: 20px;
 }
 
 .links-rodape {
-  margin-top: 20px;
+    margin-top: 20px;
 }
 
 .links-rodape a {
-  color: #fff;
-  margin: 0 10px;
-  font-size: 0.9rem;
-  text-decoration: none;
+    color: #fff;
+    margin: 0 10px;
+    font-size: 0.9rem;
+    text-decoration: none;
 }
 
 .links-rodape a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
-#img-icons { 
-	width: 100px;
-	height: 80px;
+@media (max-width: 1400px) {
+    #fpn {
+        margin-top: 2.2rem;
+    }
+}
+
+
+@media (max-width: 1024px) {
+    .second-all {
+        flex-direction: column;
+        text-align: center;
+        padding: 40px 5%;
+    }
+
+    #spn {
+        width: 50%;
+        margin: 20px 0;
+    }
+
+    #sec-text {
+        width: 100%;
+    }
+
+    .features1 {
+        flex-direction: column;
+        gap: 80px;
+    }
+
+    .imgcards,
+    .txtcards {
+        width: 100%;
+    }
+
+    .features {
+        gap: 30px;
+        padding: 50px 20px;
+    }
+
+    .imagemfim {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    #fpn {
+        margin-top: 3rem;
+    }
+
+    .second-all {
+        padding: 30px
+    }
+
+    #spn {
+        width: 70%;
+    }
+
+    .cardcel {
+        width: 280px;
+        height: 600px;
+    }
+
+    .hello {
+        font-size: 3rem;
+    }
+
+    .features1 {
+        gap: 50px;
+    }
+
+    .imgcards,
+    .txtcards {
+        padding: 20px;
+    }
+
+    .title {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    #fpn {
+        margin-top: 4rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #fpn {
+        margin-top: 4.5rem;
+    }
+
+    .cardcel {
+        width: 240px;
+        height: 470px;
+    }
+
+    .hello {
+        font-size: 2.2rem;
+        line-height: 28px;
+    }
+
+    .features {
+        padding: 40px 10px;
+    }
+
+    .features1 {
+        padding-left: 0;
+    }
+
+    .allcards-fat {
+        padding: 0 40px;
+        width: auto;
+    }
+
+    .description {
+        font-size: 1.2rem;
+    }
+
+    .feature-card {
+        width: 100%;
+        height: auto;
+        padding: 20px;
+    }
+
+    .imagemfim #imgfim {
+        height: 50vh;
+    }
+
+    .imagemfim div {
+        width: auto;
+    }
+
+    .imagemfim div h1 {
+        font-size: 2.5rem;
+    }
 }

@@ -1,106 +1,141 @@
-{% extends "shared/base.html" %}
+{% extends 'shared/base.html' %}
 
-{% block title %}Foodpay{% endblock %}
+{% block title %}Home{% endblock %}
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/home/home-style.css')}}">
-<!-- Google Fonts extra para mais estilo -->
-<link href="https://fonts.googleapis.com/css2?family=Chau+Philomene+One&family=Roboto:wght@400;700&display=swap"
-   rel="stylesheet">
-
-<!-- AOS (Animate On Scroll) para animações ao rolar a página -->
-<link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home/home-style.css') }}">
 {% endblock %}
 
 {% block content %}
-<!-- Imagem Principal -->
-<div id="container">
-   <div id="menu-cima">
-      <img src="{{ url_for('static', filename='images/home/HOME.svg') }}" alt="" id="img-menu">
-   </div>
+<!-- Imagem principal -->
+<section class="first">
+    <img src="{{ url_for('static', filename='images/home/FOODPAYOF.jpg') }}" id="fpn">
+</section>
 
-   <!-- Benefícios -->
-   <section id="beneficios" data-aos="fade-up" data-aos-duration="1000">
-      <h2>Benefícios</h2>
-      <div class="beneficios-container">
-         <div class="beneficio">
-            <img src="{{ url_for('static', filename='images/home/icons/1.svg') }}" alt="Rapidez" id="img-icons">
-            <h4>Agilidade no Atendimento</h4>
-            <p>Evite filas e otimize seu tempo no intervalo.</p>
-         </div>
-         <div class="beneficio">
-            <img src="{{ url_for('static', filename='images/home/icons/2.svg') }}" alt="App Intuitivo" id="img-icons">
-            <h4>Aplicativo Intuitivo</h4>
-            <p>Fácil de usar, direto do celular ou computador.</p>
-         </div>
-         <div class="beneficio">
-            <img src="{{ url_for('static', filename='images/home/icons/3.svg') }}" alt="Histórico" id="img-icons">
-            <h4>Histórico de Pedidos</h4>
-            <p>Veja o que comprou e controle seus gastos.</p>
-         </div>
-         <div class="beneficio">
-            <img src="{{ url_for('static', filename='images/home/icons/4.svg') }}" alt="Suporte" id="img-icons">
-            <h4>Suporte Integrado</h4>
-            <p>Ajuda rápida em caso de dúvidas ou problemas.</p>
-         </div>
-      </div>
-   </section>
 
-   <div id="load-page">
+<!-- Primeira seção: celular, 3 benefícios -->
+<section class="features1">
+    <!-- Celular -->
+    <div class="allcardcel">
+        <div class="cardcel">
+            <!-- Câmera do celular -->
+            <div class="top">
+                <div class="camera">
+                    <div class="int">
+                    </div>
+                    <div class="speaker"></div>
+                </div>
+            </div>
 
-   </div>
+            <!-- Celular -->
+            <div class="card-int">
+                <img src="{{ url_for('static', filename='images/home/logo.png') }}" alt="Logo FoodPay" class="simcel">
+                <div class="hello">foodpay <span class="hidden">Compre rápido, pague fácil</span></div>
+            </div>
+        </div>
+    </div>
 
-   <!-- Como Funciona -->
-   <section id="como-funciona" data-aos="fade-up" data-aos-duration="1000">
-      <h2>Como Funciona?</h2>
-      <div class="passos">
-         <div class="passo">
-            <img src="{{ url_for('static', filename='images/home/icons/5.svg') }}" alt="Cadastro" id="img-icons">
-            <h3>1. Cadastre-se</h3>
-            <p>Crie sua conta usando seu e-mail institucional em poucos cliques.</p>
-         </div>
-         <div class="passo">
-            <img src="{{ url_for('static', filename='images/home/icons/6.svg') }}" alt="Pedido" id="img-icons">
-            <h3>2. Faça o Pedido</h3>
-            <p>Escolha o que deseja comer e pague online pelo app ou site.</p>
-         </div>
-         <div class="passo">
-            <img src="{{ url_for('static', filename='images/home/icons/7.svg') }}" alt="Retirada" id="img-icons">
-            <h3>3. Retire sem Fila</h3>
-            <p>Vá até a cantina e apenas retire seu pedido pronto, sem esperar.</p>
-         </div>
-      </div>
-   </section>
+    <!-- Benefícios -->
+    <div class="allcards-fat">
+        <div class="cards-list">
+            <div class="cardtitle">
+                <img src="{{ url_for('static', filename='images/home/cadastro.png') }}" class="cadasicon">
+                <span class="title">Cadastro simples</span>
+            </div>
+            <p class="description">
+                É aluno de ETEC ou FATEC? Entrou, preencheu, tá dentro — rápido, fácil e sem complicação.
+            </p>
+        </div>
 
-   <!-- Vantagens -->
-   <section id="vantagens" data-aos="fade-up" data-aos-duration="1000">
-      <h2>Por que usar o FoodPay?</h2>
-      <div class="vantagens-lista">
-         <div class="vantagem">
-            <img src="{{ url_for('static', filename='images/home/icons/8.svg') }}" alt="Rápido" id="img-icons">
+        <div class="cards-list">
+            <div class="cardtitle">
+                <img src="{{ url_for('static', filename='images/home/seguranca.png') }}" class="cadasicon">
+                <span class="title">Segurança</span>
+            </div>
+            <p class="description">
+                Seus dados estão sempre protegidos, com cuidado e tecnologia que mantém tudo seguro.
+            </p>
+        </div>
+
+        <div class="cards-list">
+            <div class="cardtitle">
+                <img src="{{ url_for('static', filename='images/home/cps.png') }}" class="cadasicon">
+                <span class="title">Exclusividade</span>
+            </div>
+            <p class="description">
+                O sistema para facilitar sua vida, exclusivo para alunos de ETECs e FATECs: feito para você.
+            </p>
+        </div>
+    </div>
+</section>
+
+
+<!-- Segunda seção: 3 cards -->
+<section class="features">
+    <div class="feature-card">
+        <div class="feature-content">
+            <h4>Controle Total</h4>
+            <img src="{{ url_for('static', filename='images/home/Buffer-rafiki.png') }}" class="imgcardsesp">
+            <p>
+                Com o FoodPay, você tem o controle total das suas compras na cantina, acompanhando gastos em tempo real
+                e sem preocupações.
+            </p>
+        </div>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-content">
+            <h4>Pensado para Administradores</h4>
+            <img src="{{ url_for('static', filename='images/home/Admin-cuate.png') }}" class="imgcardsesp">
+            <p>
+                Para gestores, a plataforma oferece relatórios inteligentes e uma gestão mais organizada das vendas e
+                produtos da cantina escolar.
+            </p>
+        </div>
+    </div>
+
+    <div class="feature-card">
+        <div class="feature-content">
             <h4>Economia de Tempo</h4>
-            <p>Evite filas e aproveite melhor o intervalo.</p>
-         </div>
-         <div class="vantagem">
-            <img src="{{ url_for('static', filename='images/home/icons/9.svg') }}" alt="Seguro" id="img-icons">
-            <h4>Pagamento Seguro</h4>
-            <p>Transações protegidas e integradas ao sistema da escola.</p>
-         </div>
-         <div class="vantagem">
-            <img src="{{ url_for('static', filename='images/home/icons/10.svg') }}" alt="Controle" id="img-icons">
-            <h4>Controle de Gastos</h4>
-            <p>Tenha visibilidade dos seus gastos direto no app.</p>
-         </div>
-      </div>
-   </section>
+            <img src="{{ url_for('static', filename='images/home/time flies-pana.png') }}" class="imgcardsesp">
+            <p>
+                E o melhor: tudo isso gera uma grande economia de tempo para alunos, pais e equipe da cantina, tornando
+                tudo mais eficiente.
+            </p>
+        </div>
+    </div>
+</section>
 
-   {% include 'shared/footer.html' %}
-</div>
+
+<!-- Seção final: celular, botão sobre -->
+<section class="imagemfim">
+    <div>
+        <h1>E aí, curtiram o FoodPay?</h1>
+        <h3>Clique no botão e conheça mais sobre a gente!</h3>
+        <button id="btn-sobre">
+            <!-- SVG do botão -->
+            <div class="svg-wrapper-1">
+                <div class="svg-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                        <path fill="none" d="M0 0h24v24H0z"></path>
+                        <path fill="currentColor"
+                            d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l6-8-8 6-8.054-2.685z">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+            <span>Sobre</span>
+        </button>
+    </div>
+    <img src="{{ url_for('static', filename='images/home/instagram.jpg') }}" id="imgfim" alt="Imagem final">
+</section>
+
+{% include 'shared/footer.html' %}
 {% endblock %}
 
 {% block extra_js %}
-<!-- Script do AOS -->
-<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 <script>
-   AOS.init();
+    document.getElementById('btn-sobre').addEventListener('click', () => {
+        window.location.href = '/info/sobre'
+    })
 </script>
 {% endblock %}
