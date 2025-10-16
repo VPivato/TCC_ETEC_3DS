@@ -44,22 +44,21 @@ a {
 
 /* ========== Seção de Capa / Imagem Inicial ========== */
 .imagemCover {
-  min-height: 50rem;
+  min-height: 95vh;
   margin-top: 1px;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
   opacity: 0.9;
-  /* background-image: url(); */
+  background-image: url(../../images/sobre/cantina.jpeg);
   background-size: cover;
   color: aliceblue;
   position: relative;
 }
 
 .imagemCover::after {
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.65) 100%);
-  /* W3C */
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.9) 100%);
   content: '';
   position: absolute;
   left: 0;
@@ -122,7 +121,7 @@ h4 {
   margin: auto;
   align-items: flex-start;
   text-align: center;
-  font-size: 18px;
+  font-size: 1.6rem;
 
 }
 
@@ -140,7 +139,7 @@ h4 {
 
 .txtspequenoscard {
   font-family: "Inter", sans-serif;
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   padding: 0 30px;
   color: rgb(71, 71, 71);
   margin: auto;
@@ -160,7 +159,6 @@ h4 {
 /* ====== Seção "Nosso Time" ====== */
 .nossa_equipe {
   width: 100%;
-  background-color: #f9f9f9;
   padding: 50px 0;
 }
 

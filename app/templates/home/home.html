@@ -3,12 +3,13 @@
 {% block title %}Home{% endblock %}
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home/home-style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home/home-escuro.css') }}">
 {% endblock %}
 
 {% block content %}
 <!-- Imagem principal -->
 <section class="first">
-    <img src="{{ url_for('static', filename='images/home/FOODPAYOF.jpg') }}" id="fpn">
+    <img src="{{ url_for('static', filename='images/home/FoodPay.png') }}" id="fpn">
 </section>
 
 
@@ -133,9 +134,10 @@
 {% endblock %}
 
 {% block extra_js %}
+<script src="{{ url_for('static', filename='js/home/home-script.js') }}"></script>
 <script>
-    document.getElementById('btn-sobre').addEventListener('click', () => {
-        window.location.href = '/info/sobre'
-    })
+    if (document.body.classList.contains('modo-escuro')) {
+        document.getElementById('imgfim').src = "{{ url_for('static', filename='images/home/instagram.png') }}"
+    }
 </script>
 {% endblock %}

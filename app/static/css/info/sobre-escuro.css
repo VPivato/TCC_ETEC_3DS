@@ -18,6 +18,10 @@ body.modo-escuro .txtspequenoscard {
     color: #d0d0d0;
 }
 
+body.modo-escuro .namefulano {
+    color: #b0b0b0;
+}
+
 body.modo-escuro .sec {
     background-color: #13553f;
 }

@@ -103,11 +103,22 @@ def calcular_kpis_produtos():
     estoque_total = db.session.query(func.sum(Produtos.estoque_produto)).scalar() or 0
     produtos_estoque_baixo = Produtos.query.filter(Produtos.estoque_produto > 0, Produtos.estoque_produto <= 5).all()
 
+    # <-- converter para estrutura serializável (lista de dicts)
+    lista_produtos_estoque_baixo = [
+        {
+            "id": int(p.id),
+            "descricao_produto": p.descricao_produto,
+            "estoque_produto": int(p.estoque_produto),
+            "categoria_produto": p.categoria_produto
+        }
+        for p in produtos_estoque_baixo
+    ]
+
     return {
         "total_produtos": total_produtos,
         "produtos_esgotados": produtos_esgotados,
         "produtos_estoque_baixo": len(produtos_estoque_baixo),
-        "lista_produtos_estoque_baixo": produtos_estoque_baixo,
+        "lista_produtos_estoque_baixo": lista_produtos_estoque_baixo,
         "estoque_total": estoque_total
     }
 

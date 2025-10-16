@@ -125,8 +125,8 @@ def gerar_relatorio_produtos(_pedidos_periodo):
     kpis_estoque = calcular_kpis_produtos()
 
     # Gráfico estoque baixo
-    labels_estoque_baixo = [p.descricao_produto for p in kpis_estoque.get('lista_produtos_estoque_baixo')]
-    valores_estoque_baixo = [p.estoque_produto for p in kpis_estoque.get('lista_produtos_estoque_baixo')]
+    labels_estoque_baixo = [p["descricao_produto"] for p in kpis_estoque.get('lista_produtos_estoque_baixo', [])]
+    valores_estoque_baixo = [p["estoque_produto"] for p in kpis_estoque.get('lista_produtos_estoque_baixo', [])]
 
     pedidos = _pedidos_periodo
     _, faturamento_dict = analisar_produtos(pedidos)
